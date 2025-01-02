@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,14 +40,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "accounts",
-    "django.contrib.sites",
+    "allauth_ui",  # Add this before allauth
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    # 'allauth.socialaccount.providers.apple',
+    "widget_tweaks",  # Add this
+    "slippers",  # Add this
+    "accounts",
+    "django.contrib.sites",
     "allauth.socialaccount.providers.google",
-    # 'allauth.socialaccount.providers.instagram',
     "allauth.socialaccount.providers.telegram",
     "allauth.socialaccount.providers.twitter",
 ]
@@ -66,7 +69,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],  # Add this line
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -74,7 +77,6 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "django.template.context_processors.request",
             ],
         },
     },
@@ -148,25 +150,25 @@ LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # For development
 
 
+ALLAUTH_UI_THEME = "retro"  # or "dark", "cupcake", etc.
+
+
+
+
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "APP": {
-            "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
-            "secret": os.environ.get("GOOGLE_CLIENT_SECRET"),
-            "key": "",  # Leave empty if not needed
+            "client_id": os.getenv("GOOGLE_OAUTH_CLIENT_ID"),
+            "secret": os.getenv("GOOGLE_OAUTH_SECRET"),
+            "key": "",
         },
-        "SCOPE": [
-            "profile",
-            "email",
-        ],
-        "AUTH_PARAMS": {
-            "access_type": "online",
-        },
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
     },
     "telegram": {
         "APP": {
-            "client_id": os.environ.get("TELEGRAM_CLIENT_ID"),  # Bot ID
-            "secret": os.environ.get("TELEGRAM_CLIENT_SECRET"),  # Bot Token
+            "client_id": os.getenv("TELEGRAM_CLIENT_ID"),
+            "secret": os.getenv("TELEGRAM_CLIENT_SECRET"),
         },
         "AUTH_PARAMS": {
             "auth_date_validity": 30,  # Optional: Set expiration time in seconds
@@ -174,8 +176,8 @@ SOCIALACCOUNT_PROVIDERS = {
     },
     "twitter": {
         "APP": {
-            "client_id": os.environ.get("TWITTER_OAUTH_CLIENT_ID"),  # API Key
-            "secret": os.environ.get("TWITTER_OAUTH_SECRET"),  # API Secret Key
+            "client_id": os.getenv("TWITTER_OAUTH_CLIENT_ID"),
+            "secret": os.getenv("TWITTER_OAUTH_SECRET"),
         }
     },
 }
