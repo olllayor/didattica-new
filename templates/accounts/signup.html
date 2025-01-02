@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100">
+    <div class="flex min-h-screen">
+      <!-- Left side - Illustration -->
+      <div class="hidden w-1/2 bg-gray-200 lg:block">
+        <div class="flex h-full items-center justify-center p-8">
+          <!-- Replace with your SVG illustration -->
+          <svg
+            class="h-full w-full"
+            viewBox="0 0 1208 900"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- SVG paths here -->
+          </svg>
+        </div>
+      </div>
+
+      <!-- Right side - Sign Up Form -->
+      <div class="flex w-full items-center justify-center lg:w-1/2">
+        <div
+          class="mx-auto w-full max-w-sm space-y-6 p-6 bg-white rounded-lg shadow-lg"
+        >
+          <div class="space-y-2 text-center">
+            <h1 class="text-3xl font-bold">Create an Account</h1>
+            <p class="text-gray-600">
+              Enter your details to create your account
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class="space-y-2">
+                <input
+                  id="first-name"
+                  placeholder="First Name"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div class="space-y-2">
+                <input
+                  id="last-name"
+                  placeholder="Last Name"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+            </div>
+            <div class="space-y-2">
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter Email"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                required
+              />
+            </div>
+            <div class="space-y-2">
+              <input
+                id="password"
+                type="password"
+                placeholder="Create Password"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                required
+              />
+            </div>
+            <button
+              class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              Create Account
+            </button>
+          </div>
+
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-xs uppercase">
+              <span class="bg-white px-2 text-gray-500"> Or Sign up with </span>
+            </div>
+          </div>
+
+          <!-- Social Auth Buttons -->
+          <div class="grid gap-2">
+            <button
+              class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <svg class="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                <!-- Google SVG icon -->
+              </svg>
+              Continue with Google
+            </button>
+            <button
+              class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <!-- Twitter SVG icon -->
+              Continue with Twitter
+            </button>
+            <button
+              class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <!-- Telegram SVG icon -->
+              Continue with Telegram
+            </button>
+          </div>
+
+          <div class="text-center text-sm">
+            Already have an account?{" "}
+            <a href="/login" class="text-indigo-600 hover:underline">
+              Sign in
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
