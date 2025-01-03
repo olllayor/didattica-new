@@ -1,4 +1,4 @@
-<button 
+<button
   onclick="openCreatePostModal()"
   class="fixed bottom-8 right-8 h-14 w-14 rounded-full shadow-lg bg-black text-white flex items-center justify-center hover:opacity-90 z-50"
 >
@@ -7,3 +7,9 @@
     <line x1="5" y1="12" x2="19" y2="12"></line>
   </svg>
 </button>
+<script>
+  function openCreatePostModal() {
+    document.getElementById('createPostModal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  }
+</script>

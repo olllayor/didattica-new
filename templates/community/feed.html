@@ -1,9 +1,10 @@
+
 {% extends "base.html" %}
 {% load static %}
 
 {% block content %}
 <div class="max-w-2xl mx-auto">
-  <div class="p-4 border-b sticky top-0 bg-white z-10">
+  <div class="p-4 border-b sticky top-0 bg-white z-10 font-mono">
     <button class="w-full flex justify-between items-center px-4 py-2 hover:bg-gray-100 rounded-md">
       For you
       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -14,19 +15,21 @@
 
   <div class="divide-y">
     {% for post in posts %}
-    <div class="border-b pb-4">
-      <div class="flex items-center justify-between p-4">
+    <div class="border-b pb-4 font-mono">
+      <div class="flex items-start justify-between p-4">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
             <img src="{% static 'placeholder.svg' %}" alt="{{ post.author.username }}" class="w-full h-full object-cover"/>
           </div>
-          <div class="flex items-center gap-1">
-            <span class="font-semibold">{{ post.author.username }}</span>
-            {% if post.author.is_staff %}
-            <span class="bg-blue-500 text-white rounded-full p-0.5 text-xs">✓</span>
-            {% endif %}
+          <div class="flex flex-col">
+            <div class="flex items-center gap-1">
+              <span class="font-semibold">{{ post.author.username }}</span>
+              {% if post.author.is_staff %}
+              <span class="bg-blue-500 text-white rounded-full p-0.5 text-xs">✓</span>
+              {% endif %}
+            </div>
+            <span class="text-gray-500 text-sm">{{ post.created_at|timesince }}</span>
           </div>
-          <span class="text-gray-500">{{ post.created_at|timesince }}</span>
         </div>
         <button class="hover:opacity-70">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -34,17 +37,25 @@
           </svg>
         </button>
       </div>
-      
+
       <div class="px-4 whitespace-pre-wrap">{{ post.content }}</div>
-      
-      {% if post.image %}
-      <div class="mt-4 flex gap-2">
-        <div class="relative aspect-square w-full">
-          <img src="{{ post.image.url }}" alt="Post image" class="object-cover w-full h-full"/>
+
+      {% if post.post_images.all %}
+        <div class="mt-4 overflow-x-auto scrollbar-hide">
+            <div class="flex gap-2">
+            {% for image in post.post_images.all %}
+            <div class="relative aspect-square w-60 md:w-80 rounded-md overflow-hidden flex-shrink-0">
+                <img src="{{ image.image.url }}" alt="Post image" class="object-cover w-full h-full"/>
+            </div>
+            {% endfor %}
+            </div>
         </div>
-      </div>
-      {% endif %}
-      
+        {% elif post.image %}
+        <div class="mt-4">
+            <img src="{{ post.image.url }}" alt="Post image" class="rounded-md w-full object-cover"/>
+        </div>
+        {% endif %}
+
       <div class="flex items-center gap-6 mt-4 px-4">
         <button class="flex items-center gap-1 hover:opacity-70">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -56,7 +67,7 @@
         </button>
         <button class="flex items-center gap-1 hover:opacity-70">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 a8.5 8.5 0 0 1-7.6 4.7 a8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 a8.5 8.5 0 0 1 4.7-7.6 a8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
           </svg>
           {% if post.comments.count > 0 %}
           <span class="text-sm">{{ post.comments.count }}</span>
@@ -80,7 +91,31 @@
         </button>
       </div>
     </div>
+    {% empty %}
+    <div class="py-4 text-center font-mono">No posts yet.</div>
     {% endfor %}
   </div>
+
+  {% if page_obj.has_other_pages %}
+  <div class="flex justify-center mt-4 font-mono">
+    {% if page_obj.has_previous %}
+      <a href="?page=1" class="px-4 py-2 rounded-md hover:bg-gray-100">« First</a>
+      <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 rounded-md hover:bg-gray-100">Previous</a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <span class="px-4 py-2 rounded-md bg-gray-200">{{ num }}</span>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a href="?page={{ num }}" class="px-4 py-2 rounded-md hover:bg-gray-100">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 rounded-md hover:bg-gray-100">Next</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}" class="px-4 py-2 rounded-md hover:bg-gray-100">Last »</a>
+    {% endif %}
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

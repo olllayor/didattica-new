@@ -7,9 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}My Site{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Apply Geist Mono font globally */
+        body {
+            font-family: 'Geist', monospace;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@geist-ui/湧水@latest/geist-font.min.css">
     <script src="{% static 'js/modal.js' %}"></script>
 </head>
-<body>
+<body class="bg-gray-50">
     {% include "components/sidebar.html" %}
     <main class="ml-16">
         {% block content %}{% endblock %}
