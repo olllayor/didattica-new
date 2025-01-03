@@ -1,70 +1,20 @@
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}My Django Project{% endblock %}</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Site{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-gray-100">
-    <!-- Header -->
-    <header class="bg-white shadow">
-      <div
-        class="container mx-auto px-4 py-6 flex justify-between items-center"
-      >
-        <a href="/" class="text-2xl font-bold text-indigo-600"
-          >My Django Project</a
-        >
-        <nav>
-          <ul class="flex space-x-4">
-            {% if user.is_authenticated %}
-            <li>
-              <a
-                href="{% url 'profile' %}"
-                class="text-gray-700 hover:text-indigo-600"
-                >Profile</a
-              >
-            </li>
-            <li>
-              <a
-                href="{% url 'account_logout' %}"
-                class="text-gray-700 hover:text-indigo-600"
-                >Logout</a
-              >
-            </li>
-            {% else %}
-            <li>
-              <a
-                href="{% url 'account_login' %}"
-                class="text-gray-700 hover:text-indigo-600"
-                >Login</a
-              >
-            </li>
-            <li>
-              <a
-                href="{% url 'account_signup' %}"
-                class="text-gray-700 hover:text-indigo-600"
-                >Sign Up</a
-              >
-            </li>
-            {% endif %}
-          </ul>
-        </nav>
-      </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-      {% block content %}
-      <!-- Content from child templates will go here -->
-      {% endblock %}
+    <script src="{% static 'js/modal.js' %}"></script>
+</head>
+<body>
+    {% include "components/sidebar.html" %}
+    <main class="ml-16">
+        {% block content %}{% endblock %}
     </main>
-
-    <!-- Footer -->
-    <footer class="bg-white shadow mt-8">
-      <div class="container mx-auto px-4 py-6 text-center text-gray-600">
-        &copy; 2023 My Django Project. All rights reserved.
-      </div>
-    </footer>
-  </body>
+    {% include "components/create-post-button.html" %}
+    {% include "components/create-post-modal.html" %}
+</body>
 </html>
