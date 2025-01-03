@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+  <h1 class="text-2xl font-bold mb-6">{{ post.title }}</h1>
+  <p class="text-gray-600">{{ post.body }}</p>
+  <p class="text-sm text-gray-500">Posted by {{ post.author.username }} on {{ post.created_at }}</p>
+
+  <h2 class="text-xl font-semibold mt-8 mb-4">Answers</h2>
+  {% for answer in answers %}
+    <div class="mb-4 p-4 border border-gray-300 rounded-lg">
+      <p class="text-gray-600">{{ answer.body }}</p>
+      <p class="text-sm text-gray-500">Answered by {{ answer.author.username }} on {{ answer.created_at }}</p>
+    </div>
+  {% endfor %}
+
+  <a href="{% url 'community:post_answer' post.id %}" class="bg-indigo-600 text-white px-4 py-2 rounded-md">Post an Answer</a>
+</div>
+{% endblock %}
