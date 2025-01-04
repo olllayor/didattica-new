@@ -1,0 +1,88 @@
+<div id="imagePreviewModal" class="hidden fixed inset-0 bg-black/90 z-[70] flex items-center justify-center p-4">
+  <!-- Close Button (Top Right) -->
+  <button onclick="closeImagePreviewModal()" class="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+
+  <!-- Previous Button (Left Edge) -->
+  <button id="prevImageButton" class="absolute left-4 top-1/2 -translate-y-1/2 text-white bg-black/50 rounded-full p-2 hover:bg-black/70">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+
+  <!-- Next Button (Right Edge) -->
+  <button id="nextImageButton" class="absolute right-4 top-1/2 -translate-y-1/2 text-white bg-black/50 rounded-full p-2 hover:bg-black/70">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+
+  <!-- Previewed Image -->
+  <div class="relative max-w-full max-h-full">
+    <img id="previewedImage" src="" alt="Previewed Image" class="max-w-full max-h-[90vh] rounded-lg" />
+  </div>
+</div>
+
+<script>
+  let currentImageIndex = 0;
+  let imageUrls = [];
+
+  function openImagePreviewModal(images, index = 0) {
+    const modal = document.getElementById('imagePreviewModal');
+    const previewedImage = document.getElementById('previewedImage');
+
+    // Set the image URLs and current index
+    imageUrls = images;
+    currentImageIndex = index;
+
+    // Show the first image
+    previewedImage.src = imageUrls[currentImageIndex];
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+
+    // Add keyboard event listeners
+    document.addEventListener('keydown', handleKeyboardNavigation);
+  }
+
+  function closeImagePreviewModal() {
+    const modal = document.getElementById('imagePreviewModal');
+    modal.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+
+    // Remove keyboard event listeners
+    document.removeEventListener('keydown', handleKeyboardNavigation);
+
+    // Reset state
+    currentImageIndex = 0;
+    imageUrls = [];
+  }
+
+  function showNextImage() {
+    if (currentImageIndex < imageUrls.length - 1) {
+      currentImageIndex++;
+      document.getElementById('previewedImage').src = imageUrls[currentImageIndex];
+    }
+  }
+
+  function showPreviousImage() {
+    if (currentImageIndex > 0) {
+      currentImageIndex--;
+      document.getElementById('previewedImage').src = imageUrls[currentImageIndex];
+    }
+  }
+
+  function handleKeyboardNavigation(event) {
+    if (event.key === 'ArrowLeft') {
+      showPreviousImage();
+    } else if (event.key === 'ArrowRight') {
+      showNextImage();
+    }
+  }
+
+  // Add click event listeners to navigation buttons
+  document.getElementById('prevImageButton').addEventListener('click', showPreviousImage);
+  document.getElementById('nextImageButton').addEventListener('click', showNextImage);
+</script>

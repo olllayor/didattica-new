@@ -6,3 +6,4 @@ urlpatterns = [
     path("feed/", views.feed, name="feed"),
     path("post/<int:post_id>/comment/", views.add_comment, name="add_comment"),
 ]
+
