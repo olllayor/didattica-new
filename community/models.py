@@ -12,9 +12,17 @@ class Post(models.Model):
     file = models.FileField(upload_to="posts/files/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    likes = models.ManyToManyField(User, related_name="liked_posts", blank=True)
+    views = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"Post by {self.author.username}"
+    
+    def get_likes_count(self):
+        return self.likes.count()
+
+    def get_comments_count(self):
+        return self.comments.count()
 
 class PostImage(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="post_images")
