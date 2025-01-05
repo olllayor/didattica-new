@@ -1,8 +1,12 @@
+# community/models.py
 from django.db import models
 from django.contrib.auth import get_user_model
+from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
+import os
 
 User = get_user_model()
-
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -28,6 +32,30 @@ class PostImage(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="post_images")
     image = models.ImageField(upload_to="post_images/")
 
+    def save(self, *args, **kwargs):
+        if self.image:
+            # Open the image using Pillow
+            img = Image.open(self.image)
+            
+            # Convert the image to RGB mode if it's not already
+            if img.mode in ('RGBA', 'LA'):
+                background = Image.new('RGB', img.size, (255, 255, 255))
+                background.paste(img, mask=img.split()[-1])  # Paste using alpha channel as mask
+                img = background
+
+            # Convert the image to WebP format with the best quality
+            buffer = BytesIO()
+            img.save(buffer, format='WEBP', quality=100)
+            webp_image = ContentFile(buffer.getvalue())
+
+            # Save the WebP image with the same name but with .webp extension
+            self.image.save(
+                os.path.splitext(self.image.name)[0] + '.webp',
+                webp_image,
+                save=False
+            )
+
+        super().save(*args, **kwargs)
 
 class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -40,5 +68,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.author.username}"
-
-

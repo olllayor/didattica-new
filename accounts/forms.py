@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import Profile
+from django.core.exceptions import ValidationError
+
 
 class ProfileForm(forms.ModelForm):
     username = forms.CharField(max_length=150, required=True)
@@ -13,6 +15,14 @@ class ProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.instance:
             self.fields['username'].initial = self.instance.user.username
+
+    def clean_profile_image(self):
+        image = self.cleaned_data.get('profile_image', False)
+        if image:
+            if image.size > 6 * 1024 * 1024:  # 4MB limit
+                raise ValidationError("Image file too large ( > 6MB )")
+            return image
+        return None
 
     def clean_username(self):
         username = self.cleaned_data['username']

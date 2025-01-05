@@ -65,6 +65,7 @@ def feed(request):
                 "views": post.views,
                 "created_at": post.created_at.strftime("%b %d, %Y %I:%M %p"),
                 "profile_image": post.author.profile.profile_image.url if post.author.profile.profile_image else None,  # Add profile image URL
+                "is_liked": request.user in post.likes.all(), 
             }
             for post in page_obj
         ]
