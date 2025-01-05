@@ -185,3 +185,5 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     },
 }
+
+SOCIALACCOUNT_ADAPTER = 'accounts.adapter.CustomSocialAccountAdapter'

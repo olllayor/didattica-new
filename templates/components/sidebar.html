@@ -59,7 +59,7 @@
         />
       </svg>
     </a>
-    <a href="{% url 'profile' %}" class="hover:opacity-70">
+    <a href="{% url 'profile' username=request.user.username %}" class="hover:opacity-70">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         class="w-6 h-6"

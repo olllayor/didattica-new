@@ -1,11 +1,11 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block content %}
+{% extends "base.html" %} {% load static %} {% block content %}
 <div class="max-w-2xl mx-auto pt-8 px-4">
   <!-- Header -->
   <div class="flex items-center justify-between mb-6">
-    <a href="/" class="text-gray-600 hover:text-gray-500 text-base font-normal">
+    <a
+      href="{% url 'feed' %}"
+      class="text-gray-600 hover:text-gray-500 text-base font-normal"
+    >
       Back
     </a>
     <h1 class="font-semibold text-xl">New thread</h1>
@@ -13,18 +13,28 @@
   </div>
 
   <div class="bg-white rounded-lg shadow">
-    <form method="POST" action="{% url 'create_post' %}" class="space-y-4 p-6" enctype="multipart/form-data" id="createPostForm">
+    <form
+      method="POST"
+      action="{% url 'create_post' %}"
+      class="space-y-4 p-6"
+      enctype="multipart/form-data"
+      id="createPostForm"
+    >
       {% csrf_token %}
       <div class="flex gap-3">
         <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-          <img src="{% static 'placeholder.svg' %}" alt="{{ user.username }}" class="w-full h-full object-cover"/>
+          <img
+            src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+            alt="{{ user.username }}"
+            class="w-full h-full object-cover rounded-full"
+          />
         </div>
         <div class="flex-1">
-          <textarea 
-            name="content" 
-            id="post-content" 
-            class="w-full resize-none border-0 bg-transparent text-base placeholder:text-gray-500 focus:outline-none font-mono" 
-            placeholder="What's new?" 
+          <textarea
+            name="content"
+            id="post-content"
+            class="w-full resize-none border-0 bg-transparent text-base placeholder:text-gray-500 focus:outline-none font-mono"
+            placeholder="What's new?"
             rows="4"
           ></textarea>
         </div>
@@ -32,28 +42,48 @@
 
       <div class="border-t pt-4">
         <div class="flex items-center gap-2">
-          <label for="image-upload" class="p-2 rounded-full hover:bg-gray-100 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <label
+            for="image-upload"
+            class="p-2 rounded-full hover:bg-gray-100 cursor-pointer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
               <circle cx="8.5" cy="8.5" r="1.5" />
               <polyline points="21 15 16 10 5 21" />
             </svg>
-            <input type="file" name="images" id="image-upload" class="hidden" accept="image/*" multiple />
+            <input
+              type="file"
+              name="images"
+              id="image-upload"
+              class="hidden"
+              accept="image/*"
+              multiple
+            />
           </label>
         </div>
 
         <!-- Image Previews -->
-        <div id="image-preview-container" class="mt-2 flex gap-2 overflow-x-auto">
+        <div
+          id="image-preview-container"
+          class="mt-2 flex gap-2 overflow-x-auto"
+        >
           <!-- Image previews will be added here -->
         </div>
       </div>
 
       <div class="flex items-center justify-between border-t pt-4">
         <p class="text-sm text-gray-500">Anyone can reply & quote</p>
-        <button 
-          type="submit" 
-          id="post-button" 
-          disabled 
+        <button
+          type="submit"
+          id="post-button"
+          disabled
           class="bg-black text-white rounded-full px-4 py-2 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed font-mono"
         >
           Post
@@ -64,63 +94,75 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const textarea = document.getElementById('post-content');
-    const postButton = document.getElementById('post-button');
-    const imageUpload = document.getElementById('image-upload');
-    const imagePreviewContainer = document.getElementById('image-preview-container');
+  document.addEventListener("DOMContentLoaded", function () {
+    const textarea = document.getElementById("post-content");
+    const postButton = document.getElementById("post-button");
+    const imageUpload = document.getElementById("image-upload");
+    const imagePreviewContainer = document.getElementById(
+      "image-preview-container"
+    );
     const maxImages = 4;
     let currentFiles = []; // Track current files
 
     function updatePostButtonState() {
-      const hasContent = textarea.value.trim() !== '';
+      const hasContent = textarea.value.trim() !== "";
       const hasImages = currentFiles.length > 0;
       postButton.disabled = !(hasContent || hasImages);
     }
 
-    textarea.addEventListener('input', updatePostButtonState);
+    textarea.addEventListener("input", updatePostButtonState);
 
-    imageUpload.addEventListener('change', function(event) {
+    imageUpload.addEventListener("change", function (event) {
       const files = Array.from(event.target.files);
-      
+
       if (files.length > maxImages) {
         alert(`You can upload a maximum of ${maxImages} images.`);
-        event.target.value = '';
+        event.target.value = "";
         currentFiles = [];
-        imagePreviewContainer.innerHTML = '';
+        imagePreviewContainer.innerHTML = "";
         return;
       }
 
       // Clear previous previews
-      imagePreviewContainer.innerHTML = '';
+      imagePreviewContainer.innerHTML = "";
       currentFiles = files;
 
-      files.forEach(file => {
-        if (file.type.startsWith('image/')) {
+      files.forEach((file) => {
+        if (file.type.startsWith("image/")) {
           const reader = new FileReader();
-          
-          reader.onload = function(e) {
-            const preview = document.createElement('div');
-            preview.className = 'relative w-20 h-20 rounded-md overflow-hidden flex-shrink-0';
-            
-            const img = document.createElement('img');
+
+          reader.onload = function (e) {
+            const preview = document.createElement("div");
+            preview.className =
+              "relative w-20 h-20 rounded-md overflow-hidden flex-shrink-0";
+
+            const img = document.createElement("img");
             img.src = e.target.result;
             img.alt = file.name;
-            img.className = 'object-cover w-full h-full';
-            
-            const removeButton = document.createElement('button');
-            removeButton.type = 'button';
-            removeButton.classList.add('absolute', 'top-1', 'right-1', 'bg-gray-800', 'rounded-full', 'p-1', 'hover:bg-gray-700');
-            removeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>';
-            
-            removeButton.addEventListener('click', () => {
+            img.className = "object-cover w-full h-full";
+
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.classList.add(
+              "absolute",
+              "top-1",
+              "right-1",
+              "bg-gray-800",
+              "rounded-full",
+              "p-1",
+              "hover:bg-gray-700"
+            );
+            removeButton.innerHTML =
+              '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>';
+
+            removeButton.addEventListener("click", () => {
               preview.remove();
-              currentFiles = currentFiles.filter(f => f !== file);
+              currentFiles = currentFiles.filter((f) => f !== file);
               updatePostButtonState();
-              
+
               // Reset file input if all images are removed
               if (currentFiles.length === 0) {
-                imageUpload.value = '';
+                imageUpload.value = "";
               }
             });
 

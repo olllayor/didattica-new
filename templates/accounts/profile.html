@@ -1,42 +1,244 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% load static %} {% block title %}Profile - My Django
+Project{% endblock %} {% block content %}
+<div class="max-w-xl mx-auto">
+  <!-- Profile Header -->
+  <div class="bg-white rounded-lg p-4">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-xl font-bold">Profile</h1>
+      <button class="text-gray-600">...</button>
+    </div>
 
-{% block title %}Profile - My Django Project{% endblock %}
+    <!-- User Info -->
+    <div class="flex flex-col items-start mb-4">
+      <div class="flex items-center justify-between w-full">
+        <div>
+          <h2 class="text-xl font-bold">
+            {{ user.get_full_name|default:user.username }}
+          </h2>
+          <p class="text-gray-600">@{{ user.username }}</p>
+        </div>
+        <div class="w-16 h-16">
+          <img
+            src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+            alt="{{ user.username }}"
+            class="w-full h-full object-cover rounded-full"
+          />
+        </div>
+      </div>
 
-{% block content %}
-<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
-  <h1 class="text-3xl font-bold mb-6 text-center">Profile</h1>
+      {% if profile.bio %}
+      <div class="mt-2">
+        <p class="text-gray-700">{{ profile.bio }}</p>
+      </div>
+      {% endif %}
 
-  <!-- User Information -->
-  <div class="mb-8">
-    <h2 class="text-xl font-semibold mb-4">User Information</h2>
-    <div class="space-y-2">
-      <p><strong>Email:</strong> {{ user.email }}</p>
-      <p><strong>First Name:</strong> {{ user.first_name }}</p>
-      <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+      <!-- Website and Social Info -->
+      <div class="flex items-center gap-2 mt-4 text-sm text-gray-600">
+        {% if social_accounts %}
+        <div class="flex items-center">
+          <span class="flex items-center gap-1">
+            {% for account in social_accounts|slice:":3" %}
+            <div
+              class="w-5 h-5 rounded-full bg-gray-200 {% if not forloop.first %}-ml-2{% endif %}"
+            ></div>
+            {% endfor %}
+          </span>
+          {{ social_accounts.count }} connected account{{
+          social_accounts.count|pluralize }}
+        </div>
+        {% endif %} {% if profile.website %} {% comment %}
+        <span class="mx-2">Link</span> {% endcomment %}
+        <a href="{{ profile.website }}" class="text-blue-500 hover:underline"
+          >{{ profile.website }}</a
+        >
+        {% endif %}
+      </div>
+
+      <!-- Edit Profile Button -->
+      <button
+        onclick="openEditModal()"
+        class="w-full mt-4 py-2 border border-gray-300 rounded-lg text-center hover:bg-gray-50"
+      >
+        Edit profile
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="border-b border-gray-200">
+      <div class="flex space-x-8">
+        <button class="px-1 py-4 border-b-2 border-black font-semibold">
+          Threads
+        </button>
+        <button class="px-1 py-4 text-gray-500">Replies</button>
+        <button class="px-1 py-4 text-gray-500">Reposts</button>
+      </div>
+    </div>
+
+    <!-- Post Input -->
+    <div class="mt-4 flex gap-4">
+      <div class="w-10 h-10">
+        <img
+          src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+          alt="{{ user.username }}"
+          class="w-full h-full object-cover rounded-full"
+        />
+      </div>
+      <div class="flex-1">
+        <input
+          type="text"
+          placeholder="What's new?"
+          class="w-full p-2 rounded-lg border-none focus:ring-0 bg-transparent"
+        />
+      </div>
+      <button class="px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-100">
+        Post
+      </button>
     </div>
   </div>
 
-  <!-- Social Account Information -->
-  <div>
-    <h2 class="text-xl font-semibold mb-4">Connected Social Accounts</h2>
-    {% if social_accounts %}
-      <div class="space-y-4">
-        {% for account in social_accounts %}
-          <div class="p-4 border border-gray-300 rounded-lg">
-            <h3 class="text-lg font-semibold">{{ account.provider|title }}</h3>
-            <div class="space-y-2">
-              <p><strong>UID:</strong> {{ account.uid }}</p>
-              <p><strong>Provider:</strong> {{ account.provider }}</p>
-              <p><strong>Date Joined:</strong> {{ account.date_joined }}</p>
-              <p><strong>Extra Data:</strong></p>
-              <pre class="bg-gray-100 p-2 rounded">{{ account.extra_data|pprint }}</pre>
+  <!-- Edit Profile Modal -->
+  <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="bg-white rounded-2xl max-w-lg mx-auto mt-20 p-6">
+      <div class="mb-6">
+        <h3 class="text-xl font-semibold mb-4">Edit Profile</h3>
+        <form method="POST" enctype="multipart/form-data" class="space-y-4">
+          {% csrf_token %}
+
+          <!-- Username -->
+          <div>
+            <label for="id_username" class="block text-sm font-medium mb-2"
+              >Username</label
+            >
+            <input
+              type="text"
+              id="id_username"
+              name="username"
+              value="{{ form.username.value }}"
+              class="w-full p-2 border rounded-lg"
+            />
+            {% if form.username.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {{ form.username.errors }}
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Profile Image Upload -->
+          <div class="text-center mb-6">
+            <div class="relative w-24 h-24 mx-auto">
+              <img
+                id="preview-image"
+                src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+                alt="Profile Image"
+                class="w-full h-full object-cover rounded-full"
+              />
+              <label
+                for="id_profile_image"
+                class="absolute bottom-0 right-0 bg-black text-white p-2 rounded-full cursor-pointer hover:opacity-90"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </label>
+              <input
+                type="file"
+                id="id_profile_image"
+                name="profile_image"
+                accept="image/*"
+                class="hidden"
+                onchange="previewImage(this)"
+              />
+            </div>
+            <p class="text-sm text-gray-500 mt-2">Upload new image</p>
+          </div>
+
+          <!-- Bio -->
+          <div>
+            <label for="id_bio" class="block text-sm font-medium mb-2"
+              >Bio</label
+            >
+            <div class="flex items-center">
+              <textarea
+                id="id_bio"
+                name="bio"
+                rows="3"
+                class="flex-1 p-2 border rounded-lg"
+              >
+{{ form.bio.value }}</textarea
+              >
             </div>
           </div>
-        {% endfor %}
+
+          <!-- Website -->
+          <div>
+            <label for="id_website" class="block text-sm font-medium mb-2"
+              >Link</label
+            >
+            <input
+              type="url"
+              id="id_website"
+              name="website"
+              value="{{ form.website.value }}"
+              class="w-full p-2 border rounded-lg"
+            />
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex justify-end gap-4 mt-6">
+            <button
+              type="button"
+              onclick="closeEditModal()"
+              class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-black text-white rounded-lg hover:opacity-90"
+            >
+              Done
+            </button>
+          </div>
+        </form>
       </div>
-    {% else %}
-      <p class="text-gray-600">No social accounts connected.</p>
-    {% endif %}
+    </div>
   </div>
 </div>
+
+<script>
+  function openEditModal() {
+    document.getElementById("editModal").classList.remove("hidden");
+  }
+
+  function closeEditModal() {
+    document.getElementById("editModal").classList.add("hidden");
+  }
+
+  function previewImage(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById("preview-image").src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+</script>
 {% endblock %}
