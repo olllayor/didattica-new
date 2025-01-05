@@ -7,6 +7,8 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from .models import Reaction
+
 
 def create_post(request):
     if request.method == "POST":
@@ -21,8 +23,12 @@ def create_post(request):
             for image in images:
                 PostImage.objects.create(post=post, image=image)
 
-            messages.success(request, "Post created successfully!")  # Success message
-            return redirect("feed")
+            if post.status == 'published':
+                messages.success(request, "Post published successfully!")
+                return redirect("feed")
+            else:
+                messages.success(request, "Post saved as draft.")
+                return redirect("profile", username=request.user.username)
         else:
             messages.error(request, "Failed to create post. Please check the form.")  # Error message
     else:
@@ -115,3 +121,44 @@ def add_comment(request, post_id):
         })
     else:
         return JsonResponse({"success": False, "errors": form.errors})
+    
+
+def share_post(request, post_id):
+    original_post = get_object_or_404(Post, id=post_id)
+    if request.method == "POST":
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            shared_post = form.save(commit=False)
+            shared_post.author = request.user
+            shared_post.shared_post = original_post
+            shared_post.save()
+            messages.success(request, "Post shared successfully!")
+            return redirect("feed")
+    else:
+        form = PostForm()
+    return render(request, "community/share_post.html", {"form": form, "original_post": original_post})
+
+@require_POST
+def react_to_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    reaction = request.POST.get('reaction')
+
+    # Validate reaction
+    if reaction not in dict(Reaction.REACTION_CHOICES).keys():
+        return JsonResponse({"success": False, "error": "Invalid reaction"}, status=400)
+
+    # Update or create the reaction
+    reaction_obj, created = Reaction.objects.update_or_create(
+        post=post,
+        user=request.user,
+        defaults={'reaction': reaction}
+    )
+
+    # Get the updated reaction count for the post
+    reaction_count = post.reactions.count()
+
+    return JsonResponse({
+        "success": True,
+        "reaction": reaction,
+        "reaction_count": reaction_count,
+    })

@@ -17,6 +17,8 @@ class MultipleFileField(forms.FileField):
         return result
 
 class PostForm(forms.ModelForm):
+    status = forms.ChoiceField(choices=Post.STATUS_CHOICES, initial='published', widget=forms.RadioSelect)
+    
     images = MultipleFileField(required=False)
 
     class Meta:

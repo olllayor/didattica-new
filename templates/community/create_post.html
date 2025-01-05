@@ -93,6 +93,53 @@
   </div>
 </div>
 
+<!-- Draft Modal -->
+<div id="saveDraftModal" class="hidden fixed inset-0 bg-black/50 z-[70] flex items-center justify-center">
+  <div class="bg-white rounded-lg p-6 w-96">
+    <h2 class="text-xl font-bold mb-4">Save to Drafts?</h2>
+    <p class="text-gray-600 mb-6">Save this post as a draft to edit and post at a later time.</p>
+    <div class="flex justify-end gap-4">
+      <button onclick="closeSaveDraftModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
+      <button onclick="saveAsDraft()" class="px-4 py-2 bg-black text-white rounded-lg hover:opacity-90">Save Draft</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openSaveDraftModal() {
+    document.getElementById('saveDraftModal').classList.remove('hidden');
+  }
+
+  function closeSaveDraftModal() {
+    document.getElementById('saveDraftModal').classList.add('hidden');
+  }
+
+  function saveAsDraft() {
+    const form = document.getElementById('createPostForm');
+    const statusInput = document.createElement('input');
+    statusInput.type = 'hidden';
+    statusInput.name = 'status';
+    statusInput.value = 'draft';
+    form.appendChild(statusInput);
+    form.submit();
+  }
+
+  // Show the modal when the user clicks "Cancel" or "Back"
+  document.addEventListener('DOMContentLoaded', function() {
+    const cancelButton = document.querySelector('a[href="{% url 'feed' %}"]');
+    if (cancelButton) {
+      cancelButton.addEventListener('click', function(event) {
+        const textarea = document.getElementById('post-content');
+        if (textarea.value.trim() !== '') {
+          event.preventDefault(); // Prevent default navigation
+          openSaveDraftModal();
+        }
+      });
+    }
+  });
+</script>
+
+<!-- Existing script for image uploads -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const textarea = document.getElementById("post-content");

@@ -24,15 +24,56 @@
       }
     }
 
-    /* Like button animation */
-    .like-button svg {
-      transition: transform 0.2s ease-in-out, fill 0.2s ease-in-out;
+    /* Reaction dropdown styling */
+    .reaction-dropdown {
+      position: relative;
     }
 
-    .like-button.liked svg {
-      transform: scale(1.2);
-      fill: red;
-      stroke: red;
+    .reaction-dropdown .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
+
+    .reaction-dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .reaction-dropdown .dropdown-content button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .reaction-dropdown .dropdown-content button:hover {
+      background-color: #f3f4f6;
+    }
+
+    /* Reactions display styling */
+    .reactions-container {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .reaction {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background-color: #f3f4f6;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -67,7 +108,9 @@
         <!-- Post Header -->
         <div class="flex justify-between">
           <div class="flex gap-3">
-            <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+            <div
+              class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex-shrink-0"
+            >
               <img
                 src="{% if post.author.profile.profile_image %}{{ post.author.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
                 alt="{{ post.author.username }}"
@@ -84,24 +127,33 @@
                   </svg>
                 </span>
                 {% endif %}
-                <span class="text-gray-500">· {{ post.created_at|timesince }}</span>
+                <span class="text-gray-500"
+                  >· {{ post.created_at|timesince }}</span
+                >
               </div>
             </div>
           </div>
-          <button class="p-2 hover:bg-gray-100 rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <circle cx="12" cy="12" r="1" />
-              <circle cx="19" cy="12" r="1" />
-              <circle cx="5" cy="12" r="1" />
-            </svg>
-          </button>
+          <!-- Reaction Dropdown -->
+          <div class="reaction-dropdown">
+            <button class="p-2 hover:bg-gray-100 rounded-full" onclick="showReactions('{{ post.id }}')">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="19" cy="12" r="1" />
+                <circle cx="5" cy="12" r="1" />
+              </svg>
+            </button>
+            <div class="dropdown-content">
+              <button onclick="showReactions('{{ post.id }}')">Reactions</button>
+              <button onclick="copyPostLink('{{ post.id }}')">Copy link</button>
+            </div>
+          </div>
         </div>
 
         <!-- Post Content -->
@@ -140,25 +192,163 @@
 
         <!-- Post Actions -->
         <div class="flex justify-between mt-3">
-          <button class="flex items-center gap-2 text-gray-500 hover:text-pink-600 group like-button {% if user in post.likes.all %}liked{% endif %}" data-post-id="{{ post.id }}">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+          <button
+            class="flex items-center gap-2 text-gray-500 hover:text-pink-600 group like-button {% if user in post.likes.all %}liked{% endif %}"
+            data-post-id="{{ post.id }}"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 h-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+              />
             </svg>
             <span>{{ post.get_likes_count }}</span>
           </button>
-          <button class="flex items-center gap-2 text-gray-500 hover:text-blue-500">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
+          <button
+            class="flex items-center gap-2 text-gray-500 hover:text-blue-500"
+          >
+            <svg
+              class="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"
+              />
             </svg>
             <span>{{ post.get_comments_count }}</span>
           </button>
-          <button class="flex items-center gap-2 text-gray-500 hover:text-green-500">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          <button
+            class="flex items-center gap-2 text-gray-500 hover:text-green-500"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 h-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+              />
             </svg>
             <span>{{ post.views }}</span>
           </button>
+          <button
+            class="flex items-center gap-2 text-gray-500 hover:text-green-500"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 h-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+              />
+            </svg>
+            <span>{{ post.views }}</span>
+          </button>
+          <!-- Share Dropdown -->
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="flex items-center gap-2 text-gray-500 hover:text-blue-500">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+                />
+              </svg>
+
+            </div>
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+              <li>
+                <a onclick="copyPostLink('{{ post.id }}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                  </svg>
+                  Copy link
+                </a>
+              </li>
+              <li>
+                <a onclick="getEmbedCode('{{ post.id }}')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+                  </svg>
+                  Get embed code
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Reactions Display -->
+        <div id="reactions-{{ post.id }}" class="reactions-container mt-2">
+          {% for reaction in post.reactions.all %}
+          <div class="reaction">
+            <span>{{ reaction.reaction }}</span>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Reactions Dropdown (Hidden by default) -->
+        <div id="reaction-emojis-{{ post.id }}" class="hidden mt-2">
+          <div class="avatar-group -space-x-6 rtl:space-x-reverse">
+            <div class="avatar">
+              <div class="w-12">
+                <button onclick="reactToPost('{{ post.id }}', '👍')">👍</button>
+              </div>
+            </div>
+            <div class="avatar">
+              <div class="w-12">
+                <button onclick="reactToPost('{{ post.id }}', '❤️')">❤️</button>
+              </div>
+            </div>
+            <div class="avatar">
+              <div class="w-12">
+                <button onclick="reactToPost('{{ post.id }}', '😂')">😂</button>
+              </div>
+            </div>
+            <div class="avatar placeholder">
+              <div class="bg-neutral text-neutral-content w-12">
+                <span>+99</span>
+              </div>
+            </div>
+          </div>
         </div>
       </article>
       {% empty %}
@@ -168,84 +358,130 @@
   </div>
 </div>
 
-
 <script>
+  function showReactions(postId) {
+    const reactionEmojis = document.getElementById(`reaction-emojis-${postId}`);
+    reactionEmojis.classList.toggle('hidden');
+  }
 
-    let isLoading = false;
-    let currentPage = 1;
-    let hasMorePosts = true;
-  
-    // Function to attach event listeners to like buttons
-    function attachLikeButtonListeners() {
-      document.querySelectorAll(".like-button").forEach((button) => {
-        button.addEventListener("click", function () {
-          const postId = this.dataset.postId;
-          fetch(`/community/post/${postId}/like/`, {
-            method: "POST",
-            headers: {
-              "X-CSRFToken": "{{ csrf_token }}",
-              "Content-Type": "application/json",
-            },
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.liked) {
-                this.classList.add("liked"); // Add liked class for animation
-                this.querySelector("svg").classList.add("fill-red-500", "stroke-red-500"); // Fill the heart icon
-              } else {
-                this.classList.remove("liked"); // Remove liked class
-                this.querySelector("svg").classList.remove("fill-red-500", "stroke-red-500"); // Unfill the heart icon
-              }
-              this.querySelector("span").textContent = data.likes_count; // Update likes count
-            });
-        });
+  function reactToPost(postId, reaction) {
+    fetch(`/community/post/${postId}/react/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `reaction=${reaction}`,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          // Update the reactions display
+          const reactionsContainer = document.getElementById(`reactions-${postId}`);
+          reactionsContainer.innerHTML = `
+            <div class="reaction">
+              <span>${data.reaction}</span>
+            </div>
+          `;
+        } else {
+          alert("Failed to react to the post.");
+        }
       });
-    }
-  
-    // Attach event listeners to like buttons when the page loads
-    attachLikeButtonListeners();
-  
-    // Function to load more posts
-    function loadMorePosts() {
-      if (isLoading || !hasMorePosts) return;
-      isLoading = true;
-  
-      // Show skeleton shimmer
-      const skeletonShimmer = document.createElement("div");
-      skeletonShimmer.className = "skeleton-shimmer";
-      skeletonShimmer.innerHTML = `
+  }
+
+  function copyPostLink(postId) {
+    const postLink = `${window.location.origin}/community/post/${postId}/`;
+    navigator.clipboard.writeText(postLink).then(() => {
+      alert("Link copied to clipboard!");
+    });
+  }
+</script>
+
+<!-- Existing script for like buttons and infinite scroll -->
+<script>
+  let isLoading = false;
+  let currentPage = 1;
+  let hasMorePosts = true;
+
+  // Function to attach event listeners to like buttons
+  function attachLikeButtonListeners() {
+    document.querySelectorAll(".like-button").forEach((button) => {
+      button.addEventListener("click", function () {
+        const postId = this.dataset.postId;
+        fetch(`/community/post/${postId}/like/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.liked) {
+              this.classList.add("liked"); // Add liked class for animation
+              this.querySelector("svg").classList.add(
+                "fill-red-500",
+                "stroke-red-500"
+              ); // Fill the heart icon
+            } else {
+              this.classList.remove("liked"); // Remove liked class
+              this.querySelector("svg").classList.remove(
+                "fill-red-500",
+                "stroke-red-500"
+              ); // Unfill the heart icon
+            }
+            this.querySelector("span").textContent = data.likes_count; // Update likes count
+          });
+      });
+    });
+  }
+
+  // Attach event listeners to like buttons when the page loads
+  attachLikeButtonListeners();
+
+  // Function to load more posts
+  function loadMorePosts() {
+    if (isLoading || !hasMorePosts) return;
+    isLoading = true;
+
+    // Show skeleton shimmer
+    const skeletonShimmer = document.createElement("div");
+    skeletonShimmer.className = "skeleton-shimmer";
+    skeletonShimmer.innerHTML = `
         <div class="space-y-4">
           <div class="h-20 bg-gray-200 rounded-lg animate-pulse"></div>
           <div class="h-20 bg-gray-200 rounded-lg animate-pulse"></div>
           <div class="h-20 bg-gray-200 rounded-lg animate-pulse"></div>
         </div>
       `;
-      document.querySelector(".divide-y").appendChild(skeletonShimmer);
-  
-      // Fetch the next page of posts
-      fetch(`/community/feed/?page=${currentPage + 1}`, {
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.posts.length > 0) {
-            // Remove skeleton shimmer
-            skeletonShimmer.remove();
-  
-            // Append new posts
-            data.posts.forEach((post) => {
-              const postElement = document.createElement("article");
-              postElement.className =
-                "p-4 hover:bg-gray-50 transition-colors duration-150";
-              postElement.innerHTML = `
+    document.querySelector(".divide-y").appendChild(skeletonShimmer);
+
+    // Fetch the next page of posts
+    fetch(`/community/feed/?page=${currentPage + 1}`, {
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.posts.length > 0) {
+          // Remove skeleton shimmer
+          skeletonShimmer.remove();
+
+          // Append new posts
+          data.posts.forEach((post) => {
+            const postElement = document.createElement("article");
+            postElement.className =
+              "p-4 hover:bg-gray-50 transition-colors duration-150";
+            postElement.innerHTML = `
                 <div class="flex justify-between">
                   <div class="flex gap-3">
                     <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
                       <img src="${
                         post.profile_image || "{% static 'placeholder.svg' %}"
-                      }" alt="${post.author}" class="w-full h-full object-cover rounded-full" />
+                      }" alt="${
+              post.author
+            }" class="w-full h-full object-cover rounded-full" />
                     </div>
                     <div>
                       <div class="flex items-center gap-1">
@@ -255,7 +491,11 @@
                     </div>
                   </div>
                 </div>
-                ${post.content ? `<div class="mt-3 whitespace-pre-wrap">${post.content}</div>` : ""}
+                ${
+                  post.content
+                    ? `<div class="mt-3 whitespace-pre-wrap">${post.content}</div>`
+                    : ""
+                }
                 ${
                   post.image
                     ? `<div class="mt-4"><img src="${post.image}" alt="Post image" class="rounded-xl w-full object-cover" /></div>`
@@ -285,34 +525,34 @@
                   </button>
                 </div>
               `;
-              document.querySelector(".divide-y").appendChild(postElement);
-            });
-  
-            // Attach event listeners to like buttons of newly loaded posts
-            attachLikeButtonListeners();
-  
-            currentPage++;
-          } else {
-            // No more posts to load
-            hasMorePosts = false;
-            skeletonShimmer.remove();
-          }
-        })
-        .catch((error) => {
-          console.error("Error loading more posts:", error);
+            document.querySelector(".divide-y").appendChild(postElement);
+          });
+
+          // Attach event listeners to like buttons of newly loaded posts
+          attachLikeButtonListeners();
+
+          currentPage++;
+        } else {
+          // No more posts to load
+          hasMorePosts = false;
           skeletonShimmer.remove();
-        })
-        .finally(() => {
-          isLoading = false;
-        });
+        }
+      })
+      .catch((error) => {
+        console.error("Error loading more posts:", error);
+        skeletonShimmer.remove();
+      })
+      .finally(() => {
+        isLoading = false;
+      });
+  }
+
+  // Detect when the user scrolls to the bottom
+  window.addEventListener("scroll", () => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 100 && hasMorePosts) {
+      loadMorePosts();
     }
-  
-    // Detect when the user scrolls to the bottom
-    window.addEventListener("scroll", () => {
-      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-      if (scrollTop + clientHeight >= scrollHeight - 100 && hasMorePosts) {
-        loadMorePosts();
-      }
-    });
+  });
 </script>
 {% endblock %}
