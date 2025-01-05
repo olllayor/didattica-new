@@ -16,7 +16,11 @@
       {% csrf_token %}
       <div class="flex gap-3">
         <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-          <img src="{% static 'placeholder.svg' %}" alt="{{ user.username }}" class="w-full h-full object-cover"/>
+          <img
+            src="{% if request.user.profile.profile_image %}{{ request.user.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+            alt="{{ request.user.username }}"
+            class="w-full h-full object-cover rounded-full"
+          />
         </div>
         <div class="flex-1">
           <textarea name="content" id="post-content" class="w-full resize-none border-0 bg-transparent text-base placeholder:text-gray-500 focus:outline-none font-mono" placeholder="What's new?" rows="4"></textarea>

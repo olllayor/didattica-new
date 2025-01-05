@@ -64,6 +64,7 @@ def feed(request):
                 "comments_count": post.get_comments_count(),
                 "views": post.views,
                 "created_at": post.created_at.strftime("%b %d, %Y %I:%M %p"),
+                "profile_image": post.author.profile.profile_image.url if post.author.profile.profile_image else None,  # Add profile image URL
             }
             for post in page_obj
         ]
