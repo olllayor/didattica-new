@@ -45,7 +45,7 @@ class PostImage(models.Model):
 
             # Convert the image to WebP format with the best quality
             buffer = BytesIO()
-            img.save(buffer, format='WEBP', quality=100)
+            img.save(buffer, format='WEBP', quality=80)
             webp_image = ContentFile(buffer.getvalue())
 
             # Save the WebP image with the same name but with .webp extension
