@@ -4,6 +4,7 @@ from django.contrib import messages  # Import the messages framework
 from allauth.socialaccount.models import SocialAccount
 from .forms import ProfileForm
 from .models import Profile
+from community.models import Post  # Import the Post model from the community app
 import logging
 
 logger = logging.getLogger(__name__)
@@ -22,11 +23,14 @@ def profile(request, username):
     # Ensure the profile exists
     profile, created = Profile.objects.get_or_create(user=user)
 
+    # Fetch the user's posts
+    posts = Post.objects.filter(author=user).order_by('-created_at')  # Fetch posts by the user, ordered by creation date
+
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Username successfully updated!')
+            messages.success(request, 'Profile successfully updated!')
             return redirect('profile', username=user.username)
         else:
             if 'username' in form.errors:
@@ -39,5 +43,6 @@ def profile(request, username):
         'social_accounts': social_accounts,  # Pass social_accounts to the template
         'profile': profile,
         'form': form,
+        'posts': posts,  # Pass the user's posts to the template
     }
     return render(request, 'accounts/profile.html', context)
