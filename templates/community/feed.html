@@ -24,41 +24,6 @@
       }
     }
 
-    /* Reaction dropdown styling */
-    .reaction-dropdown {
-      position: relative;
-    }
-
-    .reaction-dropdown .dropdown-content {
-      display: none;
-      position: absolute;
-      right: 0;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      z-index: 10;
-    }
-
-    .reaction-dropdown:hover .dropdown-content {
-      display: block;
-    }
-
-    .reaction-dropdown .dropdown-content button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      width: 100%;
-      text-align: left;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    .reaction-dropdown .dropdown-content button:hover {
-      background-color: #f3f4f6;
-    }
-
     /* Reactions display styling */
     .reactions-container {
       display: flex;
@@ -134,8 +99,8 @@
             </div>
           </div>
           <!-- Reaction Dropdown -->
-          <div class="reaction-dropdown">
-            <button class="p-2 hover:bg-gray-100 rounded-full" onclick="showReactions('{{ post.id }}')">
+          <div class="dropdown dropdown-left">
+            <div tabindex="0" role="button" class="p-2 hover:bg-gray-100 rounded-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="w-5 h-5"
@@ -148,11 +113,13 @@
                 <circle cx="19" cy="12" r="1" />
                 <circle cx="5" cy="12" r="1" />
               </svg>
-            </button>
-            <div class="dropdown-content">
-              <button onclick="showReactions('{{ post.id }}')">Reactions</button>
-              <button onclick="copyPostLink('{{ post.id }}')">Copy link</button>
             </div>
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+              <li><a onclick="reactToPost('{{ post.id }}', '👍')">👍 Thumbs Up</a></li>
+              <li><a onclick="reactToPost('{{ post.id }}', '😂')">😂 Laugh</a></li>
+              <li><a onclick="reactToPost('{{ post.id }}', '🔥')">🔥 Fire</a></li>
+              <li><a onclick="copyPostLink('{{ post.id }}')">Copy Link</a></li>
+            </ul>
           </div>
         </div>
 
@@ -252,30 +219,6 @@
             </svg>
             <span>{{ post.views }}</span>
           </button>
-          <button
-            class="flex items-center gap-2 text-gray-500 hover:text-green-500"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-              />
-            </svg>
-            <span>{{ post.views }}</span>
-          </button>
           <!-- Share Dropdown -->
           <div class="dropdown dropdown-end">
             <div tabindex="0" role="button" class="flex items-center gap-2 text-gray-500 hover:text-blue-500">
@@ -293,7 +236,6 @@
                   d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
                 />
               </svg>
-
             </div>
             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
               <li>
@@ -321,34 +263,9 @@
           {% for reaction in post.reactions.all %}
           <div class="reaction">
             <span>{{ reaction.reaction }}</span>
+            <span>{{ post.reactions.count }}</span>
           </div>
           {% endfor %}
-        </div>
-
-        <!-- Reactions Dropdown (Hidden by default) -->
-        <div id="reaction-emojis-{{ post.id }}" class="hidden mt-2">
-          <div class="avatar-group -space-x-6 rtl:space-x-reverse">
-            <div class="avatar">
-              <div class="w-12">
-                <button onclick="reactToPost('{{ post.id }}', '👍')">👍</button>
-              </div>
-            </div>
-            <div class="avatar">
-              <div class="w-12">
-                <button onclick="reactToPost('{{ post.id }}', '❤️')">❤️</button>
-              </div>
-            </div>
-            <div class="avatar">
-              <div class="w-12">
-                <button onclick="reactToPost('{{ post.id }}', '😂')">😂</button>
-              </div>
-            </div>
-            <div class="avatar placeholder">
-              <div class="bg-neutral text-neutral-content w-12">
-                <span>+99</span>
-              </div>
-            </div>
-          </div>
         </div>
       </article>
       {% empty %}
@@ -359,11 +276,6 @@
 </div>
 
 <script>
-  function showReactions(postId) {
-    const reactionEmojis = document.getElementById(`reaction-emojis-${postId}`);
-    reactionEmojis.classList.toggle('hidden');
-  }
-
   function reactToPost(postId, reaction) {
     fetch(`/community/post/${postId}/react/`, {
       method: "POST",
@@ -381,6 +293,7 @@
           reactionsContainer.innerHTML = `
             <div class="reaction">
               <span>${data.reaction}</span>
+              <span>${data.reaction_count}</span>
             </div>
           `;
         } else {

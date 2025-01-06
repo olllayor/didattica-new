@@ -100,6 +100,10 @@ def like_post(request, post_id):
 
     return JsonResponse({"liked": liked, "likes_count": post.likes.count()})
 
+
+
+
+
 @login_required
 @require_POST
 def add_comment(request, post_id):
