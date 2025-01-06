@@ -35,7 +35,7 @@ def create_post(request):
         form = PostForm()
     return render(request, "community/create_post.html", {"form": form})
 
-
+# community/views.py
 def feed(request):
     posts = Post.objects.all().order_by("-created_at")
     paginator = Paginator(posts, 10)  # Show 10 posts per page
@@ -44,13 +44,13 @@ def feed(request):
     try:
         page_obj = paginator.page(page_number)
     except EmptyPage:
-        # If the page is out of range, return an empty list
         return JsonResponse({"posts": [], "has_next": False})
 
     # Track viewed posts in the session
     if "viewed_posts" not in request.session:
         request.session["viewed_posts"] = []
 
+    posts_data = []
     for post in page_obj:
         if post.id not in request.session["viewed_posts"]:
             post.views += 1
@@ -58,23 +58,24 @@ def feed(request):
             request.session["viewed_posts"].append(post.id)
             request.session.modified = True  # Save the session
 
+        # Include reactions in the response
+        reactions = [{"reaction": reaction.reaction} for reaction in post.reactions.all()]
+
+        posts_data.append({
+            "id": post.id,
+            "author": post.author.username,
+            "content": post.content,
+            "image": post.image.url if post.image else None,
+            "likes_count": post.get_likes_count(),
+            "comments_count": post.get_comments_count(),
+            "views": post.views,
+            "created_at": post.created_at.strftime("%b %d, %Y %I:%M %p"),
+            "profile_image": post.author.profile.profile_image.url if post.author.profile.profile_image else None,
+            "is_liked": request.user in post.likes.all(),
+            "reactions": reactions,  # Include reactions
+        })
+
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        # Return JSON for AJAX requests
-        posts_data = [
-            {
-                "id": post.id,
-                "author": post.author.username,
-                "content": post.content,
-                "image": post.image.url if post.image else None,
-                "likes_count": post.get_likes_count(),
-                "comments_count": post.get_comments_count(),
-                "views": post.views,
-                "created_at": post.created_at.strftime("%b %d, %Y %I:%M %p"),
-                "profile_image": post.author.profile.profile_image.url if post.author.profile.profile_image else None,  # Add profile image URL
-                "is_liked": request.user in post.likes.all(), 
-            }
-            for post in page_obj
-        ]
         return JsonResponse({"posts": posts_data, "has_next": page_obj.has_next()})
 
     comment_form = CommentForm()
@@ -100,7 +101,11 @@ def like_post(request, post_id):
 
     return JsonResponse({"liked": liked, "likes_count": post.likes.count()})
 
-
+@login_required
+def check_like(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    is_liked = request.user in post.likes.all()
+    return JsonResponse({"is_liked": is_liked})
 
 
 
