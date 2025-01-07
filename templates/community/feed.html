@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %} 
+{% load static %} 
+{% block content %}
 
 <head>
   <style>
@@ -44,7 +46,6 @@
       display: flex;
       justify-content: space-between;
       border-bottom: 1px solid #e5e7eb;
-      margin-bottom: 16px;
     }
 
     .tab-button {
@@ -69,11 +70,11 @@
 </head>
 
 <!-- Main container with light gray background -->
-<div class="min-h-screen bg-[#fafafa] py-4">
+<div class="min-h-screen bg-[#fafafa] py-7">
   <!-- Feed container with white background and rounded corners -->
   <div class="max-w-xl mx-auto bg-white rounded-2xl overflow-hidden shadow-sm">
     <!-- Header with Tab Navigation -->
-    <div class="p-4 border-b sticky top-0 bg-white z-10">
+    <div class="border-b sticky top-0 bg-white z-10">
       <div class="tab-navigation">
         <div class="tab-button active" id="for-you-tab">For You</div>
         <div class="tab-button" id="following-tab">Following</div>
@@ -339,53 +340,53 @@
 
 <script>
   // Tab Navigation Logic
-  const forYouTab = document.getElementById("for-you-tab");
-  const followingTab = document.getElementById("following-tab");
-  const postsFeed = document.getElementById("posts-feed");
+  const forYouTab = document.getElementById('for-you-tab');
+  const followingTab = document.getElementById('following-tab');
+  const postsFeed = document.getElementById('posts-feed');
 
-  forYouTab.addEventListener("click", () => {
-    forYouTab.classList.add("active");
-    followingTab.classList.remove("active");
+  forYouTab.addEventListener('click', () => {
+    forYouTab.classList.add('active');
+    followingTab.classList.remove('active');
     fetchForYouPosts();
   });
 
-  followingTab.addEventListener("click", () => {
-    followingTab.classList.add("active");
-    forYouTab.classList.remove("active");
+  followingTab.addEventListener('click', () => {
+    followingTab.classList.add('active');
+    forYouTab.classList.remove('active');
     fetchFollowingPosts();
   });
 
   function fetchForYouPosts() {
     // Fetch "For You" posts from the server
-    fetch("/community/feed/for-you/")
-      .then((response) => response.json())
-      .then((data) => {
+    fetch('/community/feed/for-you/')
+      .then(response => response.json())
+      .then(data => {
         postsFeed.innerHTML = data.posts
           .map(
-            (post) => `
+            post => `
               <article class="p-4 hover:bg-gray-50 transition-colors duration-150">
                 <!-- Render post content here -->
               </article>
             `
           )
-          .join("");
+          .join('');
       });
   }
 
   function fetchFollowingPosts() {
     // Fetch "Following" posts from the server
-    fetch("/community/feed/following/")
-      .then((response) => response.json())
-      .then((data) => {
+    fetch('/community/feed/following/')
+      .then(response => response.json())
+      .then(data => {
         postsFeed.innerHTML = data.posts
           .map(
-            (post) => `
+            post => `
               <article class="p-4 hover:bg-gray-50 transition-colors duration-150">
                 <!-- Render post content here -->
               </article>
             `
           )
-          .join("");
+          .join('');
       });
   }
 
