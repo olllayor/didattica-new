@@ -30,11 +30,12 @@ def create_post(request):
                 messages.success(request, "Post saved as draft.")
                 return redirect("profile", username=request.user.username)
         else:
+            # Print form errors for debugging
+            print(form.errors)
             messages.error(request, "Failed to create post. Please check the form.")  # Error message
     else:
         form = PostForm()
     return render(request, "community/create_post.html", {"form": form})
-
 # community/views.py
 def feed(request):
     posts = Post.objects.all().order_by("-created_at")
@@ -163,11 +164,19 @@ def react_to_post(request, post_id):
         defaults={'reaction': reaction}
     )
 
-    # Get the updated reaction count for the post
-    reaction_count = post.reactions.count()
+    # Get all reactions for the post
+    reactions = post.reactions.all()
+    reaction_counts = {}
+    for r in reactions:
+        if r.reaction in reaction_counts:
+            reaction_counts[r.reaction] += 1
+        else:
+            reaction_counts[r.reaction] = 1
+
+    # Prepare the response
+    reaction_list = [{"reaction": k, "count": v} for k, v in reaction_counts.items()]
 
     return JsonResponse({
         "success": True,
-        "reaction": reaction,
-        "reaction_count": reaction_count,
+        "reactions": reaction_list,
     })

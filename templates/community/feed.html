@@ -320,31 +320,29 @@
 <script>
   function reactToPost(postId, reaction) {
     fetch(`/community/post/${postId}/react/`, {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": "{{ csrf_token }}",
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: `reaction=${reaction}`,
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: `reaction=${reaction}`,
     })
-      .then((response) => response.json())
-      .then((data) => {
+    .then((response) => response.json())
+    .then((data) => {
         if (data.success) {
-          // Update the reactions display
-          const reactionsContainer = document.getElementById(
-            `reactions-${postId}`
-          );
-          reactionsContainer.innerHTML = `
-            <div class="reaction">
-              <span>${data.reaction}</span>
-              <span>${data.reaction_count}</span>
-            </div>
-          `;
+            // Update the reactions display
+            const reactionsContainer = document.getElementById(`reactions-${postId}`);
+            reactionsContainer.innerHTML = data.reactions.map(reaction => `
+                <div class="reaction">
+                    <span>${reaction.reaction}</span>
+                    <span>${reaction.count}</span>
+                </div>
+            `).join('');
         } else {
-          alert("Failed to react to the post.");
+            alert("Failed to react to the post.");
         }
-      });
-  }
+    });
+}
 
   function copyPostLink(postId) {
     const postLink = `${window.location.origin}/community/post/${postId}/`;

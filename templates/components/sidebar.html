@@ -1,14 +1,16 @@
-<div
-  class="fixed left-0 top-0 h-full w-16 flex flex-col items-center py-8 border-r bg-white"
->
-  <a href="{% url 'feed' %}" class="mb-8">
+<div class="fixed left-0 top-0 h-full w-16 flex flex-col items-center justify-center border-r bg-white">
+  <!-- Logo -->
+  <a href="{% url 'feed' %}" class="mb-14">
     <div class="w-8 h-8 rounded-full bg-black"></div>
   </a>
-  <nav class="flex flex-col items-center gap-8">
+
+  <!-- Navigation Icons -->
+  <nav class="flex flex-col items-center gap-14"> <!-- Increased gap to 12 (48px) -->
+    <!-- Home -->
     <a href="{% url 'feed' %}" class="hover:opacity-70">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="w-6 h-6"
+        class="w-7 h-7"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -18,10 +20,12 @@
         <polyline points="9 22 9 12 15 12 15 22" />
       </svg>
     </a>
+
+    <!-- Search -->
     <a href="#" class="hover:opacity-70">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="w-6 h-6"
+        class="w-7 h-7"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -31,10 +35,12 @@
         <line x1="21" y1="21" x2="16.65" y2="16.65" />
       </svg>
     </a>
+
+    <!-- Create Post -->
     <a href="{% url 'create_post' %}" class="hover:opacity-70">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="w-6 h-6"
+        class="w-7 h-7"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -45,24 +51,33 @@
         <line x1="8" y1="12" x2="16" y2="12" />
       </svg>
     </a>
+
+    <!-- Bookmarks -->
     <a href="#" class="hover:opacity-70">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="w-6 h-6"
+        class="w-7 h-7"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         stroke-width="2"
       >
         <path
-          d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
         />
       </svg>
     </a>
-    <a href="{% url 'profile' username=request.user.username %}" class="hover:opacity-70">
+
+    <!-- Profile -->
+    <a
+      href="{% url 'profile' username=request.user.username %}"
+      class="hover:opacity-70"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="w-6 h-6"
+        class="w-7 h-7"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"

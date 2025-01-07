@@ -17,8 +17,7 @@ class MultipleFileField(forms.FileField):
         return result
 
 class PostForm(forms.ModelForm):
-    status = forms.ChoiceField(choices=Post.STATUS_CHOICES, initial='published', widget=forms.RadioSelect)
-    
+    status = forms.ChoiceField(choices=Post.STATUS_CHOICES, initial='published', widget=forms.RadioSelect, required=False)
     images = MultipleFileField(required=False)
 
     class Meta:
@@ -28,13 +27,14 @@ class PostForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         content = cleaned_data.get("content")
-        images = cleaned_data.get("images")
+        images = self.files.getlist("images")  # Get list of uploaded images
 
         # If no content and no images, raise a validation error
         if not content and not images:
             raise forms.ValidationError("You must provide either text content or at least one image.")
 
         return cleaned_data
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
