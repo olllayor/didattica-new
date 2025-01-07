@@ -1,26 +1,22 @@
 <button
   onclick="openCreatePostModal()"
-  class="fixed bottom-8 right-9 h-20 w-24 bg-white rounded-2xl shadow-lg flex items-center justify-center z-50 transition-all duration-200 ease-out hover:shadow-xl hover:scale-110 transform"
+  class="fixed bottom-20 right-9 h-20 w-24 bg-white rounded-2xl shadow-lg flex items-center justify-center z-50 transition-all duration-200 ease-out hover:shadow-xl hover:scale-110 transform"
 >
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    class="h-9 w-9" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    class="h-9 w-9"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
     stroke-width="2"
   >
-    <path 
-      stroke-linecap="round" 
-      stroke-linejoin="round" 
-      d="M12 5v14m-7-7h14"
-    />
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
   </svg>
 </button>
 
 <script>
   function openCreatePostModal() {
-    document.getElementById('createPostModal').classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
+    document.getElementById("createPostModal").classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
   }
 </script>
