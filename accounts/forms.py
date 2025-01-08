@@ -9,7 +9,7 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ['username', 'profile_image', 'website', 'bio']
+        fields = ['username', 'name', 'profile_image', 'website', 'bio']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

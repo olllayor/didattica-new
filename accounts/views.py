@@ -5,10 +5,17 @@ from allauth.socialaccount.models import SocialAccount
 from .forms import ProfileForm
 from .models import Profile
 from community.models import Post  # Import the Post model from the community app
+from django.contrib.auth.decorators import login_required
 import logging
+
 
 logger = logging.getLogger(__name__)
 
+
+def index(request):
+    return render(request, 'index.html')
+
+@login_required
 def profile(request, username):
     try:
         user = User.objects.get(username=username)
@@ -46,3 +53,5 @@ def profile(request, username):
         'posts': posts,  # Pass the user's posts to the template
     }
     return render(request, 'accounts/profile.html', context)
+
+

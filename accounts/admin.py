@@ -3,7 +3,7 @@ from .models import Profile
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'bio', 'website', 'created_at', 'updated_at')
+    list_display = ('user', 'name', 'bio', 'website', 'created_at', 'updated_at')
     list_filter = ('created_at', 'user')
     search_fields = ('user__username', 'bio', 'website')
     date_hierarchy = 'created_at'

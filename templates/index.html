@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Existing styles */
+        :root {
+            --white:  #ffffff;
+            --yellow: #f1edb6;
+            --black:  #000000;
+        }
+
+        body {
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        *, *:before, *:after { box-sizing: border-box; }
+
+        *:before, *:after { position: absolute; }
+
+        /* Background canvas style */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Original styles */
+        .space {
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Rest of the original styles */
+        .gargantua {
+            width: 90vmax;
+            height: 60vmax;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transform: rotate(-5deg);
+            filter: sepia(0.5);
+        }
+        .gargantua > div {
+            position: absolute;
+        }
+
+        .bot-photon-ring {
+            width: 18vmax;
+            height: 10vmax;
+            border-radius: 1vmax 1vmax 20vmax 20vmax;
+            box-shadow: 0 0 5px 2px var(--black);
+            top: 28.5vmax;
+            border: 2px solid var(--white);
+            border-top: 0;
+            background: var(--black);
+            margin-left: 0.75vmax;
+            box-shadow: 0 0 5px 2px var(--black), 0px 0px 5px 2px var(--yellow), 0px -3px 10px -3px var(--yellow) inset;
+        }
+
+        .image-disk {
+            width: 22vmax;
+            height: 22vmax;
+            border-radius: 100%;
+            top: 19vmax;
+            border: 2vmax solid var(--white);
+            box-shadow: 0 0px 15px 3px var(--yellow), 0 0px 5px 2px var(--yellow) inset;
+        }
+        .image-disk:before, .image-disk:after {
+            content: "";
+            position: absolute;
+            left: -5.365vmax;
+            top: 3.85vmax;
+            width: 3.5vmax;
+            height: 4.5vmax;
+            border-radius: 0px 0px 34px 10px;
+            transform: rotate(23deg);
+            box-shadow: 16px 2px 0px 1px white;
+        }
+        .image-disk:after {
+            left: 19.885vmax;
+            transform: rotateY(180deg) rotateZ(23deg);
+        }
+        .image-disk-lines {
+            width: 22vmax;
+            height: 22vmax;
+            border-radius: 100%;
+            background: radial-gradient(
+                circle at 50% 50%,
+                transparent, transparent 9.25vmax, 
+                var(--yellow) 9.5vmax, var(--yellow) 9.55vmax, 
+                var(--white) 9.55vmax, var(--white) 9.95vmax,
+                var(--yellow) 9.95vmax, var(--yellow) 10.05vmax,
+                var(--white) 10.05vmax, var(--white) 10.35vmax,
+                var(--yellow) 10.35vmax, var(--yellow) 10.42vmax,
+                var(--white) 10.42vmax, var(--white) 10.75vmax,
+                var(--yellow) 10.75vmax, var(--yellow) 10.79vmax,
+                var(--white) 10.79vmax, var(--white) 10.95vmax,
+                red 22vmax
+            );
+        }
+
+        .accretion-disk {
+            background: radial-gradient(
+                ellipse at 49.5% 40%, 
+                transparent, transparent 11.15vmax, 
+                var(--white) 11.15vmax, var(--yellow) 11.15vmax, 
+                var(--yellow) 11.2vmax, var(--white) 11.2vmax, 
+                var(--white) 12.5vmax, var(--yellow) 12.5vmax, 
+                var(--yellow) 12.65vmax, var(--white) 12.65vmax,
+                var(--white) 13.5vmax, var(--yellow) 13.5vmax, 
+                var(--yellow) 13.55vmax, var(--white) 13.55vmax,
+                var(--white) 14.45vmax, var(--yellow) 14.45vmax, 
+                var(--yellow) 14.55vmax, var(--white) 14.55vmax, 
+                var(--white) 15.5vmax, var(--yellow) 15.5vmax, 
+                var(--yellow) 15.65vmax, var(--white) 15.65vmax,
+                var(--white) 16.5vmax, var(--yellow) 16.5vmax, 
+                var(--yellow) 16.65vmax, var(--white) 16.65vmax,
+                var(--white) 17.6vmax,  var(--yellow) 17.6vmax,
+                var(--yellow) 17.65vmax, var(--white) 17.65vmax,
+                var(--white) 18.25vmax,  var(--yellow) 18.25vmax,
+                var(--yellow) 18.35vmax, var(--white) 18.35vmax,
+                var(--white) 19.15vmax,  var(--yellow) 19.15vmax,
+                var(--yellow) 19.35vmax, var(--white) 19.35vmax,
+                var(--white) 19.95vmax,  var(--yellow) 19.95vmax,
+                var(--yellow) 20.05vmax, var(--white) 20.05vmax,
+                var(--white) 20.75vmax,  var(--yellow) 20.75vmax,
+                var(--yellow) 20.85vmax, var(--white) 20.85vmax,
+                var(--white) 21.5vmax,  var(--yellow) 21.5vmax,
+                var(--yellow) 21.55vmax, var(--white) 21.55vmax,
+                var(--white) 22.5vmax,  var(--yellow) 22.5vmax,
+                var(--yellow) 22.65vmax, var(--white) 22.65vmax,
+                var(--white) 23.45vmax, var(--yellow) 23.45vmax,
+                var(--yellow) 23.52vmax, var(--white) 23.55vmax
+            ),
+            radial-gradient(
+                ellipse at 49.5% 37%, 
+                var(--black), var(--black) 9.25vmax, 
+                var(--white) 9.5vmax, var(--white)
+            );
+            width: 54vmax;
+            height: 6vmax;
+            border-radius: 100%;
+            top: 28.5vmax;
+            box-shadow: 0 0 3px 0 var(--white), 0 0px 15px 3px var(--yellow), 0 15px 10px 10px var(--black);
+        }
+
+        .top-photon-ring {
+            width: 17vmax;
+            height: 9vmax;
+            border-radius: 20vmax 20vmax 1vmax 1vmax;
+            background: var(--black);
+            top: 21.5vmax;
+            box-shadow: 0 5px 0px 2px var(--black), -3px 5px 0px 2px var(--black), 4px 5px 0px 2px var(--black), -2px 3px 3px 0px var(--yellow);
+        }
+        .top-photon-ring:before {
+            content: "";
+            width: 18vmax;
+            height: 3vmax;
+            background: black;
+            left: -0.5vmax;
+            border-radius: 100%;
+            bottom: -7.6vmax;
+            box-shadow: 0 0 1px 1px var(--black);
+            position: relative;
+            display: block;
+        }
+        .top-photon-ring:after {
+            content: "";
+            opacity: 0.75;
+            width: 17vmax;
+            height: 17vmax;
+            border: 2px solid var(--white);
+            border-radius: 100%;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+            transform: rotate(-46deg);
+            left: 0.25vmax;
+            top: 1.25vmax;
+            box-shadow: -5px 5px 5px -4px var(--yellow) inset, 2px -2px 4px -2px var(--yellow);
+        }
+
+        /* New style for project description */
+        .project-description {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--white);
+            font-size: 14px;
+            text-align: center;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+    <div class="space">
+        <div class="gargantua">
+            <div class="bot-photon-ring"></div>
+            <div class="image-disk"></div>
+            <div class="image-disk-lines"></div>
+            <div class="accretion-disk"></div>
+            <div class="top-photon-ring"></div>
+        </div>
+    </div>
+
+    <!-- Project Description -->
+    <div class="project-description">
+        Welcome to our project! Explore the mysteries of the universe with our interactive black hole simulation.
+    </div>
+
+    <script>
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Star particles
+        const particles = [];
+        const NUM_PARTICLES = 1500;
+        const CENTER_X = canvas.width / 2;
+        const CENTER_Y = canvas.height / 2;
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * Math.max(canvas.width, canvas.height);
+                this.x = CENTER_X + Math.cos(angle) * distance;
+                this.y = CENTER_Y + Math.sin(angle) * distance;
+                this.z = Math.random() * 2;
+                this.size = Math.random() * 2 + 0.5;
+                this.brightness = Math.random() * 0.5 + 0.5;
+                this.color = `rgba(${255}, ${255}, ${241}, ${this.brightness})`;
+            }
+
+            update() {
+                const dx = this.x - CENTER_X;
+                const dy = this.y - CENTER_Y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 5) {
+                    this.reset();
+                    return;
+                }
+
+                // Calculate gravitational pull
+                const force = Math.min(50 / (distance * 0.1), 15);
+                const angle = Math.atan2(dy, dx);
+                
+                // Update position with gravitational effect
+                this.x -= Math.cos(angle) * force;
+                this.y -= Math.sin(angle) * force;
+
+                // Add spiral motion
+                const rotationSpeed = 0.002;
+                const rotationAngle = rotationSpeed * distance * 0.01;
+                const cos = Math.cos(rotationAngle);
+                const sin = Math.sin(rotationAngle);
+                
+                const relativeX = this.x - CENTER_X;
+                const relativeY = this.y - CENTER_Y;
+                
+                this.x = CENTER_X + (relativeX * cos - relativeY * sin);
+                this.y = CENTER_Y + (relativeX * sin + relativeY * cos);
+
+                // Reset if off screen
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * this.z, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        // Initialize particles
+        for (let i = 0; i < NUM_PARTICLES; i++) {
+            particles.push(new Particle());
+        }
+
+        // Animation loop
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw particles
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            // Update center position
+            CENTER_X = canvas.width / 2;
+            CENTER_Y = canvas.height / 2;
+        });
+    </script>
+</body>
+</html>

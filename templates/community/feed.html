@@ -1,4 +1,7 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %} 
+{% load static %} 
+{% block content %}
+
 
 <head>
   <style>
@@ -105,9 +108,10 @@
                   </svg>
                 </span>
                 {% endif %}
-                <span class="text-gray-500"
-                  >· {{ post.created_at|timesince }}</span
-                >
+                <span class="text-gray-500" data-timestamp="{{ post.created_at.isoformat }}">
+                  · {{ post.created_at|timesince }} <!-- Fallback for initial render -->
+                </span>
+                
               </div>
             </div>
           </div>
@@ -337,6 +341,46 @@
 </div>
 
 <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Function to format the time
+    function formatTime(timestamp) {
+      const now = new Date();
+      const postDate = new Date(timestamp);
+      const delta = now - postDate;
+
+      const seconds = Math.floor(delta / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      if (seconds < 60) {
+        return 'Just now';
+      } else if (minutes < 60) {
+        return `${minutes}m`;
+      } else if (hours < 24) {
+        return `${hours}h`;
+      } else if (postDate.getFullYear() === now.getFullYear()) {
+        return postDate.toLocaleDateString('default', { month: 'short', day: 'numeric' });
+      } else {
+        return postDate.toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+    }
+
+    // Function to update all timestamps on the page
+    function updateTimestamps() {
+      document.querySelectorAll('[data-timestamp]').forEach(element => {
+        const timestamp = element.getAttribute('data-timestamp');
+        const formattedTime = formatTime(timestamp);
+        element.textContent = ` · ${formattedTime}`;
+      });
+    }
+
+    // Update timestamps immediately and every minute
+    updateTimestamps();
+    setInterval(updateTimestamps, 60000); // Update every minute
+  });
+
+
   function reactToPost(postId, reaction) {
     fetch(`/community/post/${postId}/react/`, {
       method: "POST",

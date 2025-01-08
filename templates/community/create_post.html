@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %} 
+{% load static %} 
+{% block content %}
 <div class="max-w-2xl mx-auto pt-8 px-4">
   <!-- Header -->
   <div class="flex items-center justify-between mb-6">
@@ -39,32 +41,6 @@
           ></textarea>
         </div>
       </div>
-
-      <!-- Add the status field -->
-      {% comment %} <div class="border-t pt-4">
-        <label class="block text-sm font-medium mb-2">Status</label>
-        <div class="flex gap-4">
-          <label class="flex items-center">
-            <input
-              type="radio"
-              name="status"
-              value="published"
-              class="form-radio"
-              checked
-            />
-            <span class="ml-2">Published</span>
-          </label>
-          <label class="flex items-center">
-            <input
-              type="radio"
-              name="status"
-              value="draft"
-              class="form-radio"
-            />
-            <span class="ml-2">Draft</span>
-          </label>
-        </div>
-      </div> {% endcomment %}
 
       <div class="border-t pt-4">
         <div class="flex items-center gap-2">

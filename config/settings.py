@@ -149,13 +149,13 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-LOGIN_REDIRECT_URL = "/profile/"  # Redirect after successful login
+LOGIN_REDIRECT_URL = "/@<str:username>/"  # Redirect after successful login
 LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # For development
 
 
-ALLAUTH_UI_THEME = "retro"  # or "dark", "cupcake", etc.
+ALLAUTH_UI_THEME = "cmyk"  # or "dark", "cupcake", etc.
 
 
 
