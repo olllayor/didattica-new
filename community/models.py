@@ -49,10 +49,12 @@ class Post(models.Model):
         return self.reactions.count()
 
     def get_reposts_count(self):
-        return self.shares.count()  # Count the number of times this post has been reposted
+        return (
+            self.shares.count()
+        )  # Count the number of times this post has been reposted
 
     def get_replies_count(self):
-        return self.replies.count() 
+        return self.replies.count()
 
 
 class PostImage(models.Model):
@@ -100,11 +102,11 @@ class Comment(models.Model):
 
 class Reaction(models.Model):
     REACTION_CHOICES = [
-        ('👍', 'Thumbs Up'),
-        ('😂', 'Laugh'),
-        ('🔥', 'Fire'),
-        ('👏', 'Clap'),
-        ('🚀', 'Rocket'),
+        ("👍", "Thumbs Up"),
+        ("😂", "Laugh"),
+        ("🔥", "Fire"),
+        ("👏", "Clap"),
+        ("🚀", "Rocket"),
         # ('😲', 'Surprised'),
         # ('😡', 'Angry'),
         # ('💯', '100'),
@@ -122,12 +124,11 @@ class Reaction(models.Model):
         # ('📸', 'Camera'),
         # ('🎥', 'Video'),
         # ('🔒', 'Lock'),
-
     ]
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='reactions')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="reactions")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     reaction = models.CharField(max_length=2, choices=REACTION_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('post', 'user')  # Ensure a user can only react once per post
+        unique_together = ("post", "user")  # Ensure a user can only react once per post

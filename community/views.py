@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from .models import Reaction
 
+
 @login_required
 def create_post(request):
     if request.method == "POST":
@@ -32,11 +33,11 @@ def create_post(request):
             post.save()
 
             # Handle multiple image uploads
-            images = request.FILES.getlist('images')  # Get list of uploaded images
+            images = request.FILES.getlist("images")  # Get list of uploaded images
             for image in images:
                 PostImage.objects.create(post=post, image=image)
 
-            if post.status == 'published':
+            if post.status == "published":
                 messages.success(request, "Post published successfully!")
                 return redirect("feed")
             else:
@@ -45,10 +46,14 @@ def create_post(request):
         else:
             # Print form errors for debugging
             print(form.errors)
-            messages.error(request, "Failed to create post. Please check the form.")  # Error message
+            messages.error(
+                request, "Failed to create post. Please check the form."
+            )  # Error message
     else:
         form = PostForm()
     return render(request, "community/create_post.html", {"form": form})
+
+
 # community/views.py
 def feed(request):
     posts = Post.objects.all().order_by("-created_at")
@@ -73,21 +78,29 @@ def feed(request):
             request.session.modified = True  # Save the session
 
         # Include reactions in the response
-        reactions = [{"reaction": reaction.reaction} for reaction in post.reactions.all()]
+        reactions = [
+            {"reaction": reaction.reaction} for reaction in post.reactions.all()
+        ]
 
-        posts_data.append({
-            "id": post.id,
-            "author": post.author.username,
-            "content": post.content,
-            "image": post.image.url if post.image else None,
-            "likes_count": post.get_likes_count(),
-            "comments_count": post.get_comments_count(),
-            "views": post.views,
-            "created_at": post.created_at.strftime("%b %d, %Y %I:%M %p"),
-            "profile_image": post.author.profile.profile_image.url if post.author.profile.profile_image else None,
-            "is_liked": request.user in post.likes.all(),
-            "reactions": reactions,  # Include reactions
-        })
+        posts_data.append(
+            {
+                "id": post.id,
+                "author": post.author.username,
+                "content": post.content,
+                "image": post.image.url if post.image else None,
+                "likes_count": post.get_likes_count(),
+                "comments_count": post.get_comments_count(),
+                "views": post.views,
+                "created_at": post.created_at.strftime("%b %d, %Y %I:%M %p"),
+                "profile_image": (
+                    post.author.profile.profile_image.url
+                    if post.author.profile.profile_image
+                    else None
+                ),
+                "is_liked": request.user in post.likes.all(),
+                "reactions": reactions,  # Include reactions
+            }
+        )
 
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return JsonResponse({"posts": posts_data, "has_next": page_obj.has_next()})
@@ -98,6 +111,7 @@ def feed(request):
         "community/feed.html",
         {"posts": page_obj, "comment_form": comment_form},
     )
+
 
 @login_required
 @require_POST
@@ -115,12 +129,12 @@ def like_post(request, post_id):
 
     return JsonResponse({"liked": liked, "likes_count": post.likes.count()})
 
+
 @login_required
 def check_like(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     is_liked = request.user in post.likes.all()
     return JsonResponse({"is_liked": is_liked})
-
 
 
 @login_required
@@ -134,17 +148,19 @@ def add_comment(request, post_id):
         comment.author = request.user
         comment.post = post
         comment.save()
-        return JsonResponse({
-            "success": True,
-            "comment": {
-                "content": comment.content,
-                "author": comment.author.username,
-                "created_at": comment.created_at.strftime("%b %d, %Y %I:%M %p"),
-            },
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "comment": {
+                    "content": comment.content,
+                    "author": comment.author.username,
+                    "created_at": comment.created_at.strftime("%b %d, %Y %I:%M %p"),
+                },
+            }
+        )
     else:
         return JsonResponse({"success": False, "errors": form.errors})
-    
+
 
 def share_post(request, post_id):
     original_post = get_object_or_404(Post, id=post_id)
@@ -159,12 +175,17 @@ def share_post(request, post_id):
             return redirect("feed")
     else:
         form = PostForm()
-    return render(request, "community/share_post.html", {"form": form, "original_post": original_post})
+    return render(
+        request,
+        "community/share_post.html",
+        {"form": form, "original_post": original_post},
+    )
+
 
 @require_POST
 def react_to_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    reaction = request.POST.get('reaction')
+    reaction = request.POST.get("reaction")
 
     # Validate reaction
     if reaction not in dict(Reaction.REACTION_CHOICES).keys():
@@ -172,9 +193,7 @@ def react_to_post(request, post_id):
 
     # Update or create the reaction
     reaction_obj, created = Reaction.objects.update_or_create(
-        post=post,
-        user=request.user,
-        defaults={'reaction': reaction}
+        post=post, user=request.user, defaults={"reaction": reaction}
     )
 
     # Get all reactions for the post
@@ -189,7 +208,28 @@ def react_to_post(request, post_id):
     # Prepare the response
     reaction_list = [{"reaction": k, "count": v} for k, v in reaction_counts.items()]
 
-    return JsonResponse({
-        "success": True,
-        "reactions": reaction_list,
-    })
+    return JsonResponse(
+        {
+            "success": True,
+            "reactions": reaction_list,
+        }
+    )
+
+
+def post_detail(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    replies = Post.objects.filter(reply_to=post).order_by("-created_at")
+
+    # Track view
+    if "viewed_posts" not in request.session:
+        request.session["viewed_posts"] = []
+
+    if post.id not in request.session["viewed_posts"]:
+        post.views += 1
+        post.save()
+        request.session["viewed_posts"].append(post.id)
+        request.session.modified = True
+
+    return render(
+        request, "community/post_detail.html", {"post": post, "replies": replies}
+    )
