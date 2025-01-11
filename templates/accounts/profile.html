@@ -40,12 +40,16 @@
       <!-- Follower/Following Counts -->
       <div class="mt-4 flex gap-4">
         <div>
-          <span class="font-bold followers-count">{{ profile.get_followers_count }}</span>
-          <span class="text-gray-600">Followers</span>
+          <a href="{% url 'followers_list' username=user.username %}" class="hover:underline">
+            <span class="font-bold followers-count">{{ profile.get_followers_count }}</span>
+            <span class="text-gray-600">Followers</span>
+          </a>
         </div>
         <div>
-          <span class="font-bold following-count">{{ request.user.profile.get_following_count }}</span>
-          <span class="text-gray-600">Following</span>
+          <a href="{% url 'following_list' username=user.username %}" class="hover:underline">
+            <span class="font-bold following-count">{{ profile.get_following_count }}</span>
+            <span class="text-gray-600">Following</span>
+          </a>
         </div>
       </div>
 

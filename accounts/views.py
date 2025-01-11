@@ -110,3 +110,31 @@ def follow_user(request, username):
         })
     else:
         return JsonResponse({'error': 'You cannot follow yourself.'}, status=400)
+    
+# accounts/views.py
+
+@login_required
+def followers_list(request, username):
+    user = get_object_or_404(User, username=username)
+    profile = user.profile
+    followers = profile.followers.all()
+    context = {
+        'user': user,
+        'profile': profile,
+        'followers': followers,
+        'is_followers_page': True,
+    }
+    return render(request, 'accounts/follow_list.html', context)
+
+@login_required
+def following_list(request, username):
+    user = get_object_or_404(User, username=username)
+    profile = user.profile
+    following = profile.following.all()
+    context = {
+        'user': user,
+        'profile': profile,
+        'following': following,
+        'is_followers_page': False,
+    }
+    return render(request, 'accounts/follow_list.html', context)
