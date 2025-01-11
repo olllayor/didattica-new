@@ -1,7 +1,7 @@
-{% extends "base.html" %} 
-{% load static %} 
+{% extends "base.html" %}
+{% load static %}
 
-{% block title %}Profile{% endblock %} 
+{% block title %}Profile{% endblock %}
 
 {% block content %}
 <div class="max-w-2xl mx-auto mt-5">
@@ -25,6 +25,31 @@
         </div>
       </div>
 
+      <!-- Follow/Unfollow Button -->
+      {% if request.user != user %}
+      <button
+        id="followButton"
+        class="mt-6 py-2 btn btn-primary btn-block"
+        data-username="{{ user.username }}"
+        data-following="{% if request.user in profile.followers.all %}true{% else %}false{% endif %}"
+      >
+        {% if request.user in profile.followers.all %}Unfollow{% else %}Follow{% endif %}
+      </button>
+      {% endif %}
+
+      <!-- Follower/Following Counts -->
+      <div class="mt-4 flex gap-4">
+        <div>
+          <span class="font-bold" id="followersCount">{{ profile.get_followers_count }}</span>
+          <span class="text-gray-600">Followers</span>
+        </div>
+        <div>
+          <span class="font-bold" id="followingCount">{{ profile.get_following_count }}</span>
+          <span class="text-gray-600">Following</span>
+        </div>
+      </div>
+
+
       {% if profile.bio %}
       <div class="mt-2">
         <p class="text-gray-700">{{ profile.bio }}</p>
@@ -36,70 +61,72 @@
         <div>
           {% if profile.website %}
           <a href="{{ profile.website }}" class="text-blue-500 hover:underline">
-              {{ profile.website }}
+            {{ profile.website }}
           </a>
           {% endif %}
         </div>
         {% if social_accounts %}
         <div class="flex items-center gap-2 mr-1">
-            {% for account in social_accounts %}
+          {% for account in social_accounts %}
             {% if account.provider == 'google' %}
-                <div class="w-7 h-7">
+              <div class="w-7 h-7">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                    <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                    <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
-                    <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
-                    <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                  <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                  <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+                  <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
+                  <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
                 </svg>
-                </div>
+              </div>
             {% elif account.provider == 'telegram' %}
-                <div class="w-7 h-7">
+              <div class="w-7 h-7">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                    <linearGradient id="BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1" x1="9.858" x2="38.142" y1="9.858" y2="38.142" gradientUnits="userSpaceOnUse">
+                  <linearGradient id="BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1" x1="9.858" x2="38.142" y1="9.858" y2="38.142" gradientUnits="userSpaceOnUse">
                     <stop offset="0" stop-color="#33bef0"></stop>
                     <stop offset="1" stop-color="#0a85d9"></stop>
-                    </linearGradient>
-                    <path fill="url(#BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1)" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z"></path>
-                    <path fill="#fff" d="M11.553,23.717c6.99-3.075,16.035-6.824,17.284-7.343c3.275-1.358,4.28-1.098,3.779,1.91 c-0.36,2.162-1.398,9.319-2.226,13.774c-0.491,2.642-1.593,2.955-3.325,1.812c-0.833-0.55-5.038-3.331-5.951-3.984 c-0.833-0.595-1.982-1.311-0.541-2.721c0.513-0.502,3.874-3.712,6.493-6.21c0.343-0.328-0.088-0.867-0.484-0.604 c-3.53,2.341-8.424,5.59-9.047,6.013c-0.941,0.639-1.845,0.932-3.467,0.466c-1.226-0.352-2.423-0.772-2.889-0.932 C9.384,25.282,9.81,24.484,11.553,23.717z"></path>
+                  </linearGradient>
+                  <path fill="url(#BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1)" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z"></path>
+                  <path fill="#fff" d="M11.553,23.717c6.99-3.075,16.035-6.824,17.284-7.343c3.275-1.358,4.28-1.098,3.779,1.91 c-0.36,2.162-1.398,9.319-2.226,13.774c-0.491,2.642-1.593,2.955-3.325,1.812c-0.833-0.55-5.038-3.331-5.951-3.984 c-0.833-0.595-1.982-1.311-0.541-2.721c0.513-0.502,3.874-3.712,6.493-6.21c0.343-0.328-0.088-0.867-0.484-0.604 c-3.53,2.341-8.424,5.59-9.047,6.013c-0.941,0.639-1.845,0.932-3.467,0.466c-1.226-0.352-2.423-0.772-2.889-0.932 C9.384,25.282,9.81,24.484,11.553,23.717z"></path>
                 </svg>
-                </div>
+              </div>
             {% elif account.provider == 'apple' %}
-                <div class="w-7 h-7">
+              <div class="w-7 h-7">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-                    <path d="M54.166,19.783c-0.258,0.162-6.401,3.571-6.401,11.13c0.29,8.621,7.752,11.644,7.88,11.644 c-0.128,0.162-1.127,4.119-4.085,8.267C49.213,54.398,46.607,58,42.65,58c-3.764,0-5.115-2.381-9.458-2.381 c-4.664,0-5.984,2.381-9.555,2.381c-3.957,0-6.756-3.795-9.232-7.335c-3.216-4.633-5.95-11.903-6.047-18.883 c-0.065-3.699,0.644-7.335,2.444-10.423c2.541-4.312,7.077-7.238,12.031-7.335c3.795-0.128,7.173,2.606,9.49,2.606 c2.22,0,6.37-2.606,11.065-2.606C45.415,14.026,50.82,14.636,54.166,19.783z M32.002,13.285c-0.676-3.378,1.19-6.756,2.927-8.911 C37.149,1.769,40.655,0,43.678,0c0.193,3.378-1.03,6.691-3.216,9.104C38.5,11.71,35.122,13.671,32.002,13.285z"></path>
+                  <path d="M54.166,19.783c-0.258,0.162-6.401,3.571-6.401,11.13c0.29,8.621,7.752,11.644,7.88,11.644 c-0.128,0.162-1.127,4.119-4.085,8.267C49.213,54.398,46.607,58,42.65,58c-3.764,0-5.115-2.381-9.458-2.381 c-4.664,0-5.984,2.381-9.555,2.381c-3.957,0-6.756-3.795-9.232-7.335c-3.216-4.633-5.95-11.903-6.047-18.883 c-0.065-3.699,0.644-7.335,2.444-10.423c2.541-4.312,7.077-7.238,12.031-7.335c3.795-0.128,7.173,2.606,9.49,2.606 c2.22,0,6.37-2.606,11.065-2.606C45.415,14.026,50.82,14.636,54.166,19.783z M32.002,13.285c-0.676-3.378,1.19-6.756,2.927-8.911 C37.149,1.769,40.655,0,43.678,0c0.193,3.378-1.03,6.691-3.216,9.104C38.5,11.71,35.122,13.671,32.002,13.285z"></path>
                 </svg>
-                </div>
+              </div>
             {% elif account.provider == 'twitter' %}
-                <div class="w-7 h-7">
+              <div class="w-7 h-7">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
-                    <path d="M 11 4 C 7.134 4 4 7.134 4 11 L 4 39 C 4 42.866 7.134 46 11 46 L 39 46 C 42.866 46 46 42.866 46 39 L 46 11 C 46 7.134 42.866 4 39 4 L 11 4 z M 13.085938 13 L 21.023438 13 L 26.660156 21.009766 L 33.5 13 L 36 13 L 27.789062 22.613281 L 37.914062 37 L 29.978516 37 L 23.4375 27.707031 L 15.5 37 L 13 37 L 22.308594 26.103516 L 13.085938 13 z M 16.914062 15 L 31.021484 35 L 34.085938 35 L 19.978516 15 L 16.914062 15 z"></path>
+                  <path d="M 11 4 C 7.134 4 4 7.134 4 11 L 4 39 C 4 42.866 7.134 46 11 46 L 39 46 C 42.866 46 46 42.866 46 39 L 46 11 C 46 7.134 42.866 4 39 4 L 11 4 z M 13.085938 13 L 21.023438 13 L 26.660156 21.009766 L 33.5 13 L 36 13 L 27.789062 22.613281 L 37.914062 37 L 29.978516 37 L 23.4375 27.707031 L 15.5 37 L 13 37 L 22.308594 26.103516 L 13.085938 13 z M 16.914062 15 L 31.021484 35 L 34.085938 35 L 19.978516 15 L 16.914062 15 z"></path>
                 </svg>
-                </div>
+              </div>
             {% elif account.provider == 'linkedin' %}
-                <div class="w-7 h-7">
+              <div class="w-7 h-7">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
-                    <path d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"></path>
+                  <path d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"></path>
                 </svg>
-                </div>
+              </div>
             {% elif account.provider == 'instagram' %}
-                <div class="w-7 h-7">
+              <div class="w-7 h-7">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
-                    <path d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"></path>
+                  <path d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"></path>
                 </svg>
-                </div>
+              </div>
             {% endif %}
-            {% endfor %}
+          {% endfor %}
         </div>
         {% endif %}
       </div>
 
       <!-- Edit Profile Button -->
+      {% if request.user == user %}
       <button
         onclick="openEditModal()"
         class="w-full mt-6 py-2 border border-gray-300 rounded-lg text-center hover:bg-gray-50"
       >
         Edit profile
       </button>
+      {% endif %}
     </div>
 
     <!-- Tabs -->
@@ -114,112 +141,156 @@
     </div>
 
     <!-- Post Input -->
+    {% if request.user == user %}
     <div class="mt-4 flex gap-4">
-        <div class="w-10 h-10">
+      <div class="w-10 h-10">
         <img
-            src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
-            alt="{{ user.username }}"
-            class="w-full h-full object-cover rounded-full"
+          src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+          alt="{{ user.username }}"
+          class="w-full h-full object-cover rounded-full"
         />
-        </div>
-        <div class="flex-1">
+      </div>
+      <div class="flex-1">
         <input
-            type="text"
-            placeholder="What's new?"
-            class="w-full p-2 rounded-lg border-none focus:ring-0 bg-transparent"
-            onclick="openCreatePostModal()"
+          type="text"
+          placeholder="What's new?"
+          class="w-full p-2 rounded-lg border-none focus:ring-0 bg-transparent"
+          onclick="openCreatePostModal()"
         />
-        </div>
-        <button
+      </div>
+      <button
         class="px-4 py-2 shadow-lg rounded-lg text-black-400 hover:bg-gray-100"
-        onclick="openCreatePostModal()" 
-        >
+        onclick="openCreatePostModal()"
+      >
         Post
-        </button>
+      </button>
     </div>
+    {% endif %}
 
     <!-- User's Posts Section -->
     <div class="mt-6">
       <h3 class="text-lg font-semibold mb-4">Posts</h3>
       {% if posts %}
-        <div class="space-y-4">
-          {% for post in posts %}
-            <div class="bg-white p-4 rounded-lg shadow-sm">
-              <div class="flex justify-between">
-                <div class="flex gap-3">
-                  <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                    <img
-                      src="{% if post.author.profile.profile_image %}{{ post.author.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
-                      alt="{{ post.author.username }}"
-                      class="w-full h-full object-cover rounded-full"
-                    />
-                  </div>
-                  <div>
-                    <div class="flex items-center gap-1">
-                      <span class="font-bold">{{ post.author.username }}</span>
-                      <span class="text-gray-500">· {{ post.created_at|timesince }}</span>
-                    </div>
-                  </div>
-                </div>
+      <div class="space-y-4">
+        {% for post in posts %}
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <div class="flex justify-between">
+            <div class="flex gap-3">
+              <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                <img
+                  src="{% if post.author.profile.profile_image %}{{ post.author.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+                  alt="{{ post.author.username }}"
+                  class="w-full h-full object-cover rounded-full"
+                />
               </div>
-
-              <!-- Post Content -->
-              {% if post.content %}
-                <div class="mt-3 whitespace-pre-wrap">{{ post.content }}</div>
-              {% endif %}
-
-              <!-- Post Images -->
-              {% if post.post_images.all %}
-                <div class="mt-4 overflow-x-auto scrollbar-hide">
-                  <div class="flex gap-2">
-                    {% for image in post.post_images.all %}
-                      <div class="relative aspect-square w-60 md:w-80 rounded-xl overflow-hidden flex-shrink-0">
-                        <img
-                          src="{{ image.image.url }}"
-                          alt="Post image"
-                          class="object-cover w-full h-full cursor-pointer"
-                          onclick="openImagePreviewModal([{% for img in post.post_images.all %}'{{ img.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}], {{ forloop.counter0 }})"
-                        />
-                      </div>
-                    {% endfor %}
-                  </div>
+              <div>
+                <div class="flex items-center gap-1">
+                  <span class="font-bold">{{ post.author.username }}</span>
+                  <span class="text-gray-500">· {{ post.created_at|timesince }}</span>
                 </div>
-              {% endif %}
-
-              <!-- Post Actions -->
-              <div class="flex justify-between mt-3">
-                <button class="flex items-center gap-2 text-gray-500 hover:text-pink-600 group like-button {% if user in post.likes.all %}liked{% endif %}" data-post-id="{{ post.id }}">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 {% if user in post.likes.all %}fill-red-500 stroke-red-500{% endif %}">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                  </svg>
-                  <span>{{ post.get_likes_count }}</span>
-                </button>
-
-                <button class="flex items-center gap-2 text-gray-500 hover:text-blue-500">
-                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
-                  </svg>
-                  <span>{{ post.get_comments_count }}</span>
-                </button>
-
-                <button class="flex items-center gap-2 text-gray-500 hover:text-green-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                  </svg>
-                  <span>{{ post.views }}</span>
-                </button>
               </div>
             </div>
-          {% endfor %}
+          </div>
+
+          <!-- Post Content -->
+          {% if post.content %}
+          <div class="mt-3 whitespace-pre-wrap">{{ post.content }}</div>
+          {% endif %}
+
+          <!-- Post Images -->
+          {% if post.post_images.all %}
+          <div class="mt-4 overflow-x-auto scrollbar-hide">
+            <div class="flex gap-2">
+              {% for image in post.post_images.all %}
+              <div class="relative aspect-square w-60 md:w-80 rounded-xl overflow-hidden flex-shrink-0">
+                <img
+                  src="{{ image.image.url }}"
+                  alt="Post image"
+                  class="object-cover w-full h-full cursor-pointer"
+                  onclick="openImagePreviewModal([{% for img in post.post_images.all %}'{{ img.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}], {{ forloop.counter0 }})"
+                />
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Post Actions -->
+          <div class="flex justify-between mt-3">
+            <button
+              class="flex items-center gap-2 text-gray-500 hover:text-pink-600 group like-button {% if user in post.likes.all %}liked{% endif %}"
+              data-post-id="{{ post.id }}"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5 {% if user in post.likes.all %}fill-red-500 stroke-red-500{% endif %}"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                />
+              </svg>
+              <span>{{ post.get_likes_count }}</span>
+            </button>
+
+            <button
+              class="flex items-center gap-2 text-gray-500 hover:text-blue-500"
+            >
+              <svg
+                class="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"
+                />
+              </svg>
+              <span>{{ post.get_comments_count }}</span>
+            </button>
+
+            <button
+              class="flex items-center gap-2 text-gray-500 hover:text-green-500"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+              </svg>
+              <span>{{ post.views }}</span>
+            </button>
+          </div>
         </div>
+        {% endfor %}
+      </div>
       {% else %}
-        <p class="text-gray-500">No posts yet.</p>
+      <p class="text-gray-500">No posts yet.</p>
       {% endif %}
     </div>
   </div>
 
   <!-- Edit Profile Modal -->
+  {% if request.user == user %}
   <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
     <div class="bg-white rounded-2xl max-w-lg mx-auto mt-20 p-6">
       <div class="mb-6">
@@ -229,9 +300,7 @@
 
           <!-- Username -->
           <div>
-            <label for="id_username" class="block text-sm font-medium mb-2"
-              >Username</label
-            >
+            <label for="id_username" class="block text-sm font-medium mb-2">Username</label>
             <input
               type="text"
               id="id_username"
@@ -240,9 +309,7 @@
               class="w-full p-2 border rounded-lg"
             />
             {% if form.username.errors %}
-            <div class="text-red-500 text-sm mt-1">
-              {{ form.username.errors }}
-            </div>
+            <div class="text-red-500 text-sm mt-1">{{ form.username.errors }}</div>
             {% endif %}
           </div>
 
@@ -294,26 +361,20 @@
 
           <!-- Bio -->
           <div>
-            <label for="id_bio" class="block text-sm font-medium mb-2"
-              >Bio</label
-            >
+            <label for="id_bio" class="block text-sm font-medium mb-2">Bio</label>
             <div class="flex items-center">
               <textarea
                 id="id_bio"
                 name="bio"
                 rows="3"
                 class="flex-1 p-2 border rounded-lg"
-              >
-{{ form.bio.value }}</textarea
-              >
+              >{{ form.bio.value }}</textarea>
             </div>
           </div>
 
           <!-- Website -->
           <div>
-            <label for="id_website" class="block text-sm font-medium mb-2"
-              >Link</label
-            >
+            <label for="id_website" class="block text-sm font-medium mb-2">Link</label>
             <input
               type="url"
               id="id_website"
@@ -326,12 +387,7 @@
           <!-- Buttons -->
           <div class="flex justify-end gap-4 mt-6">
             <div class="flex w-full gap-4">
-              
-                <a href="/accounts/logout/" class="btn btn-outline-error">
-                Logout
-                </a>
-              
-    
+              <a href="/accounts/logout/" class="btn btn-outline-error">Logout</a>
             </div>
             <button
               type="button"
@@ -351,12 +407,13 @@
       </div>
     </div>
   </div>
+  {% endif %}
 </div>
 
 <script>
   function openCreatePostModal() {
-    document.getElementById('createPostModal').classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
+    document.getElementById("createPostModal").classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
   }
 
   function openEditModal() {
@@ -432,8 +489,8 @@
   function previewImage(input) {
     if (input.files && input.files[0]) {
       const file = input.files[0];
-      if (!file.type.startsWith('image/')) {
-        alert('Please upload a valid image file.');
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload a valid image file.");
         return;
       }
       const reader = new FileReader();
@@ -443,5 +500,40 @@
       reader.readAsDataURL(file);
     }
   }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const followButton = document.getElementById("followButton");
+    if (followButton) {
+      followButton.addEventListener("click", function () {
+        const username = followButton.dataset.username;
+        const isFollowing = followButton.dataset.following === "true";
+
+        fetch(`/@${username}/follow/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.followed) {
+              followButton.textContent = "Unfollow";
+              followButton.dataset.following = "true";
+            } else {
+              followButton.textContent = "Follow";
+              followButton.dataset.following = "false";
+            }
+
+            // Update follower and following counts immediately
+            document.getElementById("followersCount").textContent = data.followers_count;
+            document.getElementById("followingCount").textContent = data.following_count;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+    }
+  });
 </script>
 {% endblock %}

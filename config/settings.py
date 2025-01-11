@@ -152,10 +152,24 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_REDIRECT_URL = "/@<str:username>/"  # Redirect after successful login
 LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # For development
-
-
 ALLAUTH_UI_THEME = "cmyk"  # or "dark", "cupcake", etc.
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Use SMTP for production
+# EMAIL_HOST = 'smtp.gmail.com'  # Replace with your SMTP server
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Your email
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Your email password
+
+# # Allauth settings
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Enforce email verification
+# ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # Allow login with username or email
+# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1  # Email confirmation link expiry in days
+# ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN = 180  # Cooldown period in seconds
+# ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5  # Limit login attempts
+# ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300  # Timeout after failed login attempts
+# ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Logout user after password change
 
 
 

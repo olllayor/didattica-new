@@ -1,7 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from allauth.account.models import EmailAddress
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -29,8 +31,18 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+     # Add follow relationships
+    followers = models.ManyToManyField(User, related_name="following", blank=True)
+    following = models.ManyToManyField(User, related_name="followers", blank=True)
+
     def __str__(self):
         return f"@{self.user.username}"
+    
+    def get_followers_count(self):
+        return self.followers.count()
+
+    def get_following_count(self):
+        return self.following.count()
 
     def save(self, *args, **kwargs):
         # Only process the image if it's a new upload
@@ -68,3 +80,4 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
