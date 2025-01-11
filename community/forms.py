@@ -19,6 +19,9 @@ class MultipleFileField(forms.FileField):
 class PostForm(forms.ModelForm):
     status = forms.ChoiceField(choices=Post.STATUS_CHOICES, initial='published', widget=forms.RadioSelect, required=False)
     images = MultipleFileField(required=False)
+    reply_to = forms.IntegerField(widget=forms.HiddenInput(), required=False)  # For replies
+    shared_post = forms.IntegerField(widget=forms.HiddenInput(), required=False)  # For reposts
+
 
     class Meta:
         model = Post

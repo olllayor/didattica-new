@@ -32,6 +32,9 @@ class Post(models.Model):
     shared_post = models.ForeignKey(
         "self", on_delete=models.SET_NULL, null=True, blank=True, related_name="shares"
     )
+    reply_to = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True, related_name="replies"
+    )
 
     def __str__(self):
         return f"Post by {self.author.username}"
@@ -41,9 +44,15 @@ class Post(models.Model):
 
     def get_comments_count(self):
         return self.comments.count()
-    
+
     def get_reaction_count(self):
         return self.reactions.count()
+
+    def get_reposts_count(self):
+        return self.shares.count()  # Count the number of times this post has been reposted
+
+    def get_replies_count(self):
+        return self.replies.count() 
 
 
 class PostImage(models.Model):

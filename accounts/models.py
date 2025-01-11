@@ -35,6 +35,12 @@ class Profile(models.Model):
     followers = models.ManyToManyField(User, related_name="following", blank=True)
     following = models.ManyToManyField(User, related_name="followers", blank=True)
 
+
+    
+
+    def get_reaction_count(self):
+        return self.reactions.count()
+    
     def __str__(self):
         return f"@{self.user.username}"
     
@@ -43,6 +49,13 @@ class Profile(models.Model):
 
     def get_following_count(self):
         return self.following.count()
+    
+    def get_reposts_count(self):
+        return self.shares.count()
+
+    def get_replies_count(self):
+        return self.replies.count()
+
 
     def save(self, *args, **kwargs):
         # Only process the image if it's a new upload

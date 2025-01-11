@@ -9,13 +9,26 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from .models import Reaction
 
-
+@login_required
 def create_post(request):
     if request.method == "POST":
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
+
+            # Handle reposts
+            shared_post_id = form.cleaned_data.get("shared_post")
+            if shared_post_id:
+                shared_post = get_object_or_404(Post, id=shared_post_id)
+                post.shared_post = shared_post
+
+            # Handle replies
+            reply_to_id = form.cleaned_data.get("reply_to")
+            if reply_to_id:
+                reply_to = get_object_or_404(Post, id=reply_to_id)
+                post.reply_to = reply_to
+
             post.save()
 
             # Handle multiple image uploads
