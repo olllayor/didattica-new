@@ -40,11 +40,11 @@
       <!-- Follower/Following Counts -->
       <div class="mt-4 flex gap-4">
         <div>
-          <span class="font-bold" id="followersCount">{{ profile.get_followers_count }}</span>
+          <span class="font-bold followers-count">{{ profile.get_followers_count }}</span>
           <span class="text-gray-600">Followers</span>
         </div>
         <div>
-          <span class="font-bold" id="followingCount">{{ profile.get_following_count }}</span>
+          <span class="font-bold following-count">{{ request.user.profile.get_following_count }}</span>
           <span class="text-gray-600">Following</span>
         </div>
       </div>
@@ -517,17 +517,26 @@
         })
           .then((response) => response.json())
           .then((data) => {
-            if (data.followed) {
-              followButton.textContent = "Unfollow";
-              followButton.dataset.following = "true";
-            } else {
-              followButton.textContent = "Follow";
-              followButton.dataset.following = "false";
+            if (data.error) {
+              alert(data.error);
+              return;
             }
 
-            // Update follower and following counts immediately
-            document.getElementById("followersCount").textContent = data.followers_count;
-            document.getElementById("followingCount").textContent = data.following_count;
+            // Update the follow button text
+            followButton.textContent = data.followed ? "Unfollow" : "Follow";
+            followButton.dataset.following = data.followed ? "true" : "false";
+
+            // Update the follower count for B user
+            const followersCountElement = document.querySelector(".followers-count");
+            if (followersCountElement) {
+              followersCountElement.textContent = data.followers_count;
+            }
+
+            // Update the following count for A user
+            const followingCountElement = document.querySelector(".following-count");
+            if (followingCountElement) {
+              followingCountElement.textContent = data.following_count;
+            }
           })
           .catch((error) => {
             console.error("Error:", error);

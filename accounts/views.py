@@ -84,28 +84,29 @@ def search(request):
     return render(request, 'accounts/search.html', {'query': query, 'results': results})
 
 
-# accounts/views.py
 @login_required
 def follow_user(request, username):
     user_to_follow = get_object_or_404(User, username=username)
     profile_to_follow = user_to_follow.profile
+    current_user_profile = request.user.profile
 
     if request.user != user_to_follow:
         if request.user in profile_to_follow.followers.all():
             # Unfollow
             profile_to_follow.followers.remove(request.user)
-            request.user.profile.following.remove(user_to_follow)
+            current_user_profile.following.remove(user_to_follow)
             followed = False
         else:
             # Follow
             profile_to_follow.followers.add(request.user)
-            request.user.profile.following.add(user_to_follow)
+            current_user_profile.following.add(user_to_follow)
             followed = True
 
+        # Return updated counts
         return JsonResponse({
             'followed': followed,
-            'followers_count': profile_to_follow.get_followers_count(),
-            'following_count': request.user.profile.get_following_count(),
+            'followers_count': profile_to_follow.get_followers_count(),  # B's follower count
+            'following_count': current_user_profile.get_following_count(),  # A's following count
         })
     else:
         return JsonResponse({'error': 'You cannot follow yourself.'}, status=400)
