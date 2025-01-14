@@ -78,9 +78,10 @@
     </main>
 
     <!-- Include Components -->
-    {% include "components/create-post-button.html" %}
-    {% include "components/create-post-modal.html" %}
-    {% include "components/image-preview-modal.html" %}
+    {% include "components/create-post-button.html" %} {% include
+    "components/create-post-modal.html" %} {% include
+    "components/image-preview-modal.html" %} {% include
+    "components/reply-modal.html" %}
 
     <!-- Bottom Navigation Bar (Mobile) -->
     <div class="fixed bottom-0 left-0 w-full bg-base-200 z-40 md:hidden">
@@ -307,18 +308,18 @@
 
       // Modal Functions
       function openCreatePostModal() {
-        document.getElementById('createPostModal').classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
+        document.getElementById("createPostModal").classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
       }
 
       function closeCreatePostModal() {
-        document.getElementById('createPostModal').classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
+        document.getElementById("createPostModal").classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
       }
 
       function openImagePreviewModal(images, index = 0) {
-        const modal = document.getElementById('imagePreviewModal');
-        const previewedImage = document.getElementById('previewedImage');
+        const modal = document.getElementById("imagePreviewModal");
+        const previewedImage = document.getElementById("previewedImage");
 
         // Set the image URLs and current index
         imageUrls = images;
@@ -326,20 +327,20 @@
 
         // Show the first image
         previewedImage.src = imageUrls[currentImageIndex];
-        modal.classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
+        modal.classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
 
         // Add keyboard event listeners
-        document.addEventListener('keydown', handleKeyboardNavigation);
+        document.addEventListener("keydown", handleKeyboardNavigation);
       }
 
       function closeImagePreviewModal() {
-        const modal = document.getElementById('imagePreviewModal');
-        modal.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
+        const modal = document.getElementById("imagePreviewModal");
+        modal.classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
 
         // Remove keyboard event listeners
-        document.removeEventListener('keydown', handleKeyboardNavigation);
+        document.removeEventListener("keydown", handleKeyboardNavigation);
 
         // Reset state
         currentImageIndex = 0;
@@ -349,28 +350,98 @@
       function showNextImage() {
         if (currentImageIndex < imageUrls.length - 1) {
           currentImageIndex++;
-          document.getElementById('previewedImage').src = imageUrls[currentImageIndex];
+          document.getElementById("previewedImage").src =
+            imageUrls[currentImageIndex];
         }
       }
 
       function showPreviousImage() {
         if (currentImageIndex > 0) {
           currentImageIndex--;
-          document.getElementById('previewedImage').src = imageUrls[currentImageIndex];
+          document.getElementById("previewedImage").src =
+            imageUrls[currentImageIndex];
         }
       }
 
       function handleKeyboardNavigation(event) {
-        if (event.key === 'ArrowLeft') {
+        if (event.key === "ArrowLeft") {
           showPreviousImage();
-        } else if (event.key === 'ArrowRight') {
+        } else if (event.key === "ArrowRight") {
           showNextImage();
         }
       }
 
       // Add click event listeners to navigation buttons
-      document.getElementById('prevImageButton').addEventListener('click', showPreviousImage);
-      document.getElementById('nextImageButton').addEventListener('click', showNextImage);
+      document
+        .getElementById("prevImageButton")
+        .addEventListener("click", showPreviousImage);
+      document
+        .getElementById("nextImageButton")
+        .addEventListener("click", showNextImage);
+
+      // Add click event listeners to navigation buttons
+      document.addEventListener("DOMContentLoaded", function () {
+        const prevImageButton = document.getElementById("prevImageButton");
+        const nextImageButton = document.getElementById("nextImageButton");
+
+        if (prevImageButton) {
+          prevImageButton.addEventListener("click", showPreviousImage);
+        }
+
+        if (nextImageButton) {
+          nextImageButton.addEventListener("click", showNextImage);
+        }
+      });
+
+      // Function to open the reply modal
+      function openReplyModal(postId) {
+        document.getElementById("replyModal").classList.remove("hidden");
+        document.getElementById("replyPostId").value = postId;
+        document.body.classList.add("overflow-hidden");
+      }
+
+      // Function to close the reply modal
+      function closeReplyModal() {
+        document.getElementById("replyModal").classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+      }
+
+      // Function to handle like button clicks
+      function handleLikeButtonClick(event) {
+        event.preventDefault();
+        const postId = event.currentTarget.dataset.postId;
+
+        fetch(`/community/post/${postId}/like/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.liked) {
+              event.currentTarget.classList.add("liked");
+              event.currentTarget
+                .querySelector("svg")
+                .classList.add("fill-red-500", "stroke-red-500");
+            } else {
+              event.currentTarget.classList.remove("liked");
+              event.currentTarget
+                .querySelector("svg")
+                .classList.remove("fill-red-500", "stroke-red-500");
+            }
+            event.currentTarget.querySelector("span").textContent =
+              data.likes_count;
+          });
+      }
+
+      // Attach event listeners to like buttons when the page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".like-button").forEach((button) => {
+          button.addEventListener("click", handleLikeButtonClick);
+        });
+      });
     </script>
   </body>
 </html>

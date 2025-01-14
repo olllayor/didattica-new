@@ -1,10 +1,6 @@
 <!-- templates/accounts/profile.html -->
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}Profile{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% load static %} {% block title %}Profile{% endblock
+%} {% block content %}
 <div class="max-w-2xl mx-auto mt-5">
   <!-- Profile Header -->
   <div class="bg-white rounded-2xl p-4">
@@ -34,7 +30,8 @@
         data-username="{{ user.username }}"
         data-following="{% if request.user in profile.followers.all %}true{% else %}false{% endif %}"
       >
-        {% if request.user in profile.followers.all %}Unfollow{% else %}Follow{% endif %}
+        {% if request.user in profile.followers.all %}Unfollow{% else %}Follow{%
+        endif %}
       </button>
       {% endif %}
 
@@ -45,7 +42,9 @@
             href="{% url 'followers_list' username=user.username %}"
             class="hover:underline"
           >
-            <span class="font-bold followers-count">{{ profile.get_followers_count }}</span>
+            <span class="font-bold followers-count"
+              >{{ profile.get_followers_count }}</span
+            >
             <span class="text-gray-600">Followers</span>
           </a>
         </div>
@@ -54,7 +53,9 @@
             href="{% url 'following_list' username=user.username %}"
             class="hover:underline"
           >
-            <span class="font-bold following-count">{{ profile.get_following_count }}</span>
+            <span class="font-bold following-count"
+              >{{ profile.get_following_count }}</span
+            >
             <span class="text-gray-600">Following</span>
           </a>
         </div>
@@ -67,7 +68,9 @@
       {% endif %}
 
       <!-- Website and Social Info -->
-      <div class="flex items-center justify-between w-full mt-4 text-sm text-gray-600">
+      <div
+        class="flex items-center justify-between w-full mt-4 text-sm text-gray-600"
+      >
         <div>
           {% if profile.website %}
           <a href="{{ profile.website }}" class="text-blue-500 hover:underline">
@@ -77,88 +80,87 @@
         </div>
         {% if social_accounts %}
         <div class="flex items-center gap-2 mr-1">
-          {% for account in social_accounts %}
-            {% if account.provider == 'google' %}
-              <div class="w-7 h-7">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                  <path
-                    fill="#FFC107"
-                    d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
-                  ></path>
-                  <path
-                    fill="#FF3D00"
-                    d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
-                  ></path>
-                  <path
-                    fill="#4CAF50"
-                    d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
-                  ></path>
-                  <path
-                    fill="#1976D2"
-                    d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
-                  ></path>
-                </svg>
-              </div>
-            {% elif account.provider == 'telegram' %}
-              <div class="w-7 h-7">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                  <linearGradient
-                    id="BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1"
-                    x1="9.858"
-                    x2="38.142"
-                    y1="9.858"
-                    y2="38.142"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop offset="0" stop-color="#33bef0"></stop>
-                    <stop offset="1" stop-color="#0a85d9"></stop>
-                  </linearGradient>
-                  <path
-                    fill="url(#BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1)"
-                    d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z"
-                  ></path>
-                  <path
-                    fill="#fff"
-                    d="M11.553,23.717c6.99-3.075,16.035-6.824,17.284-7.343c3.275-1.358,4.28-1.098,3.779,1.91 c-0.36,2.162-1.398,9.319-2.226,13.774c-0.491,2.642-1.593,2.955-3.325,1.812c-0.833-0.55-5.038-3.331-5.951-3.984 c-0.833-0.595-1.982-1.311-0.541-2.721c0.513-0.502,3.874-3.712,6.493-6.21c0.343-0.328-0.088-0.867-0.484-0.604 c-3.53,2.341-8.424,5.59-9.047,6.013c-0.941,0.639-1.845,0.932-3.467,0.466c-1.226-0.352-2.423-0.772-2.889-0.932 C9.384,25.282,9.81,24.484,11.553,23.717z"
-                  ></path>
-                </svg>
-              </div>
-            {% elif account.provider == 'apple' %}
-              <div class="w-7 h-7">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-                  <path
-                    d="M54.166,19.783c-0.258,0.162-6.401,3.571-6.401,11.13c0.29,8.621,7.752,11.644,7.88,11.644 c-0.128,0.162-1.127,4.119-4.085,8.267C49.213,54.398,46.607,58,42.65,58c-3.764,0-5.115-2.381-9.458-2.381 c-4.664,0-5.984,2.381-9.555,2.381c-3.957,0-6.756-3.795-9.232-7.335c-3.216-4.633-5.95-11.903-6.047-18.883 c-0.065-3.699,0.644-7.335,2.444-10.423c2.541-4.312,7.077-7.238,12.031-7.335c3.795-0.128,7.173,2.606,9.49,2.606 c2.22,0,6.37-2.606,11.065-2.606C45.415,14.026,50.82,14.636,54.166,19.783z M32.002,13.285c-0.676-3.378,1.19-6.756,2.927-8.911 C37.149,1.769,40.655,0,43.678,0c0.193,3.378-1.03,6.691-3.216,9.104C38.5,11.71,35.122,13.671,32.002,13.285z"
-                  ></path>
-                </svg>
-              </div>
-            {% elif account.provider == 'twitter' %}
-              <div class="w-7 h-7">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
-                  <path
-                    d="M 11 4 C 7.134 4 4 7.134 4 11 L 4 39 C 4 42.866 7.134 46 11 46 L 39 46 C 42.866 46 46 42.866 46 39 L 46 11 C 46 7.134 42.866 4 39 4 L 11 4 z M 13.085938 13 L 21.023438 13 L 26.660156 21.009766 L 33.5 13 L 36 13 L 27.789062 22.613281 L 37.914062 37 L 29.978516 37 L 23.4375 27.707031 L 15.5 37 L 13 37 L 22.308594 26.103516 L 13.085938 13 z M 16.914062 15 L 31.021484 35 L 34.085938 35 L 19.978516 15 L 16.914062 15 z"
-                  ></path>
-                </svg>
-              </div>
-            {% elif account.provider == 'linkedin' %}
-              <div class="w-7 h-7">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
-                  <path
-                    d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"
-                  ></path>
-                </svg>
-              </div>
-            {% elif account.provider == 'instagram' %}
-              <div class="w-7 h-7">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
-                  <path
-                    d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"
-                  ></path>
-                </svg>
-              </div>
-            {% endif %}
-          {% endfor %}
+          {% for account in social_accounts %} {% if account.provider ==
+          'google' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <path
+                fill="#FFC107"
+                d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
+              ></path>
+              <path
+                fill="#FF3D00"
+                d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
+              ></path>
+              <path
+                fill="#4CAF50"
+                d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
+              ></path>
+              <path
+                fill="#1976D2"
+                d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
+              ></path>
+            </svg>
+          </div>
+          {% elif account.provider == 'telegram' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <linearGradient
+                id="BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1"
+                x1="9.858"
+                x2="38.142"
+                y1="9.858"
+                y2="38.142"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop offset="0" stop-color="#33bef0"></stop>
+                <stop offset="1" stop-color="#0a85d9"></stop>
+              </linearGradient>
+              <path
+                fill="url(#BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1)"
+                d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z"
+              ></path>
+              <path
+                fill="#fff"
+                d="M11.553,23.717c6.99-3.075,16.035-6.824,17.284-7.343c3.275-1.358,4.28-1.098,3.779,1.91 c-0.36,2.162-1.398,9.319-2.226,13.774c-0.491,2.642-1.593,2.955-3.325,1.812c-0.833-0.55-5.038-3.331-5.951-3.984 c-0.833-0.595-1.982-1.311-0.541-2.721c0.513-0.502,3.874-3.712,6.493-6.21c0.343-0.328-0.088-0.867-0.484-0.604 c-3.53,2.341-8.424,5.59-9.047,6.013c-0.941,0.639-1.845,0.932-3.467,0.466c-1.226-0.352-2.423-0.772-2.889-0.932 C9.384,25.282,9.81,24.484,11.553,23.717z"
+              ></path>
+            </svg>
+          </div>
+          {% elif account.provider == 'apple' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+              <path
+                d="M54.166,19.783c-0.258,0.162-6.401,3.571-6.401,11.13c0.29,8.621,7.752,11.644,7.88,11.644 c-0.128,0.162-1.127,4.119-4.085,8.267C49.213,54.398,46.607,58,42.65,58c-3.764,0-5.115-2.381-9.458-2.381 c-4.664,0-5.984,2.381-9.555,2.381c-3.957,0-6.756-3.795-9.232-7.335c-3.216-4.633-5.95-11.903-6.047-18.883 c-0.065-3.699,0.644-7.335,2.444-10.423c2.541-4.312,7.077-7.238,12.031-7.335c3.795-0.128,7.173,2.606,9.49,2.606 c2.22,0,6.37-2.606,11.065-2.606C45.415,14.026,50.82,14.636,54.166,19.783z M32.002,13.285c-0.676-3.378,1.19-6.756,2.927-8.911 C37.149,1.769,40.655,0,43.678,0c0.193,3.378-1.03,6.691-3.216,9.104C38.5,11.71,35.122,13.671,32.002,13.285z"
+              ></path>
+            </svg>
+          </div>
+          {% elif account.provider == 'twitter' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+              <path
+                d="M 11 4 C 7.134 4 4 7.134 4 11 L 4 39 C 4 42.866 7.134 46 11 46 L 39 46 C 42.866 46 46 42.866 46 39 L 46 11 C 46 7.134 42.866 4 39 4 L 11 4 z M 13.085938 13 L 21.023438 13 L 26.660156 21.009766 L 33.5 13 L 36 13 L 27.789062 22.613281 L 37.914062 37 L 29.978516 37 L 23.4375 27.707031 L 15.5 37 L 13 37 L 22.308594 26.103516 L 13.085938 13 z M 16.914062 15 L 31.021484 35 L 34.085938 35 L 19.978516 15 L 16.914062 15 z"
+              ></path>
+            </svg>
+          </div>
+          {% elif account.provider == 'linkedin' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+              <path
+                d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"
+              ></path>
+            </svg>
+          </div>
+          {% elif account.provider == 'instagram' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+              <path
+                d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,42.866,4,39,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"
+              ></path>
+            </svg>
+          </div>
+          {% endif %} {% endfor %}
         </div>
-      {% endif %}
+        {% endif %}
       </div>
 
       <!-- Edit Profile Button -->
@@ -233,7 +235,9 @@
               <div>
                 <div class="flex items-center gap-1">
                   <span class="font-bold">{{ post.author.username }}</span>
-                  <span class="text-gray-500">· {{ post.created_at|timesince }}</span>
+                  <span class="text-gray-500"
+                    >· {{ post.created_at|timesince }}</span
+                  >
                 </div>
               </div>
             </div>
@@ -269,7 +273,7 @@
             <button
               class="flex items-center gap-2 text-gray-500 hover:text-pink-600 group like-button {% if user in post.likes.all %}liked{% endif %}"
               data-post-id="{{ post.id }}"
-              onclick="event.preventDefault();"
+              onclick="handleLikeButtonClick(event)"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -290,7 +294,7 @@
 
             <button
               class="flex items-center gap-2 text-gray-500 hover:text-blue-500"
-              onclick="event.preventDefault(); openReplyModal('{{ post.id }}')"
+              onclick="openReplyModal('{{ post.id }}')"
             >
               <svg
                 class="w-5 h-5"
@@ -352,7 +356,9 @@
 
           <!-- Username -->
           <div>
-            <label for="id_username" class="block text-sm font-medium mb-2">Username</label>
+            <label for="id_username" class="block text-sm font-medium mb-2"
+              >Username</label
+            >
             <input
               type="text"
               id="id_username"
@@ -361,7 +367,9 @@
               class="w-full p-2 border rounded-lg"
             />
             {% if form.username.errors %}
-            <div class="text-red-500 text-sm mt-1">{{ form.username.errors }}</div>
+            <div class="text-red-500 text-sm mt-1">
+              {{ form.username.errors }}
+            </div>
             {% endif %}
           </div>
 
@@ -413,19 +421,26 @@
 
           <!-- Bio -->
           <div>
-            <label for="id_bio" class="block text-sm font-medium mb-2">Bio</label>
+            <label for="id_bio" class="block text-sm font-medium mb-2"
+              >Bio</label
+            >
             <div class="flex items-center">
               <textarea
                 id="id_bio"
                 name="bio"
                 rows="3"
-                class="flex-1 p-2 border rounded-lg">{{ form.bio.value }}</textarea>
+                class="flex-1 p-2 border rounded-lg"
+              >
+{{ form.bio.value }}</textarea
+              >
             </div>
           </div>
 
           <!-- Website -->
           <div>
-            <label for="id_website" class="block text-sm font-medium mb-2">Link</label>
+            <label for="id_website" class="block text-sm font-medium mb-2"
+              >Link</label
+            >
             <input
               type="url"
               id="id_website"
@@ -438,7 +453,9 @@
           <!-- Buttons -->
           <div class="flex justify-end gap-4 mt-6">
             <div class="flex w-full gap-4">
-              <a href="/accounts/logout/" class="btn btn-outline-error">Logout</a>
+              <a href="/accounts/logout/" class="btn btn-outline-error"
+                >Logout</a
+              >
             </div>
             <button
               type="button"
@@ -485,138 +502,40 @@
     }
   }
 
-  // Like Button Functionality
-  function attachLikeButtonListeners() {
-    document.querySelectorAll(".like-button").forEach((button) => {
-      const postId = button.dataset.postId;
+  // Function to handle like button clicks
+  function handleLikeButtonClick(event) {
+    event.preventDefault();
+    const postId = event.currentTarget.dataset.postId;
 
-      // Check if the post is already liked
-      fetch(`/community/post/${postId}/check_like/`, {
-        headers: {
-          "X-CSRFToken": "{{ csrf_token }}",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.is_liked) {
-            button.classList.add("liked");
-            button
-              .querySelector("svg")
-              .classList.add("fill-red-500", "stroke-red-500");
-          }
-        });
-
-      // Add click event listener for liking/unliking
-      button.addEventListener("click", function () {
-        fetch(`/community/post/${postId}/like/`, {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.liked) {
-              button.classList.add("liked");
-              button
-                .querySelector("svg")
-                .classList.add("fill-red-500", "stroke-red-500");
-            } else {
-              button.classList.remove("liked");
-              button
-                .querySelector("svg")
-                .classList.remove("fill-red-500", "stroke-red-500");
-            }
-            button.querySelector("span").textContent = data.likes_count;
-          });
+    fetch(`/community/post/${postId}/like/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.liked) {
+          event.currentTarget.classList.add("liked");
+          event.currentTarget
+            .querySelector("svg")
+            .classList.add("fill-red-500", "stroke-red-500");
+        } else {
+          event.currentTarget.classList.remove("liked");
+          event.currentTarget
+            .querySelector("svg")
+            .classList.remove("fill-red-500", "stroke-red-500");
+        }
+        event.currentTarget.querySelector("span").textContent =
+          data.likes_count;
       });
-    });
   }
 
   // Attach event listeners to like buttons when the page loads
-  attachLikeButtonListeners();
-
-  function previewImage(input) {
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      if (!file.type.startsWith("image/")) {
-        alert("Please upload a valid image file.");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        document.getElementById("preview-image").src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
   document.addEventListener("DOMContentLoaded", function () {
-    const followButton = document.getElementById("followButton");
-    if (followButton) {
-      followButton.addEventListener("click", function () {
-        const username = followButton.dataset.username;
-        const isFollowing = followButton.dataset.following === "true";
-
-        fetch(`/@${username}/follow/`, {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.error) {
-              alert(data.error);
-              return;
-            }
-
-            // Update the follow button text
-            followButton.textContent = data.followed ? "Unfollow" : "Follow";
-            followButton.dataset.following = data.followed ? "true" : "false";
-
-            // Update the follower count for B user
-            const followersCountElement = document.querySelector(".followers-count");
-            if (followersCountElement) {
-              followersCountElement.textContent = data.followers_count;
-            }
-
-            // Update the following count for A user
-            const followingCountElement = document.querySelector(".following-count");
-            if (followingCountElement) {
-              followingCountElement.textContent = data.following_count;
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
-      });
-    }
-  });
-  document.addEventListener("DOMContentLoaded", function () {
-    const postsTab = document.getElementById("posts-tab");
-    const repliesTab = document.getElementById("replies-tab");
-    const postsSection = document.getElementById("posts-section");
-    const repliesSection = document.getElementById("replies-section");
-
-    postsTab.addEventListener("click", () => {
-      postsTab.classList.add("border-black", "font-semibold");
-      postsTab.classList.remove("text-gray-500");
-      repliesTab.classList.remove("border-black", "font-semibold");
-      repliesTab.classList.add("text-gray-500");
-      postsSection.classList.remove("hidden");
-      repliesSection.classList.add("hidden");
-    });
-
-    repliesTab.addEventListener("click", () => {
-      repliesTab.classList.add("border-black", "font-semibold");
-      repliesTab.classList.remove("text-gray-500");
-      postsTab.classList.remove("border-black", "font-semibold");
-      postsTab.classList.add("text-gray-500");
-      repliesSection.classList.remove("hidden");
-      postsSection.classList.add("hidden");
+    document.querySelectorAll(".like-button").forEach((button) => {
+      button.addEventListener("click", handleLikeButtonClick);
     });
   });
 </script>
