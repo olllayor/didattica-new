@@ -1,0 +1,10 @@
+<h3 class="text-lg font-semibold mb-4">Replies</h3>
+{% if replies %}
+<div class="space-y-4">
+  {% for reply in replies %}
+  <!-- Copy your reply template here -->
+  {% endfor %}
+</div>
+{% else %}
+<p class="text-gray-500">No replies yet.</p>
+{% endif %}

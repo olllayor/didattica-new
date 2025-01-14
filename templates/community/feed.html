@@ -1,7 +1,8 @@
-{% extends "base.html" %} {% load static %} {% block content %}
-
-<head>
-  <style>
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+  <head>
+    <style>
     .skeleton-shimmer {
       animation: shimmer 1.5s infinite linear;
       background: linear-gradient(
@@ -78,365 +79,244 @@
       align-items: center;
       gap: 4px;
     }
-  </style>
-</head>
-
-<!-- Main container with light gray background -->
-<div class="min-h-screen bg-[#fafafa] py-7">
-  <!-- Feed container with white background and rounded corners -->
-  <div class="max-w-2xl mx-auto bg-white rounded-2xl overflow-hidden shadow-sm">
-    <!-- Header with Tab Navigation -->
-    <div class="border-b sticky top-0 bg-white z-10">
-      <div class="tab-navigation">
-        <div class="tab-button active" id="for-you-tab">For You</div>
-        <div class="tab-button" id="following-tab">Following</div>
-      </div>
-    </div>
-
-    <!-- Posts Feed -->
-    <div class="divide-y" id="posts-feed">
-      {% for post in posts %}
-      <article
-        class="p-4 hover:bg-gray-50 transition-colors duration-150 relative"
-        onclick="if (event.target.tagName !== 'BUTTON' && !event.target.closest('button') && !event.target.closest('.dropdown') && !event.target.closest('img')) window.location.href='/community/post/{{ post.id }}/'"
-      >
-        <!-- Repost Badge -->
-        {% if post.shared_post %}
-        <div class="repost-badge">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-          Reposted by @{{ post.author.username }}
+    </style>
+  </head>
+  <!-- Main container with light gray background -->
+  <div class="min-h-screen bg-[#fafafa] py-7">
+    <!-- Feed container with white background and rounded corners -->
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl overflow-hidden shadow-sm">
+      <!-- Header with Tab Navigation -->
+      <div class="border-b sticky top-0 bg-white z-10">
+        <div class="tab-navigation">
+          <div class="tab-button active" id="for-you-tab">For You</div>
+          <div class="tab-button" id="following-tab">Following</div>
         </div>
-        {% endif %}
-
-        <!-- Post Header -->
-        <div class="flex justify-between">
-          <div class="flex gap-3">
-            <div
-              class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex-shrink-0"
-            >
-              <img
-                src="{% if post.author.profile.profile_image %}{{ post.author.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
-                alt="{{ post.author.username }}"
-                class="w-full h-full object-cover rounded-full"
-              />
-            </div>
-            <div>
-              <div class="flex items-center gap-1">
-                <span class="font-bold">{{ post.author.username }}</span>
-                {% if post.author.is_verified %}
-                <span class="text-blue-500">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </div>
+      <!-- Posts Feed -->
+      <div class="divide-y" id="posts-feed">
+        {% for post in posts %}
+          <article class="p-4 hover:bg-gray-50 transition-colors duration-150 relative"
+                   onclick="if (event.target.tagName !== 'BUTTON' && !event.target.closest('button') && !event.target.closest('.dropdown') && !event.target.closest('img')) window.location.href='/community/post/{{ post.id }}/'">
+            <!-- Repost Badge -->
+            {% if post.shared_post %}
+              <div class="repost-badge">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-4 h-4"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Reposted by @{{ post.author.username }}
+              </div>
+            {% endif %}
+            <!-- Post Header -->
+            <div class="flex justify-between">
+              <div class="flex gap-3">
+                <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+                  <img src="{% if post.author.profile.profile_image %}{{ post.author.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+                       alt="{{ post.author.username }}"
+                       class="w-full h-full object-cover rounded-full" />
+                </div>
+                <div>
+                  <div class="flex items-center gap-1">
+                    <span class="font-bold">{{ post.author.username }}</span>
+                    {% if post.author.is_verified %}
+                      <span class="text-blue-500">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </span>
+                    {% endif %}
+                    <span class="text-gray-500"
+                          data-timestamp="{{ post.created_at.isoformat }}">· {{ post.created_at|timesince }}</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Reaction Dropdown -->
+              <div class="dropdown dropdown-left">
+                <div tabindex="0" role="button" class="p-2 hover:bg-gray-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="w-5 h-5"
+                       viewBox="0 0 24 24"
+                       fill="none"
+                       stroke="currentColor"
+                       stroke-width="2">
+                    <circle cx="12" cy="12" r="1" />
+                    <circle cx="19" cy="12" r="1" />
+                    <circle cx="5" cy="12" r="1" />
                   </svg>
-                </span>
-                {% endif %}
-                <span
-                  class="text-gray-500"
-                  data-timestamp="{{ post.created_at.isoformat }}"
-                >
-                  · {{ post.created_at|timesince }}
-                </span>
+                </div>
+                <ul tabindex="0"
+                    class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                  <li>
+                    <a onclick="reactToPost('{{ post.id }}', '👍')">👍 Thumbs Up</a>
+                  </li>
+                  <li>
+                    <a onclick="reactToPost('{{ post.id }}', '😂')">😂 Laugh</a>
+                  </li>
+                  <li>
+                    <a onclick="reactToPost('{{ post.id }}', '🔥')">🔥 Fire</a>
+                  </li>
+                  <li>
+                    <a onclick="copyPostLink('{{ post.id }}')">Copy Link</a>
+                  </li>
+                </ul>
               </div>
             </div>
-          </div>
-          <!-- Reaction Dropdown -->
-          <div class="dropdown dropdown-left">
-            <div
-              tabindex="0"
-              role="button"
-              class="p-2 hover:bg-gray-100 rounded-full"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="w-5 h-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <circle cx="12" cy="12" r="1" />
-                <circle cx="19" cy="12" r="1" />
-                <circle cx="5" cy="12" r="1" />
+            <!-- Post Content -->
+            {% if post.content %}<div class="mt-3 whitespace-pre-wrap">{{ post.content }}</div>{% endif %}
+            <!-- Post Images -->
+            {% if post.post_images.all %}
+              <div class="mt-4 overflow-x-auto scrollbar-hide">
+                <div class="flex gap-2">
+                  {% for image in post.post_images.all %}
+                    <div class="relative aspect-square w-60 md:w-80 rounded-xl overflow-hidden flex-shrink-0">
+                      <img src="{{ image.image.url }}"
+                           alt="Post image"
+                           class="object-cover w-full h-full cursor-pointer"
+                           onclick="event.stopPropagation(); openImagePreviewModal([{% for img in post.post_images.all %}'{{ img.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}], {{ forloop.counter0 }})" />
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            <!-- Post Actions -->
+            <div class="flex justify-between mt-3">
+              <!-- Like Button -->
+              <button class="flex items-center gap-2 text-gray-500 hover:text-pink-600 group like-button {% if user in post.likes.all %}liked{% endif %}"
+                      data-post-id="{{ post.id }}"
+                      onclick="event.preventDefault();">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke-width="1.5"
+                     stroke="currentColor"
+                     class="w-5 h-5 {% if user in post.likes.all %}fill-red-500 stroke-red-500{% endif %}">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                </svg>
+                <span>{{ post.get_likes_count }}</span>
+              </button>
+
+
+              <!-- Reply and Repost Dropdown -->
+              {% comment %} <div class="dropdown dropdown-end">
+            <button tabindex="0" class="flex items-center gap-2 text-gray-500 hover:text-blue-500" onclick="event.preventDefault()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
               </svg>
-            </div>
-            <ul
-              tabindex="0"
-              class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-            >
-              <li>
-                <a onclick="reactToPost('{{ post.id }}', '👍')">👍 Thumbs Up</a>
-              </li>
-              <li>
-                <a onclick="reactToPost('{{ post.id }}', '😂')">😂 Laugh</a>
-              </li>
-              <li>
-                <a onclick="reactToPost('{{ post.id }}', '🔥')">🔥 Fire</a>
-              </li>
-              <li><a onclick="copyPostLink('{{ post.id }}')">Copy Link</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Post Content -->
-        {% if post.content %}
-        <div class="mt-3 whitespace-pre-wrap">{{ post.content }}</div>
-        {% endif %}
-
-        <!-- Post Images -->
-        {% if post.post_images.all %}
-        <div class="mt-4 overflow-x-auto scrollbar-hide">
-          <div class="flex gap-2">
-            {% for image in post.post_images.all %}
-            <div
-              class="relative aspect-square w-60 md:w-80 rounded-xl overflow-hidden flex-shrink-0"
-            >
-              <img
-                src="{{ image.image.url }}"
-                alt="Post image"
-                class="object-cover w-full h-full cursor-pointer"
-                onclick="event.stopPropagation(); openImagePreviewModal([{% for img in post.post_images.all %}'{{ img.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}], {{ forloop.counter0 }})"
-              />
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-        {% endif %}
-
-        <!-- Post Actions -->
-        <div class="flex justify-between mt-3">
-          <!-- Like Button -->
-          <button
-            class="flex items-center gap-2 text-gray-500 hover:text-pink-600 group like-button {% if user in post.likes.all %}liked{% endif %}"
-            data-post-id="{{ post.id }}"
-            onclick="event.preventDefault();"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5 {% if user in post.likes.all %}fill-red-500 stroke-red-500{% endif %}"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-              />
-            </svg>
-            <span>{{ post.get_likes_count }}</span>
-          </button>
-
-          <!-- Reply and Repost Dropdown -->
-          <div class="dropdown dropdown-end">
-            <button
-              tabindex="0"
-              class="flex items-center gap-2 text-gray-500 hover:text-blue-500"
-              onclick="event.preventDefault()"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
-                />
-              </svg>
-              <span
-                >{{ post.get_replies_count|add:post.get_reposts_count }}</span
-              >
+              <span>{{ post.get_replies_count|add:post.get_reposts_count }}</span>
             </button>
-            <ul
-              tabindex="0"
-              class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow border border-gray-200"
-            >
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow border border-gray-200">
               <li>
-                <a
-                  onclick="openReplyModal('{{ post.id }}')"
-                  class="dropdown-item text-sm font-medium flex items-center gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"
-                    />
+                <a onclick="openReplyModal('{{ post.id }}')" class="dropdown-item text-sm font-medium flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
                   </svg>
                   Reply
                 </a>
               </li>
               <li>
-                <a
-                  onclick="repostPost('{{ post.id }}')"
-                  class="dropdown-item text-sm font-medium flex items-center gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3"
-                    />
+                <a onclick="repostPost('{{ post.id }}')" class="dropdown-item text-sm font-medium flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
                   </svg>
                   Repost
                 </a>
               </li>
             </ul>
-          </div>
-
-          <!-- View Button -->
-          <button
-            class="flex items-center gap-2 text-gray-500 hover:text-green-500"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-              />
-            </svg>
-            <span>{{ post.views }}</span>
-          </button>
-
-          <!-- Share Dropdown -->
-          <div class="dropdown dropdown-end">
-            <div
-              tabindex="0"
-              role="button"
-              class="flex items-center gap-2 text-gray-500 hover:text-blue-500"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-                />
-              </svg>
-            </div>
-            <ul
-              tabindex="0"
-              class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-            >
-              <li>
-                <a
-                  onclick="copyPostLink('{{ post.id }}')"
-                  class="dropdown-item text-sm font-medium flex items-center gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
-                    />
+              </div> {% endcomment %}
+              <!-- Reply Button -->
+              <button class="flex items-center gap-2 text-gray-500 hover:text-blue-500"
+                      onclick="event.stopPropagation(); openReplyModal('{{ post.id }}')">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke-width="1.5"
+                     stroke="currentColor"
+                     class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                </svg>
+                <span>{{ post.get_replies_count }}</span>
+                <!-- View Button -->
+                <button class="flex items-center gap-2 text-gray-500 hover:text-green-500">
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       fill="none"
+                       viewBox="0 0 24 24"
+                       stroke-width="1.5"
+                       stroke="currentColor"
+                       class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                   </svg>
-                  Copy link
-                </a>
-              </li>
-              <li>
-                <a
-                  onclick="getEmbedCode('{{ post.id }}')"
-                  class="dropdown-item text-sm font-medium flex items-center gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z"
-                    />
-                  </svg>
-                  Get embed code
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Reactions Display -->
-        <div id="reactions-{{ post.id }}" class="reactions-container mt-2">
-          {% for reaction in post.reactions.all %}
-          <div class="reaction">
-            <span>{{ reaction.reaction }}</span>
-            <span>{{ post.reactions.count }}</span>
-          </div>
+                  <span>{{ post.views }}</span>
+                </button>
+                <!-- Share Dropdown -->
+                <div class="dropdown dropdown-end">
+                  <div tabindex="0"
+                       role="button"
+                       class="flex items-center gap-2 text-gray-500 hover:text-blue-500">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke-width="1.5"
+                         stroke="currentColor"
+                         class="w-5 h-5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                    </svg>
+                  </div>
+                  <ul tabindex="0"
+                      class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                    <li>
+                      <a onclick="copyPostLink('{{ post.id }}')"
+                         class="dropdown-item text-sm font-medium flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke-width="1.5"
+                             stroke="currentColor"
+                             class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                        </svg>
+                        Copy link
+                      </a>
+                    </li>
+                    <li>
+                      <a onclick="getEmbedCode('{{ post.id }}')"
+                         class="dropdown-item text-sm font-medium flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke-width="1.5"
+                             stroke="currentColor"
+                             class="w-5 h-5">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+                        </svg>
+                        Get embed code
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <!-- Reactions Display -->
+              <div id="reactions-{{ post.id }}" class="reactions-container mt-2">
+                {% for reaction in post.reactions.all %}
+                  <div class="reaction">
+                    <span>{{ reaction.reaction }}</span>
+                    <span>{{ post.reactions.count }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            </article>
+          {% empty %}
+            <div class="p-4 text-center text-gray-500">No posts yet</div>
           {% endfor %}
         </div>
-      </article>
-      {% empty %}
-      <div class="p-4 text-center text-gray-500">No posts yet</div>
-      {% endfor %}
+      </div>
     </div>
-  </div>
-</div>
-
-<!-- Include the Reply Modal component -->
-{% include "components/reply-modal.html" %}
-
-<script>
+    <!-- Include the Reply Modal component -->
+    {% include "components/reply-modal.html" %}
+    <script>
   document.addEventListener("DOMContentLoaded", function () {
     // Function to format the time
     function formatTime(timestamp) {
@@ -611,51 +491,30 @@
                         <div class="flex justify-between">
                           <div class="flex gap-3">
                             <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                              <img src="${
-                                post.profile_image ||
-                                "{% static 'placeholder.svg' %}"
-                              }" alt="${
-              post.author
-            }" class="w-full h-full object-cover rounded-full" />
+                              <img src="${ post.profile_image || "{% static 'placeholder.svg' %}" }" alt="${ post.author }" class="w-full h-full object-cover rounded-full" />
                             </div>
                             <div>
                               <div class="flex items-center gap-1">
                                 <span class="font-bold">${post.author}</span>
-                                <span class="text-gray-500">· ${
-                                  post.created_at
-                                }</span>
+                               <span class="text-gray-500"
+                          data-timestamp="{{ post.created_at.isoformat }}">· {{ post.created_at|timesince }}</span>
                               </div>
                             </div>
                           </div>
                           <!-- Ellipsis Button -->
                           <div class="dropdown dropdown-left">
                             <div tabindex="0" role="button" class="p-2 hover:bg-gray-100 rounded-full">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="w-5 h-5"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                              >
+                              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="1" />
                                 <circle cx="19" cy="12" r="1" />
                                 <circle cx="5" cy="12" r="1" />
                               </svg>
                             </div>
                             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                              <li><a onclick="reactToPost('${
-                                post.id
-                              }', '👍')">👍 Thumbs Up</a></li>
-                              <li><a onclick="reactToPost('${
-                                post.id
-                              }', '😂')">😂 Laugh</a></li>
-                              <li><a onclick="reactToPost('${
-                                post.id
-                              }', '🔥')">🔥 Fire</a></li>
-                              <li><a onclick="copyPostLink('${
-                                post.id
-                              }')">Copy Link</a></li>
+                              <li><a onclick="reactToPost('${ post.id }', '👍')">👍 Thumbs Up</a></li>
+                              <li><a onclick="reactToPost('${ post.id }', '😂')">😂 Laugh</a></li>
+                              <li><a onclick="reactToPost('${ post.id }', '🔥')">🔥 Fire</a></li>
+                              <li><a onclick="copyPostLink('${ post.id }')">Copy Link</a></li>
                             </ul>
                           </div>
                         </div>
@@ -670,19 +529,16 @@
                             : ""
                         }
                         <div class="flex justify-between mt-3">
-                          <button class="flex items-center gap-2 text-gray-500 hover:text-pink-600 group like-button ${
-                            post.is_liked ? "liked" : ""
-                          }" data-post-id="${post.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ${
-                              post.is_liked ? "fill-red-500 stroke-red-500" : ""
-                            }">
+                          <button class="flex items-center gap-2 text-gray-500 hover:text-pink-600 group like-button ${ post.is_liked ? "liked" : "" }" data-post-id="${post.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ${ post.is_liked ? "fill-red-500 stroke-red-500" : "" }">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                             </svg>
                             <span>${post.likes_count}</span>
                           </button>
-                          <button class="flex items-center gap-2 text-gray-500 hover:text-blue-500">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                              <path d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
+                          <button class="flex items-center gap-2 text-gray-500 hover:text-blue-500"
+                            onclick="event.stopPropagation(); "openReplyModal('${ post.id }')">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
                             </svg>
                             <span>${post.comments_count}</span>
                           </button>
@@ -696,19 +552,8 @@
                           <!-- Share Dropdown -->
                           <div class="dropdown dropdown-end">
                             <div tabindex="0" role="button" class="flex items-center gap-2 text-gray-500 hover:text-blue-500">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="w-5 h-5"
-                              >
-                                <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-                                />
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
                               </svg>
                             </div>
                             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
@@ -732,9 +577,7 @@
                           </div>
                         </div>
                         <!-- Reactions Display -->
-                        <div id="reactions-${
-                          post.id
-                        }" class="reactions-container mt-2">
+                        <div id="reactions-${ post.id }" class="reactions-container mt-2">
                           ${post.reactions
                             .map(
                               (reaction) => `
@@ -811,6 +654,5 @@
     document.getElementById("replyModal").classList.add("hidden");
     document.body.classList.remove("overflow-hidden");
   }
-</script>
-
-{% endblock content %}
+    </script>
+  {% endblock content %}

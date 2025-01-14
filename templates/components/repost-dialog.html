@@ -1,0 +1,67 @@
+<div id="repostDialog" class="hidden fixed inset-0 bg-black/50 z-[70] flex items-center justify-center">
+  <div class="bg-white rounded-lg w-[500px] shadow-xl">
+    <div class="border-b pb-2 p-4">
+      <div class="flex items-center justify-between">
+        <button onclick="closeRepostDialog()" class="text-gray-600 hover:text-gray-500 text-base font-normal px-0">
+          Cancel
+        </button>
+        <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold">Repost</h2>
+        <div class="invisible">Cancel</div>
+      </div>
+    </div>
+
+    <div class="p-4">
+      <p class="text-center mb-4">Repost this to your followers?</p>
+      <div class="flex justify-end gap-3">
+        <button onclick="closeRepostDialog()" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-full">
+          Cancel
+        </button>
+        <button onclick="confirmRepost()" class="px-4 py-2 bg-black text-white rounded-full hover:opacity-90">
+          Repost
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentRepostId = null;
+
+function openRepostDialog(postId) {
+  currentRepostId = postId;
+  document.getElementById("repostDialog").classList.remove("hidden");
+  document.body.classList.add("overflow-hidden");
+}
+
+function closeRepostDialog() {
+  document.getElementById("repostDialog").classList.add("hidden");
+  document.body.classList.remove("overflow-hidden");
+  currentRepostId = null;
+}
+
+function confirmRepost() {
+  if (!currentRepostId) return;
+  
+  fetch(`/community/post/${currentRepostId}/repost/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}',
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      closeRepostDialog();
+      // Optionally refresh the page or update the UI
+      window.location.reload();
+    } else {
+      alert('Failed to repost');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Failed to repost');
+  });
+}
+</script>

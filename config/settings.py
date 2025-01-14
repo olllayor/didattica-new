@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import boto3
+from storages.backends.s3boto3 import S3Boto3Storage
 load_dotenv()  # Load environment variables from .env file
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -136,8 +138,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -174,6 +175,28 @@ ALLAUTH_UI_THEME = "cmyk"  # or "dark", "cupcake", etc.
 # ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Logout user after password change
 
 
+
+
+
+# Cloudflare R2 Configuration
+CLOUDFLARE_R2_ACCESS_KEY_ID = os.getenv('CLOUDFLARE_R2_ACCESS_KEY_ID')  # Your R2 Access Key ID
+CLOUDFLARE_R2_SECRET_ACCESS_KEY = os.getenv('CLOUDFLARE_R2_SECRET_ACCESS_KEY')  # Your R2 Secret Access Key
+CLOUDFLARE_R2_BUCKET_NAME = os.getenv('CLOUDFLARE_R2_BUCKET_NAME')  # Your R2 Bucket Name
+CLOUDFLARE_R2_ENDPOINT_URL = os.getenv('CLOUDFLARE_R2_ENDPOINT_URL')  # Your R2 Endpoint URL
+
+# Django Storages Configuration
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_ACCESS_KEY_ID = CLOUDFLARE_R2_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = CLOUDFLARE_R2_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME = CLOUDFLARE_R2_BUCKET_NAME
+AWS_S3_ENDPOINT_URL = CLOUDFLARE_R2_ENDPOINT_URL
+AWS_S3_CUSTOM_DOMAIN = f'{CLOUDFLARE_R2_BUCKET_NAME}.r2.cloudflarestorage.com'  # Optional: Use a custom domain
+AWS_DEFAULT_ACL = 'public-read'  # Set ACL to public-read for public access
+AWS_QUERYSTRING_AUTH = False  # Disable query string authentication for public files
+
+# Media files configuration
+MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'  # URL to access media files
+MEDIA_ROOT = ''  # Empty because files are stored in R2, not locally
 
 
 SOCIALACCOUNT_PROVIDERS = {

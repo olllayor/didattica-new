@@ -56,7 +56,7 @@ def create_post(request):
 
 # community/views.py
 def feed(request):
-    posts = Post.objects.all().order_by("-created_at")
+    posts = Post.objects.filter(reply_to=None).order_by("-created_at")
     paginator = Paginator(posts, 10)  # Show 10 posts per page
     page_number = request.GET.get("page", 1)
 

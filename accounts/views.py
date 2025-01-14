@@ -35,7 +35,9 @@ def profile(request, username):
     social_accounts = SocialAccount.objects.filter(user=user)
 
     # Fetch the user's posts
-    posts = Post.objects.filter(author=user).order_by('-created_at')
+    posts = Post.objects.filter(author=user, reply_to=None).order_by('-created_at')
+    reply_posts = Post.objects.filter(author=user).exclude(reply_to=None).order_by('-created_at')
+
 
     # Only allow the profile owner to edit the profile
     if request.method == 'POST':
@@ -60,6 +62,7 @@ def profile(request, username):
         'profile': profile,
         'form': form,
         'posts': posts,
+        'reply_posts': reply_posts,
     }
     return render(request, 'accounts/profile.html', context)
 
