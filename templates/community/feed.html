@@ -97,8 +97,8 @@
     <div class="divide-y" id="posts-feed">
       {% for post in posts %}
       <article
-        class="p-4 hover:bg-gray-50 transition-colors duration-150 relative cursor-pointer"
-        onclick="window.location.href='/community/post/{{ post.id }}/'"
+        class="p-4 hover:bg-gray-50 transition-colors duration-150 relative"
+        onclick="if (event.target.tagName !== 'BUTTON' && !event.target.closest('button') && !event.target.closest('.dropdown') && !event.target.closest('img')) window.location.href='/community/post/{{ post.id }}/'"
       >
         <!-- Repost Badge -->
         {% if post.shared_post %}
@@ -207,20 +207,11 @@
                 src="{{ image.image.url }}"
                 alt="Post image"
                 class="object-cover w-full h-full cursor-pointer"
-                onclick="openImagePreviewModal([{% for img in post.post_images.all %}'{{ img.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}], {{ forloop.counter0 }})"
+                onclick="event.stopPropagation(); openImagePreviewModal([{% for img in post.post_images.all %}'{{ img.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}], {{ forloop.counter0 }})"
               />
             </div>
             {% endfor %}
           </div>
-        </div>
-        {% elif post.image %}
-        <div class="mt-4">
-          <img
-            src="{{ post.image.url }}"
-            alt="Post image"
-            class="rounded-xl w-full object-cover cursor-pointer"
-            onclick="openImagePreviewModal(['{{ post.image.url }}'], 0)"
-          />
         </div>
         {% endif %}
 
@@ -822,4 +813,4 @@
   }
 </script>
 
-{% endblock %}
+{% endblock content %}

@@ -8,6 +8,23 @@
     {% include "components/post.html" with post=post %}
   </div>
 
+  <!-- Reply Input -->
+  <div class="bg-white rounded-2xl p-4 mb-4">
+    <div class="flex gap-3">
+      <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+        <img src="{% if request.user.profile.profile_image %}{{ request.user.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+             alt="{{ request.user.username }}"
+             class="w-full h-full object-cover rounded-full" />
+      </div>
+      <div class="flex-1">
+        <div class="w-full p-2 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50"
+             onclick="openReplyModal('{{ post.id }}')">
+          <p class="text-gray-500">Write your reply...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Replies Section -->
   <div class="bg-white rounded-2xl p-4">
     <h3 class="text-lg font-semibold mb-4">Replies</h3>
@@ -25,4 +42,4 @@
     {% endif %}
   </div>
 </div>
-{% endblock %}
+{% endblock content %}
