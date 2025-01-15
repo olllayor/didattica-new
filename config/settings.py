@@ -135,8 +135,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 
 
@@ -157,47 +155,13 @@ LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
 
 ALLAUTH_UI_THEME = "cmyk"  # or "dark", "cupcake", etc.
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Use SMTP for production
-# EMAIL_HOST = 'smtp.gmail.com'  # Replace with your SMTP server
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Your email
-# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Your email password
-
-# # Allauth settings
-# ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Enforce email verification
-# ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # Allow login with username or email
-# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1  # Email confirmation link expiry in days
-# ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN = 180  # Cooldown period in seconds
-# ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5  # Limit login attempts
-# ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300  # Timeout after failed login attempts
-# ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Logout user after password change
 
 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
-
-
-# Cloudflare R2 Configuration
-CLOUDFLARE_R2_ACCESS_KEY_ID = os.getenv('CLOUDFLARE_R2_ACCESS_KEY_ID')  # Your R2 Access Key ID
-CLOUDFLARE_R2_SECRET_ACCESS_KEY = os.getenv('CLOUDFLARE_R2_SECRET_ACCESS_KEY')  # Your R2 Secret Access Key
-CLOUDFLARE_R2_BUCKET_NAME = os.getenv('CLOUDFLARE_R2_BUCKET_NAME')  # Your R2 Bucket Name
-CLOUDFLARE_R2_ENDPOINT_URL = os.getenv('CLOUDFLARE_R2_ENDPOINT_URL')  # Your R2 Endpoint URL
-
-# Django Storages Configuration
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_ACCESS_KEY_ID = CLOUDFLARE_R2_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY = CLOUDFLARE_R2_SECRET_ACCESS_KEY
-AWS_STORAGE_BUCKET_NAME = CLOUDFLARE_R2_BUCKET_NAME
-AWS_S3_ENDPOINT_URL = CLOUDFLARE_R2_ENDPOINT_URL
-AWS_S3_CUSTOM_DOMAIN = f'{CLOUDFLARE_R2_BUCKET_NAME}.r2.cloudflarestorage.com'  # Optional: Use a custom domain
-AWS_DEFAULT_ACL = 'public-read'  # Set ACL to public-read for public access
-AWS_QUERYSTRING_AUTH = False  # Disable query string authentication for public files
-
-# Media files configuration
-MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'  # URL to access media files
-MEDIA_ROOT = ''  # Empty because files are stored in R2, not locally
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -227,3 +191,43 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 SOCIALACCOUNT_ADAPTER = 'accounts.adapter.CustomSocialAccountAdapter'
+
+
+
+
+# Cloudflare R2 Configuration
+# CLOUDFLARE_R2_ACCESS_KEY_ID = os.getenv('CLOUDFLARE_R2_ACCESS_KEY_ID')  # Your R2 Access Key ID
+# CLOUDFLARE_R2_SECRET_ACCESS_KEY = os.getenv('CLOUDFLARE_R2_SECRET_ACCESS_KEY')  # Your R2 Secret Access Key
+# CLOUDFLARE_R2_BUCKET_NAME = os.getenv('CLOUDFLARE_R2_BUCKET_NAME')  # Your R2 Bucket Name
+# CLOUDFLARE_R2_ENDPOINT_URL = os.getenv('CLOUDFLARE_R2_ENDPOINT_URL')  # Your R2 Endpoint URL
+
+# # Django Storages Configuration
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# AWS_ACCESS_KEY_ID = CLOUDFLARE_R2_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY = CLOUDFLARE_R2_SECRET_ACCESS_KEY
+# AWS_STORAGE_BUCKET_NAME = CLOUDFLARE_R2_BUCKET_NAME
+# AWS_S3_ENDPOINT_URL = CLOUDFLARE_R2_ENDPOINT_URL
+# AWS_S3_CUSTOM_DOMAIN = f'{CLOUDFLARE_R2_BUCKET_NAME}.r2.cloudflarestorage.com'  # Optional: Use a custom domain
+# AWS_DEFAULT_ACL = 'public-read'  # Set ACL to public-read for public access
+# AWS_QUERYSTRING_AUTH = False  # Disable query string authentication for public files
+
+# # Media files configuration
+# MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'  # URL to access media files
+# MEDIA_ROOT = ''  # Empty because files are stored in R2, not locally
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Use SMTP for production
+# EMAIL_HOST = 'smtp.gmail.com'  # Replace with your SMTP server
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Your email
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Your email password
+
+# # Allauth settings
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Enforce email verification
+# ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # Allow login with username or email
+# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1  # Email confirmation link expiry in days
+# ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN = 180  # Cooldown period in seconds
+# ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5  # Limit login attempts
+# ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300  # Timeout after failed login attempts
+# ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Logout user after password change
