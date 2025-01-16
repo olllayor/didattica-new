@@ -31,12 +31,25 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-     # Add follow relationships
-    followers = models.ManyToManyField(User, related_name="following", blank=True)
-    following = models.ManyToManyField(User, related_name="followers", blank=True)
 
+    # Add follow relationships
+    followers = models.ManyToManyField(User, related_name='followed_profiles', blank=True)
+    following = models.ManyToManyField(User, related_name='follower_profiles', blank=True)
 
-    
+    def follow(self, user_to_follow):
+        """Follow a user and update both follower and following relationships"""
+        if user_to_follow != self.user:
+            self.following.add(user_to_follow)
+            user_to_follow.profile.followers.add(self.user)
+
+    def unfollow(self, user_to_unfollow):
+        """Unfollow a user and update both follower and following relationships"""
+        self.following.remove(user_to_unfollow)
+        user_to_unfollow.profile.followers.remove(self.user)
+
+    def is_following(self, user):
+        """Check if we're following a specific user"""
+        return user in self.following.all()
 
     def get_reaction_count(self):
         return self.reactions.count()

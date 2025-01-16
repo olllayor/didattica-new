@@ -26,9 +26,8 @@
         <!-- Follow/Unfollow Button -->
         {% if request.user != user %}
           <button id="followButton"
-                  class="mt-6 py-2 btn btn-primary btn-block"
-                  data-username="{{ user.username }}"
-                  data-following="{% if request.user in profile.followers.all %}true{% else %}false{% endif %}">
+                  class="mt-6 py-2 btn w-full {% if request.user in profile.followers.all %}btn-secondary{% else %}btn-primary{% endif %}"
+                  data-username="{{ user.username }}">
             {% if request.user in profile.followers.all %}
               Unfollow
             {% else %}
@@ -561,5 +560,54 @@ function getEmbedCode(postId) {
         alert("Embed code copied to clipboard!");
     });
 }
+
+// Add follow button functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const followButton = document.getElementById('followButton');
+    if (followButton) {
+        followButton.addEventListener('click', function() {
+            const username = this.dataset.username;
+            
+            // Disable button during request
+            followButton.disabled = true;
+            
+            fetch(`/community/@${username}/follow/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+                
+                // Update button text and style
+                followButton.textContent = data.followed ? 'Unfollow' : 'Follow';
+                followButton.classList.toggle('btn-primary', !data.followed);
+                followButton.classList.toggle('btn-secondary', data.followed);
+                
+                // Update follower count only
+                document.querySelector('.followers-count').textContent = data.followers_count;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Optionally show error message to user
+            })
+            .finally(() => {
+                // Re-enable button
+                followButton.disabled = false;
+            });
+        });
+    }
+});
   </script>
 {% endblock content %}

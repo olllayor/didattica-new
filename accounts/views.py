@@ -9,6 +9,7 @@ from community.models import Post  # Import the Post model from the community ap
 from django.contrib.auth.decorators import login_required
 import logging
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_protect
 
 
 
@@ -88,32 +89,39 @@ def search(request):
 
 
 @login_required
+@csrf_protect
 def follow_user(request, username):
-    user_to_follow = get_object_or_404(User, username=username)
-    profile_to_follow = user_to_follow.profile
-    current_user_profile = request.user.profile
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
 
-    if request.user != user_to_follow:
-        if request.user in profile_to_follow.followers.all():
+    user_to_follow = get_object_or_404(User, username=username)
+    
+    if request.user == user_to_follow:
+        return JsonResponse({'error': 'You cannot follow yourself'}, status=400)
+
+    try:
+        current_user_profile = request.user.profile
+        is_following = current_user_profile.is_following(user_to_follow)
+
+        if is_following:
             # Unfollow
-            profile_to_follow.followers.remove(request.user)
-            current_user_profile.following.remove(user_to_follow)
+            current_user_profile.unfollow(user_to_follow)
             followed = False
         else:
             # Follow
-            profile_to_follow.followers.add(request.user)
-            current_user_profile.following.add(user_to_follow)
+            current_user_profile.follow(user_to_follow)
             followed = True
 
         # Return updated counts
         return JsonResponse({
             'followed': followed,
-            'followers_count': profile_to_follow.get_followers_count(),  # B's follower count
-            'following_count': current_user_profile.get_following_count(),  # A's following count
+            'followers_count': user_to_follow.profile.get_followers_count(),
+            'following_count': user_to_follow.profile.get_following_count()
         })
-    else:
-        return JsonResponse({'error': 'You cannot follow yourself.'}, status=400)
-    
+    except Exception as e:
+        logger.error(f"Error in follow_user: {str(e)}")
+        return JsonResponse({'error': 'An error occurred'}, status=500)
+
 # accounts/views.py
 
 @login_required
@@ -133,7 +141,8 @@ def followers_list(request, username):
 def following_list(request, username):
     user = get_object_or_404(User, username=username)
     profile = user.profile
-    following = profile.following.all()
+    # Get the users that this profile is following
+    following = profile.following.all()  # Changed this line to directly access following
     context = {
         'user': user,
         'profile': profile,
