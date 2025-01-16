@@ -8,11 +8,21 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from .models import Reaction
+from django.utils import timezone
 
 
 @login_required
 def create_post(request):
     if request.method == "POST":
+        # Check if user can post
+        if not request.user.profile.can_post():
+            remaining_time = 100 - (timezone.now() - request.user.profile.last_post_time).total_seconds()
+            messages.error(
+                request, 
+                f"Please wait {int(remaining_time)} seconds before creating another post."
+            )
+            return redirect("feed")
+
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
@@ -36,6 +46,10 @@ def create_post(request):
             images = request.FILES.getlist("images")  # Get list of uploaded images
             for image in images:
                 PostImage.objects.create(post=post, image=image)
+
+            # Update last post time
+            request.user.profile.last_post_time = timezone.now()
+            request.user.profile.save()
 
             if post.status == "published":
                 messages.success(request, "Post published successfully!")

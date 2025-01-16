@@ -30,7 +30,7 @@ class Profile(models.Model):
     website = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    last_post_time = models.DateTimeField(null=True, blank=True)
 
     # Add follow relationships
     followers = models.ManyToManyField(User, related_name='followed_profiles', blank=True)
@@ -69,6 +69,13 @@ class Profile(models.Model):
     def get_replies_count(self):
         return self.replies.count()
 
+    def can_post(self):
+        """Check if user can create a new post based on time limit"""
+        if not self.last_post_time:
+            return True
+        from django.utils import timezone
+        time_diff = timezone.now() - self.last_post_time
+        return time_diff.total_seconds() >= 100
 
     def save(self, *args, **kwargs):
         # Only process the image if it's a new upload

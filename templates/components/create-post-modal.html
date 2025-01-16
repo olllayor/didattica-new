@@ -1,18 +1,18 @@
 {% load static %}
 
 <div id="createPostModal" class="hidden fixed inset-0 bg-black/50 z-[60]">
-  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg w-[500px] shadow-xl">
-    <div class="border-b pb-2 p-4">
+  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg w-[95%] sm:w-[500px] max-h-[90vh] overflow-y-auto shadow-xl">
+    <div class="border-b pb-2 p-3 sm:p-4">
       <div class="flex items-center justify-between">
-        <button onclick="closeCreatePostModal()" class="text-gray-600 hover:text-gray-500 text-base font-normal px-0">
+        <button onclick="closeCreatePostModal()" class="text-gray-600 hover:text-gray-500 text-sm sm:text-base font-normal px-0">
           Cancel
         </button>
-        <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold">New Post</h2>
-        <div class="invisible">Cancel</div>
+        <h2 class="absolute left-1/2 -translate-x-1/2 text-sm sm:text-base font-semibold">New Post</h2>
+        <div class="invisible text-sm sm:text-base">Cancel</div>
       </div>
     </div>
 
-    <form method="POST" action="{% url 'create_post' %}" class="space-y-4 p-4" enctype="multipart/form-data" id="createPostForm">
+    <form method="post" action="{% url 'create_post' %}" class="space-y-3 sm:space-y-4 p-3 sm:p-4" enctype="multipart/form-data" id="createPostForm">
       {% csrf_token %}
       <div class="flex gap-3">
         <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="border-t pt-4">
+      <div class="border-t pt-3 sm:pt-4">
         <div class="flex items-center gap-2">
           <!-- Image Upload -->
           <label for="image-upload" class="p-2 rounded-full hover:bg-gray-100 cursor-pointer">
@@ -46,9 +46,9 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-between border-t pt-4">
-        <p class="text-sm text-gray-500">Anyone can reply & quote</p>
-        <button type="submit" id="post-button" disabled class="bg-black text-white rounded-full px-4 py-2 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed font-mono">
+      <div class="flex items-center justify-between border-t pt-3 sm:pt-4">
+        <p class="text-xs sm:text-sm text-gray-500">Anyone can reply & quote</p>
+        <button type="submit" id="post-button" disabled class="bg-black text-white rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed font-mono">
           Post
         </button>
       </div>
