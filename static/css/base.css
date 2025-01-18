@@ -1,0 +1,36 @@
+/* Theme Configurations */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme Transitions */
+* {
+    transition-property: background-color, border-color, text-color, fill, stroke;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
+}
+
+.textarea-container {
+    transition: all 0.3s ease;
+}
+
+.textarea-container:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.card {
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Theme Toggle Animation */
+.swap-rotate.swap-active {
+    transform: rotate(360deg);
+    transition: transform 0.3s ease;
+}
+
+/* Theme-specific styles will be handled by DaisyUI themes */

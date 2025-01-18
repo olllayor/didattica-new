@@ -2,7 +2,8 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import Profile
 from django.core.exceptions import ValidationError
-
+from allauth.socialaccount.forms import SignupForm
+from allauth.socialaccount.helpers import complete_social_login
 
 class ProfileForm(forms.ModelForm):
     username = forms.CharField(max_length=150, required=True)
@@ -38,3 +39,15 @@ class ProfileForm(forms.ModelForm):
             user.save()
             profile.save()
         return profile
+
+class CustomSocialLoginForm(SignupForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add any custom initialization here
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'auth-input bg-black/30 border border-gray-700 rounded-lg p-3 w-full text-white placeholder-gray-500 focus:border-yellow-300/50'
+
+    def save(self, request):
+        # Add any custom save logic here
+        user = super().save(request)
+        return user

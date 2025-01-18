@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "debug_toolbar",
-    "allauth_ui",  # Add this before allauth
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -51,7 +50,7 @@ INSTALLED_APPS = [
     "slippers",  # Add this
     "accounts",
     'community',
-    "django.contrib.sites",
+    "django.contrib.sites",  # Required for allauth
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.telegram",
     "allauth.socialaccount.providers.twitter",
@@ -173,6 +172,7 @@ SOCIALACCOUNT_PROVIDERS = {
         },
         "SCOPE": ["profile", "email"],
         "AUTH_PARAMS": {"access_type": "online"},
+        "OAUTH_PKCE_ENABLED": True,
     },
     "telegram": {
         "APP": {
@@ -187,8 +187,16 @@ SOCIALACCOUNT_PROVIDERS = {
         "APP": {
             "client_id": os.getenv("TWITTER_OAUTH_CLIENT_ID"),
             "secret": os.getenv("TWITTER_OAUTH_SECRET"),
-        }
+        },
+        "OAUTH_PKCE_ENABLED": True,
     },
+}
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_PROVIDERS_CALLBACK_URL = 'accounts/%(provider)s/login/callback/'
+SOCIALACCOUNT_TEMPLATE_EXTENSION = 'html'
+SOCIALACCOUNT_FORMS = {
+    'login': 'accounts.forms.CustomSocialLoginForm',
 }
 
 SOCIALACCOUNT_ADAPTER = 'accounts.adapter.CustomSocialAccountAdapter'
@@ -232,3 +240,21 @@ ANALYTICS_API_KEY = os.getenv('ANALYTICS_API_KEY')
 # ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5  # Limit login attempts
 # ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300  # Timeout after failed login attempts
 # ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Logout user after password change
+
+# # Allauth customization
+# ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+# ACCOUNT_USERNAME_MIN_LENGTH = 4
+# LOGIN_REDIRECT_URL = "feed"
+# ACCOUNT_LOGOUT_REDIRECT_URL = "index"
+
+# # Template customization
+# ACCOUNT_TEMPLATE_EXTENSION = 'html'
+# ACCOUNT_TEMPLATE_DIR = 'account'  # This tells allauth to look in the templates/account directory
+
+# Add these settings for logout handling
+ACCOUNT_LOGOUT_ON_GET = False  # Require POST request for logout
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Logout after password change
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"  # Where to redirect after logout
