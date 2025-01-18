@@ -1,14 +1,14 @@
+import os
+import random
+import time
+from io import BytesIO
+
+from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from allauth.account.models import EmailAddress
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
 from PIL import Image
-from io import BytesIO
-from django.core.files.base import ContentFile
-import os
-import time
 
 
 def profile_image_upload_path(instance, filename):
@@ -20,21 +20,44 @@ def profile_image_upload_path(instance, filename):
     return os.path.join("profile_images/", new_filename)
 
 
+def get_default_profile_image():
+    """Returns a random default profile image path"""
+    # List of default image names (you'll need to add these images to your media folder)
+    default_images = [
+        "default1.webp",
+        "default2.webp",
+        "default3.webp",
+        "default4.webp",
+        "default5.webp",
+        "default6.webp",
+        "default7.webp",
+        "default8.webp",
+    ]
+    return f"default_profile_images/{random.choice(default_images)}"
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     name = models.CharField(max_length=255, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     profile_image = models.ImageField(
-        upload_to=profile_image_upload_path, blank=True, null=True
+        upload_to=profile_image_upload_path,
+        default=get_default_profile_image,
+        blank=True,
+        null=True,
     )
-    website = models.URLField(blank=True, null=True)
+    website = models.URLField(blank=True, null=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     last_post_time = models.DateTimeField(null=True, blank=True)
 
     # Add follow relationships
-    followers = models.ManyToManyField(User, related_name='followed_profiles', blank=True)
-    following = models.ManyToManyField(User, related_name='follower_profiles', blank=True)
+    followers = models.ManyToManyField(
+        User, related_name="followed_profiles", blank=True
+    )
+    following = models.ManyToManyField(
+        User, related_name="follower_profiles", blank=True
+    )
 
     def follow(self, user_to_follow):
         """Follow a user and update both follower and following relationships"""
@@ -53,16 +76,16 @@ class Profile(models.Model):
 
     def get_reaction_count(self):
         return self.reactions.count()
-    
+
     def __str__(self):
         return f"@{self.user.username}"
-    
+
     def get_followers_count(self):
         return self.followers.count()
 
     def get_following_count(self):
         return self.following.count()
-    
+
     def get_reposts_count(self):
         return self.shares.count()
 
@@ -74,6 +97,7 @@ class Profile(models.Model):
         if not self.last_post_time:
             return True
         from django.utils import timezone
+
         time_diff = timezone.now() - self.last_post_time
         return time_diff.total_seconds() >= 100
 
@@ -107,10 +131,12 @@ class Profile(models.Model):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user=instance)
+        Profile.objects.get_or_create(user=instance)
 
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
+    # Ensure the profile exists before saving
+    if not hasattr(instance, "profile"):
+        Profile.objects.create(user=instance)
     instance.profile.save()
-

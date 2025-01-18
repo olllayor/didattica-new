@@ -63,7 +63,13 @@
       <a href="{% url 'profile' username=request.user.username %}"
          class="flex flex-col items-center text-gray-600 hover:text-blue-500 transition-colors">
         <div class="w-8 h-8 rounded-full overflow-hidden">
-          <img src="{% if request.user.profile.profile_image %}{{ request.user.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+          <img src="{% if request.user.profile.profile_image %}
+                    {{ request.user.profile.profile_image.url }}
+                {% elif request.user.socialaccount_set.all.0.get_avatar_url %}
+                    {{ request.user.socialaccount_set.all.0.get_avatar_url }}
+                {% else %}
+                    {% static 'images/default_profile.png' %}
+                {% endif %}"
                alt="{{ request.user.username }}"
                class="w-full h-full object-cover" />
         </div>
@@ -133,7 +139,13 @@
     <a href="{% url 'profile' username=request.user.username %}"
        class="hover:opacity-70">
       <div class="w-8 h-8 rounded-full overflow-hidden">
-        <img src="{% if request.user.profile.profile_image %}{{ request.user.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+        <img src="{% if request.user.profile.profile_image %}
+                    {{ request.user.profile.profile_image.url }}
+                {% elif request.user.socialaccount_set.all.0.get_avatar_url %}
+                    {{ request.user.socialaccount_set.all.0.get_avatar_url }}
+                {% else %}
+                    {% static 'images/default.webp' %}
+                {% endif %}"
              alt="{{ request.user.username }}"
              class="w-full h-full object-cover" />
       </div>

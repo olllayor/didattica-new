@@ -15,6 +15,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import boto3
 from storages.backends.s3boto3 import S3Boto3Storage
+
 load_dotenv()  # Load environment variables from .env file
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,7 +31,7 @@ SECRET_KEY = "django-insecure-5k8r#gac$aecqip)6=us5s1s_dw0-*516fjs(i-0nru*sytk^p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["demo.jprq.site", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = ["https://olllayor.jprq.site", "https://demo.jprq.site"]
 
 # Application definition
@@ -49,7 +50,7 @@ INSTALLED_APPS = [
     "widget_tweaks",  # Add this
     "slippers",  # Add this
     "accounts",
-    'community',
+    "community",
     "django.contrib.sites",  # Required for allauth
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.telegram",
@@ -57,7 +58,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'api_analytics.django.Analytics',
+    "api_analytics.django.Analytics",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -136,8 +137,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -156,12 +155,11 @@ LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
 ALLAUTH_UI_THEME = "cmyk"  # or "dark", "cupcake", etc.
 
 
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -193,15 +191,20 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
-SOCIALACCOUNT_PROVIDERS_CALLBACK_URL = 'accounts/%(provider)s/login/callback/'
-SOCIALACCOUNT_TEMPLATE_EXTENSION = 'html'
+SOCIALACCOUNT_PROVIDERS_CALLBACK_URL = "accounts/%(provider)s/login/callback/"
+SOCIALACCOUNT_TEMPLATE_EXTENSION = "html"
 SOCIALACCOUNT_FORMS = {
-    'login': 'accounts.forms.CustomSocialLoginForm',
+    "login": "accounts.forms.CustomSocialLoginForm",
 }
 
-SOCIALACCOUNT_ADAPTER = 'accounts.adapter.CustomSocialAccountAdapter'
+SOCIALACCOUNT_ADAPTER = "accounts.adapter.CustomSocialAccountAdapter"
 
-ANALYTICS_API_KEY = os.getenv('ANALYTICS_API_KEY')
+# Add these settings for social account handling
+SOCIALACCOUNT_AUTO_SIGNUP = True  # Enable automatic signup
+SOCIALACCOUNT_EMAIL_REQUIRED = False  # Make email optional for social signup
+ACCOUNT_USERNAME_REQUIRED = False  # Make username optional initially
+
+ANALYTICS_API_KEY = os.getenv("ANALYTICS_API_KEY")
 
 
 # Cloudflare R2 Configuration

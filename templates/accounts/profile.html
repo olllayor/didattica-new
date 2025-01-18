@@ -1,441 +1,612 @@
 <!-- templates/accounts/profile.html -->
-{% extends "base.html" %}
-{% load static %}
-{% block title %}
-  Profile
-{% endblock title %}
-{% block content %}
-  <div class="max-w-2xl mx-auto mt-5">
-    <!-- Profile Header -->
-    <div class="bg-white rounded-2xl p-4">
-      <!-- User Info -->
-      <div class="flex flex-col items-start mb-4">
-        <div class="flex items-center justify-between w-full">
-          <div>
-            <h2 class="text-xl font-bold">{{ user.get_full_name|default:user.username }}</h2>
-            <p class="text-gray-600">@{{ user.username }}</p>
-          </div>
-          <div class="w-16 h-16">
-            <img src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
-                 alt="{{ user.username }}"
-                 width="64"
-                 height="64"
-                 class="w-full h-full object-cover rounded-full" />
-          </div>
+{% extends "base.html" %} {% load static %} {% block title %} Profile {%
+endblock title %} {% block content %}
+<div class="max-w-2xl mx-auto mt-5">
+  <!-- Profile Header -->
+  <div class="bg-white rounded-2xl p-4">
+    <!-- User Info -->
+    <div class="flex flex-col items-start mb-4">
+      <div class="flex items-center justify-between w-full">
+        <div>
+          <h2 class="text-xl font-bold">
+            {{ user.get_full_name|default:user.username }}
+          </h2>
+          <p class="text-gray-600">@{{ user.username }}</p>
         </div>
-        <!-- Follow/Unfollow Button -->
-        {% if request.user != user %}
-          <button id="followButton"
-                  class="mt-6 py-2 btn w-full {% if request.user in profile.followers.all %}btn-secondary{% else %}btn-primary{% endif %}"
-                  data-username="{{ user.username }}">
-            {% if request.user in profile.followers.all %}
-              Unfollow
-            {% else %}
-              Follow
-            {% endif %}
-          </button>
-        {% endif %}
-        <!-- Follower/Following Counts -->
-        <div class="mt-4 flex gap-4">
-          <div>
-            <a href="{% url 'followers_list' username=user.username %}"
-               class="hover:underline">
-              <span class="font-bold followers-count">{{ profile.get_followers_count }}</span>
-              <span class="text-gray-600">Followers</span>
-            </a>
-          </div>
-          <div>
-            <a href="{% url 'following_list' username=user.username %}"
-               class="hover:underline">
-              <span class="font-bold following-count">{{ profile.get_following_count }}</span>
-              <span class="text-gray-600">Following</span>
-            </a>
-          </div>
+        <div class="w-16 h-16">
+          <img
+            src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% elif user.socialaccount_set.all.0.get_avatar_url %}{{ user.socialaccount_set.all.0.get_avatar_url }}{% else %}/media/default_profile_images/default1.webp{% endif %}"
+            alt="{{ user.username }}"
+            width="64"
+            height="64"
+            class="w-full h-full object-cover rounded-full"
+          />
         </div>
-        {% if profile.bio %}
-          <div class="mt-2">
-            <p class="text-gray-700">{{ profile.bio }}</p>
-          </div>
-        {% endif %}
-        <!-- Website and Social Info -->
-        <div class="flex items-center justify-between w-full mt-4 text-sm text-gray-600">
-          <div>
-            {% if profile.website %}
-              <a href="{{ profile.website }}" class="text-blue-500 hover:underline">{{ profile.website }}</a>
-            {% endif %}
-          </div>
-          {% if social_accounts %}
-            <div class="flex items-center gap-2 mr-1">
-              {% for account in social_accounts %}
-                {% if account.provider == 'google' %}
-                  <div class="w-7 h-7">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                      <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
-                      <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
-                      <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
-                      <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
-                    </svg>
-                  </div>
-                {% elif account.provider == 'telegram' %}
-                  <div class="w-7 h-7">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                      <linearGradient id="BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1" x1="9.858" x2="38.142" y1="9.858" y2="38.142" gradientUnits="userSpaceOnUse">
-                      <stop offset="0" stop-color="#33bef0"></stop>
-                      <stop offset="1" stop-color="#0a85d9"></stop>
-                      </linearGradient>
-                      <path fill="url(#BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1)" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z" />
-                      <path fill="#fff" d="M11.553,23.717c6.99-3.075,16.035-6.824,17.284-7.343c3.275-1.358,4.28-1.098,3.779,1.91c-0.36,2.162-1.398,9.319-2.226,13.774c-0.491,2.642-1.593,2.955-3.325,1.812c-0.833-0.55-5.038-3.331-5.951-3.984c-0.833-0.595-1.982-1.311-0.541-2.721c0.513-0.502,3.874-3.712,6.493-6.21c0.343-0.328-0.088-0.867-0.484-0.604c-3.53,2.341-8.424,5.59-9.047,6.013c-0.941,0.639-1.845,0.932-3.467,0.466c-1.226-0.352-2.423-0.772-2.889-0.932C9.384,25.282,9.81,24.484,11.553,23.717z" />
-                    </svg>
-                  </div>
-                {% elif account.provider == 'apple' %}
-                  <div class="w-7 h-7">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-                      <path d="M54.166,19.783c-0.258,0.162-6.401,3.571-6.401,11.13c0.29,8.621,7.752,11.644,7.88,11.644c-0.128,0.162-1.127,4.119-4.085,8.267C49.213,54.398,46.607,58,42.65,58c-3.764,0-5.115-2.381-9.458-2.381c-4.664,0-5.984,2.381-9.555,2.381c-3.957,0-6.756-3.795-9.232-7.335c-3.216-4.633-5.95-11.903-6.047-18.883c-0.065-3.699,0.644-7.335,2.444-10.423c2.541-4.312,7.077-7.238,12.031-7.335c3.795-0.128,7.173,2.606,9.49,2.606c2.22,0,6.37-2.606,11.065-2.606C45.415,14.026,50.82,14.636,54.166,19.783zM32.002,13.285c-0.676-3.378,1.19-6.756,2.927-8.911C37.149,1.769,40.655,0,43.678,0c0.193,3.378-1.03,6.691-3.216,9.104C38.5,11.71,35.122,13.671,32.002,13.285z" />
-                    </svg>
-                  </div>
-                {% elif account.provider == 'twitter' %}
-                  <div class="w-7 h-7">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
-                      <path d="M11 4C7.134 4 4 7.134 4 11L4 39C4 42.866 7.134 46 11 46L39 46C42.866 46 46 42.866 46 39L46 11C46 7.134 42.866 4 39 4L11 4zM13.085938 13L21.023438 13L26.660156 21.009766L33.5 13L36 13L27.789062 22.613281L37.914062 37L29.978516 37L23.4375 27.707031L15.5 37L13 37L22.308594 26.103516L13.085938 13zM16.914062 15L31.021484 35L34.085938 35L19.978516 15L16.914062 15z" />
-                    </svg>
-                  </div>
-                {% elif account.provider == 'linkedin' %}
-                  <div class="w-7 h-7">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
-                      <path d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4zM17,20v19h-6V20H17zM11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47zM39,39h-6c0,0,0-9.26,0-10c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56c3.97,0,7.19,2.73,7.19,8.26V39z" />
-                    </svg>
-                  </div>
-                {% elif account.provider == 'instagram' %}
-                  <div class="w-7 h-7">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
-                      <path d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,42.866,4,39,4zM17,20v19h-6V20H17zM11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47zM39,39h-6c0,0,0-9.26,0-10c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56c3.97,0,7.19,2.73,7.19,8.26V39z" />
-                    </svg>
-                  </div>
-                {% endif %}
-              {% endfor %}
-            </div>
+      </div>
+      <!-- Follow/Unfollow Button -->
+      {% if request.user != user %}
+      <button
+        id="followButton"
+        class="mt-6 py-2 btn w-full {% if request.user in profile.followers.all %}btn-secondary{% else %}btn-primary{% endif %}"
+        data-username="{{ user.username }}"
+      >
+        {% if request.user in profile.followers.all %} Unfollow {% else %}
+        Follow {% endif %}
+      </button>
+      {% endif %}
+      <!-- Follower/Following Counts -->
+      <div class="mt-4 flex gap-4">
+        <div>
+          <a
+            href="{% url 'followers_list' username=user.username %}"
+            class="hover:underline"
+          >
+            <span class="font-bold followers-count"
+              >{{ profile.get_followers_count }}</span
+            >
+            <span class="text-gray-600">Followers</span>
+          </a>
+        </div>
+        <div>
+          <a
+            href="{% url 'following_list' username=user.username %}"
+            class="hover:underline"
+          >
+            <span class="font-bold following-count"
+              >{{ profile.get_following_count }}</span
+            >
+            <span class="text-gray-600">Following</span>
+          </a>
+        </div>
+      </div>
+      {% if profile.bio %}
+      <div class="mt-2">
+        <p class="text-gray-700">{{ profile.bio }}</p>
+      </div>
+      {% endif %}
+      <!-- Website and Social Info -->
+      <div
+        class="flex items-center justify-between w-full mt-4 text-sm text-gray-600"
+      >
+        <div>
+          {% if profile.website %}
+          <a href="{{ profile.website }}" class="text-blue-500 hover:underline"
+            >{{ profile.website }}</a
+          >
           {% endif %}
         </div>
-        <!-- Edit Profile Button -->
-        {% if request.user == user %}
-          <button onclick="openEditModal()"
-                  class="w-full mt-6 py-2 border border-gray-300 rounded-lg text-center hover:bg-gray-50">
-            Edit profile
-          </button>
+        {% if social_accounts %}
+        <div class="flex items-center gap-2 mr-1">
+          {% for account in social_accounts %} {% if account.provider ==
+          'google' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <path
+                fill="#FFC107"
+                d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
+              />
+              <path
+                fill="#FF3D00"
+                d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
+              />
+              <path
+                fill="#4CAF50"
+                d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
+              />
+              <path
+                fill="#1976D2"
+                d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
+              />
+            </svg>
+          </div>
+          {% elif account.provider == 'telegram' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <linearGradient
+                id="BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1"
+                x1="9.858"
+                x2="38.142"
+                y1="9.858"
+                y2="38.142"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop offset="0" stop-color="#33bef0"></stop>
+                <stop offset="1" stop-color="#0a85d9"></stop>
+              </linearGradient>
+              <path
+                fill="url(#BiF7D16UlC0RZ_VqXJHnXa_oWiuH0jFiU0R_gr1)"
+                d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z"
+              />
+              <path
+                fill="#fff"
+                d="M11.553,23.717c6.99-3.075,16.035-6.824,17.284-7.343c3.275-1.358,4.28-1.098,3.779,1.91c-0.36,2.162-1.398,9.319-2.226,13.774c-0.491,2.642-1.593,2.955-3.325,1.812c-0.833-0.55-5.038-3.331-5.951-3.984c-0.833-0.595-1.982-1.311-0.541-2.721c0.513-0.502,3.874-3.712,6.493-6.21c0.343-0.328-0.088-0.867-0.484-0.604c-3.53,2.341-8.424,5.59-9.047,6.013c-0.941,0.639-1.845,0.932-3.467,0.466c-1.226-0.352-2.423-0.772-2.889-0.932C9.384,25.282,9.81,24.484,11.553,23.717z"
+              />
+            </svg>
+          </div>
+          {% elif account.provider == 'apple' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+              <path
+                d="M54.166,19.783c-0.258,0.162-6.401,3.571-6.401,11.13c0.29,8.621,7.752,11.644,7.88,11.644c-0.128,0.162-1.127,4.119-4.085,8.267C49.213,54.398,46.607,58,42.65,58c-3.764,0-5.115-2.381-9.458-2.381c-4.664,0-5.984,2.381-9.555,2.381c-3.957,0-6.756-3.795-9.232-7.335c-3.216-4.633-5.95-11.903-6.047-18.883c-0.065-3.699,0.644-7.335,2.444-10.423c2.541-4.312,7.077-7.238,12.031-7.335c3.795-0.128,7.173,2.606,9.49,2.606c2.22,0,6.37-2.606,11.065-2.606C45.415,14.026,50.82,14.636,54.166,19.783zM32.002,13.285c-0.676-3.378,1.19-6.756,2.927-8.911C37.149,1.769,40.655,0,43.678,0c0.193,3.378-1.03,6.691-3.216,9.104C38.5,11.71,35.122,13.671,32.002,13.285z"
+              />
+            </svg>
+          </div>
+          {% elif account.provider == 'twitter' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+              <path
+                d="M11 4C7.134 4 4 7.134 4 11L4 39C4 42.866 7.134 46 11 46L39 46C42.866 46 46 42.866 46 39L46 11C46 7.134 42.866 4 39 4L11 4zM13.085938 13L21.023438 13L26.660156 21.009766L33.5 13L36 13L27.789062 22.613281L37.914062 37L29.978516 37L23.4375 27.707031L15.5 37L13 37L22.308594 26.103516L13.085938 13zM16.914062 15L31.021484 35L34.085938 35L19.978516 15L16.914062 15z"
+              />
+            </svg>
+          </div>
+          {% elif account.provider == 'linkedin' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+              <path
+                d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4zM17,20v19h-6V20H17zM11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47zM39,39h-6c0,0,0-9.26,0-10c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56c3.97,0,7.19,2.73,7.19,8.26V39z"
+              />
+            </svg>
+          </div>
+          {% elif account.provider == 'instagram' %}
+          <div class="w-7 h-7">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+              <path
+                d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,42.866,4,39,4zM17,20v19h-6V20H17zM11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47zM39,39h-6c0,0,0-9.26,0-10c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56c3.97,0,7.19,2.73,7.19,8.26V39z"
+              />
+            </svg>
+          </div>
+          {% endif %} {% endfor %}
+        </div>
         {% endif %}
       </div>
-      <!-- Tabs -->
-      <div class="border-b border-gray-200">
-        <div class="flex space-x-8">
-          <button class="px-1 py-4 border-b-2 border-black font-semibold"
-                  id="posts-tab">Posts</button>
-          <button class="px-1 py-4 text-gray-500" id="replies-tab">Replies</button>
-        </div>
-      </div>
-      <!-- Post Input -->
+      <!-- Edit Profile Button -->
       {% if request.user == user %}
-        <div class="mt-4 flex gap-4">
-          <div class="w-10 h-10">
-            <img src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
-                 alt="{{ user.username }}"
-                 width="64"
-                 height="64"
-                 class="w-full h-full object-cover rounded-full" />
-          </div>
-          <div class="flex-1">
-            <input type="text"
-                   placeholder="What's new?"
-                   class="w-full p-2 rounded-lg border-none focus:ring-0 bg-transparent"
-                   onclick="openCreatePostModal()" />
-          </div>
-          <button class="px-4 py-2 shadow-lg rounded-lg text-black-400 hover:bg-gray-100"
-                  onclick="openCreatePostModal()">Post</button>
-        </div>
+      <button
+        onclick="openEditModal()"
+        class="w-full mt-6 py-2 border border-gray-300 rounded-lg text-center hover:bg-gray-50"
+      >
+        Edit profile
+      </button>
       {% endif %}
-      <!-- User's Posts Section -->
-      <div class="mt-6">
-        <h3 class="text-lg font-semibold mb-4">Posts</h3>
-        {% if posts %}
-          <div class="space-y-4">
-            {% for post in posts %}
-              <div class="bg-white p-4 rounded-lg shadow-sm">
-                <div class="flex justify-between">
-                  <div class="flex gap-3">
-                    <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                      <img src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
-                           alt="{{ user.username }}"
-                           width="64"
-                           height="64"
-                           class="w-full h-full object-cover rounded-full" />
-                    </div>
-                    <div>
-                      <div class="flex items-center gap-1">
-                        <span class="font-bold">{{ post.author.username }}</span>
-                        <span class="text-gray-500">· {{ post.created_at|timesince }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- Post Content -->
-                {% if post.content %}<div class="mt-3 whitespace-pre-wrap">{{ post.content }}</div>{% endif %}
-                <!-- Post Images -->
-                {% if post.post_images.all %}
-                  <div class="mt-4 overflow-x-auto scrollbar-hide">
-                    <div class="flex gap-2">
-                      {% for image in post.post_images.all %}
-                        <div class="relative aspect-square w-60 md:w-80 rounded-xl overflow-hidden flex-shrink-0">
-                          <img src="{{ image.image.url }}"
-                               alt="Post image"
-                               width="64"
-                               height="64"
-                               class="object-cover w-full h-full cursor-pointer"
-                               onclick="event.stopPropagation(); openImagePreviewModal([{% for img in post.post_images.all %}'{{ img.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}], {{ forloop.counter0 }})" />
-                        </div>
-                      {% endfor %}
-                    </div>
-                  </div>
-                {% endif %}
-                <!-- Post Actions -->
-                <div class="flex justify-between mt-3">
-                  <!-- Like Button -->
-                  <button class="flex items-center gap-2 text-gray-500 hover:text-pink-600 group like-button"
-                          data-post-id="{{ post.id }}"
-                          onclick="event.preventDefault(); handleLikeButtonClick(this)">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke-width="1.5"
-                         stroke="currentColor"
-                         class="w-5 h-5 {% if request.user in post.likes.all %}fill-red-500 stroke-red-500{% endif %}">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                    </svg>
-                    <span class="likes-count">{{ post.get_likes_count }}</span>
-                  </button>
-
-                  <!-- Reply Button -->
-                  <button class="flex items-center gap-2 text-gray-500 hover:text-blue-500"
-                          onclick="event.stopPropagation(); openReplyModal('{{ post.id }}')">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke-width="1.5"
-                         stroke="currentColor"
-                         class="w-5 h-5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                    </svg>
-                    <span>{{ post.get_replies_count }}</span>
-                  </button>
-
-                  <!-- View Button -->
-                  <button class="flex items-center gap-2 text-gray-500 hover:text-green-500">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke-width="1.5"
-                         stroke="currentColor"
-                         class="w-5 h-5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    </svg>
-                    <span>{{ post.views }}</span>
-                  </button>
-
-                  <!-- Share Dropdown -->
-                  <div class="dropdown dropdown-end">
-                    <div tabindex="0"
-                         role="button"
-                         class="flex items-center gap-2 text-gray-500 hover:text-blue-500">
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                           fill="none"
-                           viewBox="0 0 24 24"
-                           stroke-width="1.5"
-                           stroke="currentColor"
-                           class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
-                      </svg>
-                    </div>
-                    <ul tabindex="0"
-                        class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                      <li>
-                        <a onclick="copyPostLink('{{ post.id }}')"
-                           class="dropdown-item text-sm font-medium flex items-center gap-2">
-                          <svg xmlns="http://www.w3.org/2000/svg"
-                               fill="none"
-                               viewBox="0 0 24 24"
-                               stroke-width="1.5"
-                               stroke="currentColor"
-                               class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-                          </svg>
-                          Copy link
-                        </a>
-                      </li>
-                      <li>
-                        <a onclick="getEmbedCode('{{ post.id }}')"
-                           class="dropdown-item text-sm font-medium flex items-center gap-2">
-                          <svg xmlns="http://www.w3.org/2000/svg"
-                               fill="none"
-                               viewBox="0 0 24 24"
-                               stroke-width="1.5"
-                               stroke="currentColor"
-                               class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
-                          </svg>
-                          Get embed code
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <!-- Reactions Display -->
-                <div id="reactions-{{ post.id }}" class="reactions-container mt-2">
-                  {% for reaction in post.reactions.all %}
-                    <div class="reaction">
-                      <span>{{ reaction.reaction }}</span>
-                      <span>{{ post.reactions.count }}</span>
-                    </div>
-                  {% endfor %}
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-        {% else %}
-          <p class="text-gray-500">No posts yet.</p>
-        {% endif %}
+    </div>
+    <!-- Tabs -->
+    <div class="border-b border-gray-200">
+      <div class="flex space-x-8">
+        <button
+          class="px-1 py-4 border-b-2 border-black font-semibold"
+          id="posts-tab"
+        >
+          Posts
+        </button>
+        <button class="px-1 py-4 text-gray-500" id="replies-tab">
+          Replies
+        </button>
       </div>
     </div>
-    <!-- Edit Profile Modal -->
+    <!-- Post Input -->
     {% if request.user == user %}
-      <div id="editModal"
-           class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
-        <div class="bg-white rounded-2xl max-w-lg mx-auto mt-20 p-6">
-          <div class="mb-6">
-            <h3 class="text-xl font-bold mb-4">Edit Profile</h3>
-            <form method="post" enctype="multipart/form-data" class="space-y-4">
-              {% csrf_token %}
-              <!-- Username -->
-              <div>
-                <label for="id_username" class="block text-sm font-medium mb-2">Username</label>
-                <input type="text"
-                       id="id_username"
-                       name="username"
-                       value="{{ form.username.value }}"
-                       class="w-full p-2 border rounded-lg" />
-                {% if form.username.errors %}<div class="text-red-500 text-sm mt-1">{{ form.username.errors }}</div>{% endif %}
+    <div class="mt-4 flex gap-4">
+      <div class="w-10 h-10">
+        <img
+          src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+          alt="{{ user.username }}"
+          width="64"
+          height="64"
+          class="w-full h-full object-cover rounded-full"
+        />
+      </div>
+      <div class="flex-1">
+        <input
+          type="text"
+          placeholder="What's new?"
+          class="w-full p-2 rounded-lg border-none focus:ring-0 bg-transparent"
+          onclick="openCreatePostModal()"
+        />
+      </div>
+      <button
+        class="px-4 py-2 shadow-lg rounded-lg text-black-400 hover:bg-gray-100"
+        onclick="openCreatePostModal()"
+      >
+        Post
+      </button>
+    </div>
+    {% endif %}
+    <!-- User's Posts Section -->
+    <div class="mt-6">
+      <h3 class="text-lg font-semibold mb-4">Posts</h3>
+      {% if posts %}
+      <div class="space-y-4">
+        {% for post in posts %}
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <div class="flex justify-between">
+            <div class="flex gap-3">
+              <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                <img
+                  src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+                  alt="{{ user.username }}"
+                  width="64"
+                  height="64"
+                  class="w-full h-full object-cover rounded-full"
+                />
               </div>
-              <!-- Profile Image Upload -->
-              <div class="text-center mb-6">
-                <div class="relative w-24 h-24 mx-auto">
-                  <img id="preview-image"
-                       src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
-                       alt="Profile Image"
-                       width="64"
-                       height="64"
-                       class="w-full h-full object-cover rounded-full" />
-                  <label for="id_profile_image"
-                         class="absolute bottom-0 right-0 bg-black text-white p-2 rounded-full cursor-pointer hover:opacity-90">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         class="h-4 w-4"
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              <div>
+                <div class="flex items-center gap-1">
+                  <span class="font-bold">{{ post.author.username }}</span>
+                  <span class="text-gray-500"
+                    >· {{ post.created_at|timesince }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Post Content -->
+          {% if post.content %}
+          <div class="mt-3 whitespace-pre-wrap">{{ post.content }}</div>
+          {% endif %}
+          <!-- Post Images -->
+          {% if post.post_images.all %}
+          <div class="mt-4 overflow-x-auto scrollbar-hide">
+            <div class="flex gap-2">
+              {% for image in post.post_images.all %}
+              <div
+                class="relative aspect-square w-60 md:w-80 rounded-xl overflow-hidden flex-shrink-0"
+              >
+                <img
+                  src="{{ image.image.url }}"
+                  alt="Post image"
+                  width="64"
+                  height="64"
+                  class="object-cover w-full h-full cursor-pointer"
+                  onclick="event.stopPropagation(); openImagePreviewModal([{% for img in post.post_images.all %}'{{ img.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}], {{ forloop.counter0 }})"
+                />
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+          <!-- Post Actions -->
+          <div class="flex justify-between mt-3">
+            <!-- Like Button -->
+            <button
+              class="flex items-center gap-2 text-gray-500 hover:text-pink-600 group like-button"
+              data-post-id="{{ post.id }}"
+              onclick="event.preventDefault(); handleLikeButtonClick(this)"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5 {% if request.user in post.likes.all %}fill-red-500 stroke-red-500{% endif %}"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                />
+              </svg>
+              <span class="likes-count">{{ post.get_likes_count }}</span>
+            </button>
+
+            <!-- Reply Button -->
+            <button
+              class="flex items-center gap-2 text-gray-500 hover:text-blue-500"
+              onclick="event.stopPropagation(); openReplyModal('{{ post.id }}')"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
+                />
+              </svg>
+              <span>{{ post.get_replies_count }}</span>
+            </button>
+
+            <!-- View Button -->
+            <button
+              class="flex items-center gap-2 text-gray-500 hover:text-green-500"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+              </svg>
+              <span>{{ post.views }}</span>
+            </button>
+
+            <!-- Share Dropdown -->
+            <div class="dropdown dropdown-end">
+              <div
+                tabindex="0"
+                role="button"
+                class="flex items-center gap-2 text-gray-500 hover:text-blue-500"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+                  />
+                </svg>
+              </div>
+              <ul
+                tabindex="0"
+                class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+              >
+                <li>
+                  <a
+                    onclick="copyPostLink('{{ post.id }}')"
+                    class="dropdown-item text-sm font-medium flex items-center gap-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+                      />
                     </svg>
-                  </label>
-                  <input type="file"
-                         id="id_profile_image"
-                         name="profile_image"
-                         accept="image/*"
-                         class="hidden"
-                         onchange="previewImage(this)" />
-                </div>
-                <p class="text-sm text-gray-500 mt-2">Upload new image</p>
-              </div>
-              <!-- Bio -->
-              <div>
-                <label for="id_bio" class="block text-sm font-medium mb-2">Bio</label>
-                <div class="flex items-center">
-                  <textarea id="id_bio" name="bio" rows="3" class="flex-1 p-2 border rounded-lg">{{ form.bio.value }}</textarea>
-                </div>
-              </div>
-              <!-- Website -->
-              <div>
-                <label for="id_website" class="block text-sm font-medium mb-2">Link</label>
-                <input type="url"
-                       id="id_website"
-                       name="website"
-                       value="{{ form.website.value }}"
-                       class="w-full p-2 border rounded-lg" />
-              </div>
-              <!-- Buttons -->
-              <div class="flex justify-end gap-4 mt-6">
-                <div class="flex w-full gap-4">
-                  <a href="/accounts/logout/" class="btn btn-outline-error">Logout</a>
-                </div>
-                <button type="button"
-                        onclick="closeEditModal()"
-                        class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">Cancel</button>
-                <button type="submit"
-                        class="px-4 py-2 bg-black text-white rounded-lg hover:opacity-90">Done</button>
-              </div>
-            </form>
+                    Copy link
+                  </a>
+                </li>
+                <li>
+                  <a
+                    onclick="getEmbedCode('{{ post.id }}')"
+                    class="dropdown-item text-sm font-medium flex items-center gap-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z"
+                      />
+                    </svg>
+                    Get embed code
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Reactions Display -->
+          <div id="reactions-{{ post.id }}" class="reactions-container mt-2">
+            {% for reaction in post.reactions.all %}
+            <div class="reaction">
+              <span>{{ reaction.reaction }}</span>
+              <span>{{ post.reactions.count }}</span>
+            </div>
+            {% endfor %}
           </div>
         </div>
+        {% endfor %}
       </div>
-    {% endif %}
+      {% else %}
+      <p class="text-gray-500">No posts yet.</p>
+      {% endif %}
+    </div>
   </div>
-  <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  <!-- Edit Profile Modal -->
+  {% if request.user == user %}
+  <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="bg-white rounded-2xl max-w-lg mx-auto mt-20 p-6">
+      <div class="mb-6">
+        <h3 class="text-xl font-bold mb-4">Edit Profile</h3>
+        <form method="post" enctype="multipart/form-data" class="space-y-4">
+          {% csrf_token %}
+          <!-- Username -->
+          <div>
+            <label for="id_username" class="block text-sm font-medium mb-2"
+              >Username</label
+            >
+            <input
+              type="text"
+              id="id_username"
+              name="username"
+              value="{{ form.username.value }}"
+              class="w-full p-2 border rounded-lg"
+            />
+            {% if form.username.errors %}
+            <div class="text-red-500 text-sm mt-1">
+              {{ form.username.errors }}
+            </div>
+            {% endif %}
+          </div>
+          <!-- Profile Image Upload -->
+          <div class="text-center mb-6">
+            <div class="relative w-24 h-24 mx-auto">
+              <img
+                id="preview-image"
+                src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% elif user.socialaccount_set.all.0.get_avatar_url %}{{ user.socialaccount_set.all.0.get_avatar_url }}{% else %}/media/default_profile_images/default1.webp{% endif %}"
+                alt="Profile Image"
+                width="64"
+                height="64"
+                class="w-full h-full object-cover rounded-full"
+              />
+              <label
+                for="id_profile_image"
+                class="absolute bottom-0 right-0 bg-black text-white p-2 rounded-full cursor-pointer hover:opacity-90"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </label>
+              <input
+                type="file"
+                id="id_profile_image"
+                name="profile_image"
+                accept="image/*"
+                class="hidden"
+                onchange="previewImage(this)"
+              />
+            </div>
+            <p class="text-sm text-gray-500 mt-2">Upload new image</p>
+          </div>
+          <!-- Bio -->
+          <div>
+            <label for="id_bio" class="block text-sm font-medium mb-2"
+              >Bio</label
+            >
+            <div class="flex items-center">
+              <textarea
+                id="id_bio"
+                name="bio"
+                rows="3"
+                class="flex-1 p-2 border rounded-lg"
+              >
+{{ form.bio.value }}</textarea
+              >
+            </div>
+          </div>
+          <!-- Website -->
+          <div>
+            <label for="id_website" class="block text-sm font-medium mb-2"
+              >Link</label
+            >
+            <input
+              type="url"
+              id="id_website"
+              name="website"
+              value="{{ form.website.value }}"
+              class="w-full p-2 border rounded-lg"
+            />
+          </div>
+          <!-- Buttons -->
+          <div class="flex justify-end gap-4 mt-6">
+            <div class="flex w-full gap-4">
+              <a href="/accounts/logout/" class="btn btn-outline-error"
+                >Logout</a
+              >
+            </div>
+            <button
+              type="button"
+              onclick="closeEditModal()"
+              class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-black text-white rounded-lg hover:opacity-90"
+            >
+              Done
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
     // Initialize like buttons
     initializeLikeButtons();
   });
 
   function initializeLikeButtons() {
-    document.querySelectorAll('.like-button').forEach(button => {
-        const postId = button.dataset.postId;
-        
-        // Check initial like status
-        fetch(`/community/post/${postId}/check_like/`, {
-            headers: {
-                "X-CSRFToken": "{{ csrf_token }}",
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.is_liked) {
-                const svg = button.querySelector('svg');
-                svg.classList.add('fill-red-500', 'stroke-red-500');
-            }
+    document.querySelectorAll(".like-button").forEach((button) => {
+      const postId = button.dataset.postId;
+
+      // Check initial like status
+      fetch(`/community/post/${postId}/check_like/`, {
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.is_liked) {
+            const svg = button.querySelector("svg");
+            svg.classList.add("fill-red-500", "stroke-red-500");
+          }
         });
     });
   }
 
   function handleLikeButtonClick(button) {
     const postId = button.dataset.postId;
-    const svg = button.querySelector('svg');
-    const likesCount = button.querySelector('.likes-count');
+    const svg = button.querySelector("svg");
+    const likesCount = button.querySelector(".likes-count");
 
     fetch(`/community/post/${postId}/like/`, {
-        method: 'POST',
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-            "Content-Type": "application/json",
-        },
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/json",
+      },
     })
-    .then(response => response.json())
-    .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         if (data.liked) {
-            svg.classList.add('fill-red-500', 'stroke-red-500');
+          svg.classList.add("fill-red-500", "stroke-red-500");
         } else {
-            svg.classList.remove('fill-red-500', 'stroke-red-500');
+          svg.classList.remove("fill-red-500", "stroke-red-500");
         }
         likesCount.textContent = data.likes_count;
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }
 
   function openCreatePostModal() {
@@ -486,7 +657,8 @@
             .querySelector("svg")
             .classList.remove("fill-red-500", "stroke-red-500");
         }
-        event.currentTarget.querySelector("span").textContent = data.likes_count;
+        event.currentTarget.querySelector("span").textContent =
+          data.likes_count;
       });
   }
 
@@ -497,117 +669,118 @@
     });
   });
 
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("DOMContentLoaded", function () {
     // Attach event listeners to like buttons
     attachLikeButtonListeners();
 
     // Function to handle profile-specific actions
     initializeProfileActions();
-});
+  });
 
-function initializeProfileActions() {
+  function initializeProfileActions() {
     // Add any profile-specific initializations here
-}
+  }
 
-function attachLikeButtonListeners() {
-    document.querySelectorAll(".like-button").forEach(button => {
-        const postId = button.dataset.postId;
-        button.addEventListener("click", function(event) {
-            event.preventDefault();
-            handleLikeAction(postId, button);
-        });
+  function attachLikeButtonListeners() {
+    document.querySelectorAll(".like-button").forEach((button) => {
+      const postId = button.dataset.postId;
+      button.addEventListener("click", function (event) {
+        event.preventDefault();
+        handleLikeAction(postId, button);
+      });
     });
-}
+  }
 
-function handleLikeAction(postId, button) {
+  function handleLikeAction(postId, button) {
     fetch(`/community/post/${postId}/like/`, {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-            "Content-Type": "application/json",
-        }
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/json",
+      },
     })
-    .then(response => response.json())
-    .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         updateLikeButton(button, data);
-    });
-}
+      });
+  }
 
-function updateLikeButton(button, data) {
+  function updateLikeButton(button, data) {
     const svg = button.querySelector("svg");
     const counter = button.querySelector("span");
-    
+
     if (data.liked) {
-        button.classList.add("liked");
-        svg.classList.add("fill-red-500", "stroke-red-500");
+      button.classList.add("liked");
+      svg.classList.add("fill-red-500", "stroke-red-500");
     } else {
-        button.classList.remove("liked");
-        svg.classList.remove("fill-red-500", "stroke-red-500");
+      button.classList.remove("liked");
+      svg.classList.remove("fill-red-500", "stroke-red-500");
     }
     counter.textContent = data.likes_count;
-}
+  }
 
-function copyPostLink(postId) {
+  function copyPostLink(postId) {
     const postLink = `${window.location.origin}/community/post/${postId}/`;
     navigator.clipboard.writeText(postLink).then(() => {
-        alert("Link copied to clipboard!");
+      alert("Link copied to clipboard!");
     });
-}
+  }
 
-function getEmbedCode(postId) {
+  function getEmbedCode(postId) {
     const embedCode = `<iframe src="${window.location.origin}/community/post/${postId}/embed/" width="500" height="300"></iframe>`;
     navigator.clipboard.writeText(embedCode).then(() => {
-        alert("Embed code copied to clipboard!");
+      alert("Embed code copied to clipboard!");
     });
-}
+  }
 
-// Add follow button functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const followButton = document.getElementById('followButton');
+  // Add follow button functionality
+  document.addEventListener("DOMContentLoaded", function () {
+    const followButton = document.getElementById("followButton");
     if (followButton) {
-        followButton.addEventListener('click', function() {
-            const username = this.dataset.username;
-            
-            // Disable button during request
-            followButton.disabled = true;
-            
-            fetch(`/community/@${username}/follow/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json'
-                },
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) {
-                    console.error(data.error);
-                    return;
-                }
-                
-                // Update button text and style
-                followButton.textContent = data.followed ? 'Unfollow' : 'Follow';
-                followButton.classList.toggle('btn-primary', !data.followed);
-                followButton.classList.toggle('btn-secondary', data.followed);
-                
-                // Update follower count only
-                document.querySelector('.followers-count').textContent = data.followers_count;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Optionally show error message to user
-            })
-            .finally(() => {
-                // Re-enable button
-                followButton.disabled = false;
-            });
-        });
+      followButton.addEventListener("click", function () {
+        const username = this.dataset.username;
+
+        // Disable button during request
+        followButton.disabled = true;
+
+        fetch(`/community/@${username}/follow/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.error) {
+              console.error(data.error);
+              return;
+            }
+
+            // Update button text and style
+            followButton.textContent = data.followed ? "Unfollow" : "Follow";
+            followButton.classList.toggle("btn-primary", !data.followed);
+            followButton.classList.toggle("btn-secondary", data.followed);
+
+            // Update follower count only
+            document.querySelector(".followers-count").textContent =
+              data.followers_count;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // Optionally show error message to user
+          })
+          .finally(() => {
+            // Re-enable button
+            followButton.disabled = false;
+          });
+      });
     }
-});
-  </script>
+  });
+</script>
 {% endblock content %}
