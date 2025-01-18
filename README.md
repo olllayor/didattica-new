@@ -1,5 +1,5 @@
 # didattica-new
-<i class="ai-planet"></i>
+
 
 
 
