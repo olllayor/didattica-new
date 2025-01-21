@@ -1,0 +1,88 @@
+<div class="drawer drawer-end">
+  <input id="chat-drawer" type="checkbox" class="drawer-toggle" />
+  <div class="drawer-content">
+    <!-- Empty content as this is modal -->
+  </div>
+  <div class="drawer-side">
+    <label for="chat-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+    <div class="bg-base-200 text-base-content min-h-full w-96 p-4">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          {% if selected_ai.logo_url %}
+          <img src="{{ selected_ai.logo_url }}" alt="{{ selected_ai.name }}" class="w-8 h-8 rounded-lg">
+          {% else %}
+          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span class="font-bold text-xl text-primary-content">N</span>
+          </div>
+          <span class="font-bold text-xl">Noid</span>
+        </div>
+        <label for="chat-drawer" class="btn btn-ghost btn-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </label>
+      </div>
+
+      <!-- Post Content Preview -->
+      {% if post %}
+      <div class="bg-base-100 rounded-lg p-4 mb-4">
+        <h3 class="font-bold mb-2">Post Content:</h3>
+        <p class="text-sm">{{ post.content|truncatewords:50 }}</p>
+        {% if post.image %}
+        <img src="{{ post.image.url }}" alt="Post image" class="mt-2 rounded-lg max-h-40 object-cover">
+        {% endif %}
+      </div>
+      {% endif %}
+      
+      <!-- Dynamic Post Content -->
+      <div id="post-preview" class="hidden bg-base-100 rounded-lg p-4 mb-4">
+        <h3 class="font-bold mb-2">Post Content:</h3>
+        <p id="post-content" class="text-sm"></p>
+        <div id="post-image" class="mt-2 hidden">
+          <img class="rounded-lg max-h-40 object-cover w-full" alt="Post image">
+        </div>
+      </div>
+
+      <!-- Chat Interface -->
+      <div class="flex flex-col h-[calc(100vh-200px)]">
+        <div class="flex-1 overflow-y-auto mb-4" id="chat-messages">
+          <!-- Messages will be inserted here -->
+        </div>
+        
+        <div class="flex gap-2">
+          <textarea class="textarea textarea-bordered flex-1" placeholder="Ask about the post..."></textarea>
+          <button class="btn btn-primary">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('loadPostInDrawer', async (e) => {
+    const postId = e.detail.postId;
+    try {
+        const response = await fetch(`/api/posts/${postId}/`);
+        const post = await response.json();
+        
+        // Show post preview
+        const preview = document.getElementById('post-preview');
+        const content = document.getElementById('post-content');
+        const imageContainer = document.getElementById('post-image');
+        const image = imageContainer.querySelector('img');
+        
+        content.textContent = post.content;
+        preview.classList.remove('hidden');
+        
+        if (post.image) {
+            image.src = post.image;
+            imageContainer.classList.remove('hidden');
+        } else {
+            imageContainer.classList.add('hidden');
+        }
+    } catch (error) {
+        console.error('Error loading post:', error);
+    }
+});
+</script>
