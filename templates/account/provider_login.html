@@ -1,0 +1,52 @@
+{% extends "base_auth.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+{% load static %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock head_title %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center">
+    <div class="glass-effect w-full max-w-md p-8 rounded-2xl space-y-8 text-center">
+        <div>
+            <h2 class="text-3xl font-bold text-white">{% trans "Continue with" %} {{ provider.name }}</h2>
+            <p class="mt-2 text-sm text-yellow-300">
+                {% blocktrans with provider_name=provider.name site_name=site.name %}You are about to connect with {{ provider_name }}.{% endblocktrans %}
+            </p>
+        </div>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <input type="hidden" name="process" value="{{ process }}" />
+            
+            {% if action == "connect" %}
+                <div class="text-gray-300">
+                    {% blocktrans with provider_name=provider.name %}Are you sure you want to connect your account to {{ provider_name }}?{% endblocktrans %}
+                </div>
+            {% endif %}
+            
+            <div class="flex justify-center gap-4">
+                <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
+                    {% if action == "connect" %}
+                        {% trans "Connect" %}
+                    {% else %}
+                        {% trans "Continue" %}
+                    {% endif %}
+                </button>
+                <a href="{% url 'account_login' %}" class="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:border-yellow-300/50 transition duration-200">
+                    {% trans "Cancel" %}
+                </a>
+            </div>
+        </form>
+
+        {% if auth_params %}
+            {# Display any additional auth parameters if needed #}
+            <div class="text-xs text-gray-500">
+                {% for key, value in auth_params.items %}
+                    <div>{{ key }}: {{ value }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

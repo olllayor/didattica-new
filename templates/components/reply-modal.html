@@ -1,0 +1,55 @@
+<!-- templates/components/reply-modal.html -->
+{% load static %}
+<!-- Reply Modal -->
+<div id="replyModal" class="hidden fixed inset-0 bg-black/50 z-[70] flex items-center justify-center">
+    <div class="bg-white rounded-lg w-[500px] shadow-xl">
+      <div class="border-b pb-2 p-4">
+        <div class="flex items-center justify-between">
+          <button onclick="closeReplyModal()" class="text-gray-600 hover:text-gray-500 text-base font-normal px-0">
+            Cancel
+          </button>
+          <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold">Reply</h2>
+          <div class="invisible">Cancel</div>
+        </div>
+      </div>
+  
+      <form method="POST" action="{% url 'create_post' %}" class="space-y-4 p-4" enctype="multipart/form-data" id="replyForm">
+        {% csrf_token %}
+        <input type="hidden" id="replyPostId" name="reply_to" value="">
+        <div class="flex gap-3">
+          <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+            <img
+              src="{% if request.user.profile.profile_image %}{{ request.user.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+              alt="{{ request.user.username }}"
+              class="w-full h-full object-cover rounded-full"
+            />
+          </div>
+          <div class="flex-1">
+            <textarea name="content" class="w-full resize-none border-0 bg-transparent text-base placeholder:text-gray-500 focus:outline-none font-mono" placeholder="Write your reply..." rows="4"></textarea>
+          </div>
+        </div>
+  
+        <div class="flex items-center justify-between border-t pt-4">
+          <p class="text-sm text-gray-500">Anyone can reply & quote</p>
+          <button type="submit" class="bg-black text-white rounded-full px-4 py-2 hover:opacity-90">
+            Reply
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    // Function to open the reply modal
+    function openReplyModal(postId) {
+      document.getElementById("replyModal").classList.remove("hidden");
+      document.getElementById("replyPostId").value = postId;
+      document.body.classList.add("overflow-hidden");
+    }
+  
+    // Function to close the reply modal
+    function closeReplyModal() {
+      document.getElementById("replyModal").classList.add("hidden");
+      document.body.classList.remove("overflow-hidden");
+    }
+  </script>

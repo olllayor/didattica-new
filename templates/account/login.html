@@ -1,0 +1,54 @@
+{% extends "base_auth.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+{% load static %}
+{% block head_title %}{% trans "Sign In" %}{% endblock head_title %}
+{% block content %}
+    <div class="min-h-screen flex items-center justify-center bg-black">
+        <div class="glass-card w-full max-w-md p-8 rounded-2xl space-y-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-white">{% trans "Welcome" %}</h2>
+                <p class="mt-2 text-sm text-yellow-300 underline">
+                    Didattica
+                </p>
+            </div>
+
+            {% get_providers as socialaccount_providers %}
+            {% if socialaccount_providers %}
+                <div class="mt-6 space-y-4">
+                    {% for provider in socialaccount_providers %}
+                        {% if provider.id == 'google' %}
+                            <a href="{% provider_login_url provider.id process=process %}"
+                               class="w-full flex items-center justify-center px-4 py-3 space-x-3 border border-gray-700 rounded-lg text-sm font-medium text-gray-300 bg-black/30 hover:bg-gray-900/50 transition duration-200 backdrop-blur-sm hover:border-yellow-300/50">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                                    <path fill="#fbc02d" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                                    <path fill="#e53935" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+                                    <path fill="#4caf50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
+                                    <path fill="#1565c0" d="M43.611,20.083L43.595,20L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                                </svg>
+                                <span>Continue with Google</span>
+                            </a>
+                        {% elif provider.id == 'telegram' %}
+                            <a href="{% provider_login_url provider.id process=process %}"
+                               class="w-full flex items-center justify-center px-4 py-3 space-x-3 border border-gray-700 rounded-lg text-sm font-medium text-gray-300 bg-black/30 hover:bg-gray-900/50 transition duration-200 backdrop-blur-sm hover:border-yellow-300/50">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                                    <path fill="#29b6f6" d="M24 4A20 20 0 1 0 24 44A20 20 0 1 0 24 4Z"></path>
+                                    <path fill="#fff" d="M33.95,15l-3.746,19.126c0,0-0.161,0.874-1.245,0.874c-0.576,0-0.873-0.274-0.873-0.274l-8.114-6.733 l-3.97-2.001l-5.095-1.355c0,0-0.907-0.262-0.907-1.012c0-0.625,0.933-0.923,0.933-0.923l21.316-8.468 c-0.001-0.001,0.651-0.235,1.126-0.234C33.667,14,34,14.125,34,14.5C34,14.75,33.95,15,33.95,15z"></path>
+                                </svg>
+                                <span>Continue with Telegram</span>
+                            </a>
+                        {% elif provider.id == 'twitter' %}
+                            <a href="{% provider_login_url provider.id process=process %}"
+                               class="w-full flex items-center justify-center px-4 py-3 space-x-3 border border-gray-700 rounded-lg text-sm font-medium text-gray-300 bg-black/30 hover:bg-gray-900/50 transition duration-200 backdrop-blur-sm hover:border-yellow-300/50">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+                                    <path fill="currentColor" d="M11 4C7.134 4 4 7.134 4 11v28c0 3.866 3.134 7 7 7h28c3.866 0 7-3.134 7-7V11c0-3.866-3.134-7-7-7H11zm2.086 9h7.937l5.637 8.01L33.5 13H36l-8.211 9.613L37.914 37h-7.935l-6.541-9.293L15.5 37H13l9.309-10.896L13.086 13zm3.828 2l14.107 20h3.065L19.978 15h-3.064z"></path>
+                                </svg>
+                                <span>Continue with Twitter</span>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}

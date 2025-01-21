@@ -1,74 +1,247 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}My Django Project{% endblock %}</title>
+    <meta name="description"
+          content="Didattica - A platform for educational content sharing and discussion" />
+    <meta name="keywords"
+          content="education, learning, teaching, didactics, community, discussion, knowledge sharing" />
+    <title>
+      {% block title %}
+        Didattica
+      {% endblock title %}
+    </title>
+    <script src="https://unpkg.com/akar-icons-fonts"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@akar-icons/assets/dist/index.css" />
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css"
+          rel="stylesheet"
+          type="text/css" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/rippleui@1.12.1/dist/css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Optional: Add custom styles or scripts here -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <style>
-      /* Custom styles can be added here */
+      @import url("https://fonts.cdnfonts.com/css/geist");
+      body {
+        font-family: "Geist", monospace;
+      }
+      .toast-message {
+        animation: slideIn 0.5s ease-out;
+      }
+      .toast-message.success {
+        background-color: #10b981; /* Green */
+      }
+      .toast-message.error {
+        background-color: #ef4444; /* Red */
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
     </style>
   </head>
-  <body class="bg-gray-100">
-    <!-- Header -->
-    <header class="bg-white shadow">
-      <div
-        class="container mx-auto px-4 py-6 flex justify-between items-center"
-      >
-        <a href="/" class="text-2xl font-bold text-indigo-600"
-          >My Django Project</a
-        >
-        <nav>
-          <ul class="flex space-x-4">
-            {% if user.is_authenticated %}
-            <li>
-              <a
-                href="{% url 'profile' %}"
-                class="text-gray-700 hover:text-indigo-600"
-                >Profile</a
-              >
-            </li>
-            <li>
-              <a
-                href="{% url 'account_logout' %}"
-                class="text-gray-700 hover:text-indigo-600"
-                >Logout</a
-              >
-            </li>
-            {% else %}
-            <li>
-              <a
-                href="{% url 'account_login' %}"
-                class="text-gray-700 hover:text-indigo-600"
-                >Login</a
-              >
-            </li>
-            <li>
-              <a
-                href="{% url 'account_signup' %}"
-                class="text-gray-700 hover:text-indigo-600"
-                >Sign Up</a
-              >
-            </li>
-            {% endif %}
-          </ul>
-        </nav>
-      </div>
-    </header>
-
+  <body class="h-full bg-base-100 text-base-content">
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-      {% block content %}
-      <!-- Content from child templates will go here -->
-      {% endblock %}
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white shadow mt-8">
-      <div class="container mx-auto px-4 py-6 text-center text-gray-600">
-        &copy; 2023 My Django Project. All rights reserved.
+    <main class="pb-20 md:pb-0 md:ml-16">
+      <!-- Toast Messages Container -->
+      <div class="fixed top-4 right-4 z-50 space-y-2">
+        {% for message in messages %}
+          <div class="toast-message {% if message.tags %}{{ message.tags }}{% endif %} p-4 rounded-lg shadow-lg text-white flex items-center justify-between">
+            <span>{{ message }}</span>
+            <button onclick="this.parentElement.remove()" class="ml-4">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   class="h-5 w-5"
+                   viewBox="0 0 20 20"
+                   fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        {% endfor %}
       </div>
-    </footer>
+      {% block content %}
+      {% endblock content %}
+    </main>
+    <!-- Include Components -->
+    {% include "components/create-post-button.html" %}
+    <!-- Include Modals -->
+    {% block modals %}
+      {% include "components/create-post-modal.html" %}
+      {% include "components/image-preview-modal.html" %}
+      {% include "components/reply-modal.html" %}
+    {% endblock modals %}
+    <!-- Include Sidebar/Navbar -->
+    {% include "components/sidebar.html" %}
+    <!-- Scripts -->
+    <script>
+      // Automatically remove toast messages after 3 seconds
+      document.addEventListener("DOMContentLoaded", function () {
+        const toastMessages = document.querySelectorAll(".toast-message");
+        toastMessages.forEach((toast) => {
+          setTimeout(() => {
+            toast.remove();
+          }, 3000); // 5 seconds
+        });
+      });
+
+      // Modal Functions
+      function openCreatePostModal() {
+        document.getElementById("createPostModal").classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+      }
+
+      function closeCreatePostModal() {
+        document.getElementById("createPostModal").classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+      }
+
+      function openImagePreviewModal(images, index = 0) {
+        if (!Array.isArray(images)) {
+          images = [images]; // Convert single image to array
+        }
+        const modal = document.getElementById('imagePreviewModal');
+        const previewedImage = document.getElementById('previewedImage');
+        const prevButton = document.getElementById('prevImageButton');
+        const nextButton = document.getElementById('nextImageButton');
+    
+        // Set the image URLs and current index
+        imageUrls = images;
+        currentImageIndex = index;
+    
+        // Show/hide navigation buttons based on image count
+        prevButton.style.display = images.length > 1 ? 'block' : 'none';
+        nextButton.style.display = images.length > 1 ? 'block' : 'none';
+    
+        // Show the first image
+        previewedImage.src = imageUrls[currentImageIndex];
+        
+        // Wait for image to load before showing modal
+        previewedImage.onload = function() {
+          modal.classList.remove('hidden');
+          document.body.classList.add('overflow-hidden');
+        };
+    
+        // Add keyboard event listeners
+        document.addEventListener('keydown', handleKeyboardNavigation);
+      }
+    
+      function closeImagePreviewModal() {
+        const modal = document.getElementById('imagePreviewModal');
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    
+        // Remove keyboard event listeners
+        document.removeEventListener('keydown', handleKeyboardNavigation);
+    
+        // Reset state
+        currentImageIndex = 0;
+        imageUrls = [];
+      }
+    
+      function showNextImage() {
+        if (currentImageIndex < imageUrls.length - 1) {
+          currentImageIndex++;
+          const previewedImage = document.getElementById('previewedImage');
+          previewedImage.src = imageUrls[currentImageIndex];
+        }
+      }
+    
+      function showPreviousImage() {
+        if (currentImageIndex > 0) {
+          currentImageIndex--;
+          const previewedImage = document.getElementById('previewedImage');
+          previewedImage.src = imageUrls[currentImageIndex];
+        }
+      }
+    
+      function handleKeyboardNavigation(event) {
+        if (event.key === 'Escape') {
+          closeImagePreviewModal();
+        } else if (event.key === 'ArrowLeft') {
+          showPreviousImage();
+        } else if (event.key === 'ArrowRight') {
+          showNextImage();
+        }
+      }
+
+      // Add click event listeners to navigation buttons
+      document
+        .getElementById("prevImageButton")
+        .addEventListener("click", showPreviousImage);
+      document
+        .getElementById("nextImageButton")
+        .addEventListener("click", showNextImage);
+
+      // Function to open the reply modal
+      function openReplyModal(postId) {
+        document.getElementById("replyModal").classList.remove("hidden");
+        document.getElementById("replyPostId").value = postId;
+        document.body.classList.add("overflow-hidden");
+      }
+
+      // Function to close the reply modal
+      function closeReplyModal() {
+        document.getElementById("replyModal").classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+      }
+
+      // Function to handle like button clicks
+      function handleLikeButtonClick(event) {
+        event.preventDefault();
+        const postId = event.currentTarget.dataset.postId;
+
+        fetch(`/community/post/${postId}/like/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.liked) {
+              event.currentTarget.classList.add("liked");
+              event.currentTarget
+                .querySelector("svg")
+                .classList.add("fill-red-500", "stroke-red-500");
+            } else {
+              event.currentTarget.classList.remove("liked");
+              event.currentTarget
+                .querySelector("svg")
+                .classList.remove("fill-red-500", "stroke-red-500");
+            }
+            event.currentTarget.querySelector("span").textContent =
+              data.likes_count;
+          });
+      }
+      // Add click event listeners to navigation buttons
+      document.addEventListener("DOMContentLoaded", function () {
+        const prevImageButton = document.getElementById("prevImageButton");
+        const nextImageButton = document.getElementById("nextImageButton");
+
+        if (prevImageButton) {
+          prevImageButton.addEventListener("click", showPreviousImage);
+        }
+
+        if (nextImageButton) {
+          nextImageButton.addEventListener("click", showNextImage);
+        }
+      });
+
+      // Attach event listeners to like buttons when the page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".like-button").forEach((button) => {
+          button.addEventListener("click", handleLikeButtonClick);
+        });
+      });
+    </script>
   </body>
 </html>

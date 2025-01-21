@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Existing styles */
+        :root {
+            --white:  #ffffff;
+            --yellow: #f1edb6;
+            --black:  #000000;
+        }
+
+        body {
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--black); /* Set background to black for better star visibility */
+        }
+
+        *, *:before, *:after { box-sizing: border-box; }
+
+        *:before, *:after { position: absolute; }
+
+        /* Background canvas style */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Original styles */
+        .space {
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Rest of the original styles */
+        .gargantua {
+            width: 90vmin;
+            height: 60vmin;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transform: rotate(-5deg);
+            filter: sepia(0.5);
+            /* Add animation to the whole gargantua for subtle movement */
+            animation: subtleRotate 60s linear infinite;
+        }
+        .gargantua > div {
+            position: absolute;
+        }
+
+        .bot-photon-ring {
+            width: 18vmin;
+            height: 10vmin;
+            border-radius: 1vmin 1vmin 20vmin 20vmin;
+            box-shadow: 0 0 5px 2px var(--black);
+            top: 28.5vmin;
+            border: 2px solid var(--white);
+            border-top: 0;
+            background: var(--black);
+            margin-left: 0.75vmin;
+            box-shadow: 0 0 5px 2px var(--black), 0px 0px 5px 2px var(--yellow), 0px -3px 10px -3px var(--yellow) inset;
+            /* Animate pulsing effect */
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        .image-disk {
+            width: 22vmin;
+            height: 22vmin;
+            border-radius: 100%;
+            top: 19vmin;
+            border: 2vmin solid var(--white);
+            box-shadow: 0 0px 15px 3px var(--yellow), 0 0px 5px 2px var(--yellow) inset;
+            /* Animate rotation */
+            animation: rotateDisk 20s linear infinite;
+        }
+        .image-disk:before, .image-disk:after {
+            content: "";
+            position: absolute;
+            left: -5.365vmin;
+            top: 3.85vmin;
+            width: 3.5vmin;
+            height: 4.5vmin;
+            border-radius: 0px 0px 34px 10px;
+            transform: rotate(23deg);
+            box-shadow: 16px 2px 0px 1px white;
+        }
+        .image-disk:after {
+            left: 19.885vmin;
+            transform: rotateY(180deg) rotateZ(23deg);
+        }
+        .image-disk-lines {
+            width: 22vmin;
+            height: 22vmin;
+            border-radius: 100%;
+            background: radial-gradient(
+                circle at 50% 50%,
+                transparent, transparent 9.25vmin,
+                var(--yellow) 9.5vmin, var(--yellow) 9.55vmin,
+                var(--white) 9.55vmin, var(--white) 9.95vmin,
+                var(--yellow) 9.95vmin, var(--yellow) 10.05vmin,
+                var(--white) 10.05vmin, var(--white) 10.35vmin,
+                var(--yellow) 10.35vmin, var(--yellow) 10.42vmin,
+                var(--white) 10.42vmin, var(--white) 10.75vmin,
+                var(--yellow) 10.75vmin, var(--yellow) 10.79vmin,
+                var(--white) 10.79vmin, var(--white) 10.95vmin,
+                red 22vmin
+            );
+            /* Animate rotation in opposite direction */
+            animation: rotateDiskLines 30s linear infinite reverse;
+        }
+
+        .accretion-disk {
+            background: radial-gradient(
+                ellipse at 49.5% 40%,
+                transparent, transparent 11.15vmin,
+                var(--white) 11.15vmin, var(--yellow) 11.15vmin,
+                var(--yellow) 11.2vmin, var(--white) 11.2vmin,
+                var(--white) 12.5vmin, var(--yellow) 12.5vmin,
+                var(--yellow) 12.65vmin, var(--white) 12.65vmin,
+                var(--white) 13.5vmin, var(--yellow) 13.5vmin,
+                var(--yellow) 13.55vmin, var(--white) 13.55vmin,
+                var(--white) 14.45vmin, var(--yellow) 14.45vmin,
+                var(--yellow) 14.55vmin, var(--white) 14.55vmin,
+                var(--white) 15.5vmin, var(--yellow) 15.5vmin,
+                var(--yellow) 15.65vmin, var(--white) 15.65vmin,
+                var(--white) 16.5vmin, var(--yellow) 16.5vmin,
+                var(--yellow) 16.65vmin, var(--white) 16.65vmin,
+                var(--white) 17.6vmin,  var(--yellow) 17.6vmin,
+                var(--yellow) 17.65vmin, var(--white) 17.65vmin,
+                var(--white) 18.25vmin,  var(--yellow) 18.25vmin,
+                var(--yellow) 18.35vmin, var(--white) 18.35vmin,
+                var(--white) 19.15vmin,  var(--yellow) 19.15vmin,
+                var(--yellow) 19.35vmin, var(--white) 19.35vmin,
+                var(--white) 19.95vmin,  var(--yellow) 19.95vmin,
+                var(--yellow) 20.05vmin, var(--white) 20.05vmin,
+                var(--white) 20.75vmin,  var(--yellow) 20.75vmin,
+                var(--yellow) 20.85vmin, var(--white) 20.85vmin,
+                var(--white) 21.5vmin,  var(--yellow) 21.5vmin,
+                var(--yellow) 21.55vmin, var(--white) 21.55vmin,
+                var(--white) 22.5vmin,  var(--yellow) 22.5vmin,
+                var(--yellow) 22.65vmin, var(--white) 22.65vmin,
+                var(--white) 23.45vmin, var(--yellow) 23.45vmin,
+                var(--yellow) 23.52vmin, var(--white) 23.55vmin
+            ),
+            radial-gradient(
+                ellipse at 49.5% 37%,
+                var(--black), var(--black) 9.25vmin,
+                var(--white) 9.5vmin, var(--white)
+            );
+            width: 54vmin;
+            height: 6vmin;
+            border-radius: 100%;
+            top: 28.5vmin;
+            box-shadow: 0 0 3px 0 var(--white), 0 0px 15px 3px var(--yellow), 0 15px 10px 10px var(--black);
+            /* Animate subtle shimmering */
+            animation: shimmer 5s linear infinite, colorShift 10s linear infinite;
+        }
+
+        .top-photon-ring {
+            width: 17vmin;
+            height: 9vmin;
+            border-radius: 20vmin 20vmin 1vmin 1vmin;
+            background: var(--black);
+            top: 21.5vmin;
+            box-shadow: 0 5px 0px 2px var(--black), -3px 5px 0px 2px var(--black), 4px 5px 0px 2px var(--black), -2px 3px 3px 0px var(--yellow);
+            /* Animate floating effect */
+            animation: float 4s ease-in-out infinite alternate, colorShift 10s linear infinite;
+        }
+        .top-photon-ring:before {
+            content: "";
+            width: 18vmin;
+            height: 3vmin;
+            background: black;
+            left: -0.5vmin;
+            border-radius: 100%;
+            bottom: -7.6vmin;
+            box-shadow: 0 0 1px 1px var(--black);
+            position: relative;
+            display: block;
+        }
+        .top-photon-ring:after {
+            content: "";
+            opacity: 0.75;
+            width: 17vmin;
+            height: 17vmin;
+            border: 2px solid var(--white);
+            border-radius: 100%;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+            transform: rotate(-46deg);
+            left: 0.25vmin;
+            top: 1.25vmin;
+            box-shadow: -5px 5px 5px -4px var(--yellow) inset, 2px -2px 4px -2px var(--yellow);
+        }
+
+        /* New style for project description */
+        .project-description {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--white);
+            font-size: 14px;
+            text-align: center;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        /* Media queries for responsiveness */
+        @media (max-width: 768px) {
+            .gargantua {
+                width: 80vmin;
+                height: 50vmin;
+            }
+
+            .project-description {
+                font-size: 12px;
+                bottom: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gargantua {
+                width: 70vmin;
+                height: 40vmin;
+            }
+
+            .project-description {
+                font-size: 10px;
+                bottom: 5px;
+            }
+        }
+
+        /* Keyframes for animations */
+        @keyframes rotateDisk {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes rotateDiskLines {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(-360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes subtleRotate {
+            from {
+                transform: rotate(-5deg);
+            }
+            to {
+                transform: rotate(355deg);
+            }
+        }
+
+        @keyframes colorShift {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        /* New Auth Buttons Styles */
+        .auth-container {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 10;
+        }
+
+        .auth-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-family: 'Geist', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .login-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .signup-btn {
+            background: var(--yellow);
+            color: var(--black);
+            box-shadow: 0 0 15px rgba(241, 237, 182, 0.5);
+        }
+
+        .auth-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .signup-btn:hover {
+            box-shadow: 0 0 25px rgba(241, 237, 182, 0.7);
+        }
+
+        .auth-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .auth-button:hover::before {
+            left: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .auth-container {
+                top: 1rem;
+                right: 1rem;
+            }
+
+            .auth-button {
+                padding: 0.5rem 1rem;
+                min-width: 100px;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+    
+    <!-- Auth Buttons -->
+    <div class="auth-container">
+        <a href="{% url 'account_login' %}" class="auth-button login-btn">Login</a>
+    </div>
+
+    <div class="space">
+        <div class="gargantua">
+            <div class="bot-photon-ring"></div>
+            <div class="image-disk"></div>
+            <div class="image-disk-lines"></div>
+            <div class="accretion-disk"></div>
+            <div class="top-photon-ring"></div>
+        </div>
+    </div>
+
+    <!-- Project Description -->
+    <div class="project-description">
+        Focus and absorb: Visualize the core concepts. Prepare to excel.
+    </div>
+
+    <script>
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Star particles
+        const particles = [];
+        const NUM_PARTICLES = 1500;
+
+        // Use let instead of const for CENTER_X and CENTER_Y
+        let CENTER_X = canvas.width / 2;
+        let CENTER_Y = canvas.height / 2;
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * Math.max(canvas.width, canvas.height);
+                this.x = CENTER_X + Math.cos(angle) * distance;
+                this.y = CENTER_Y + Math.sin(angle) * distance;
+                this.z = Math.random() * 2;
+                this.size = Math.random() * 2 + 0.5;
+                this.brightness = Math.random() * 0.5 + 0.5;
+                this.color = `rgba(${255}, ${255}, ${241}, ${this.brightness})`;
+            }
+
+            update() {
+                const dx = this.x - CENTER_X;
+                const dy = this.y - CENTER_Y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 5) {
+                    this.reset();
+                    return;
+                }
+
+                // Calculate gravitational pull
+                const force = Math.min(50 / (distance * 0.1), 15);
+                const angle = Math.atan2(dy, dx);
+
+                // Update position with gravitational effect
+                this.x -= Math.cos(angle) * force;
+                this.y -= Math.sin(angle) * force;
+
+                // Add spiral motion
+                const rotationSpeed = 0.002;
+                const rotationAngle = rotationSpeed * distance * 0.01;
+                const cos = Math.cos(rotationAngle);
+                const sin = Math.sin(rotationAngle);
+
+                const relativeX = this.x - CENTER_X;
+                const relativeY = this.y - CENTER_Y;
+
+                this.x = CENTER_X + (relativeX * cos - relativeY * sin);
+                this.y = CENTER_Y + (relativeX * sin + relativeY * cos);
+
+                // Reset if off screen
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * this.z, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        // Initialize particles
+        for (let i = 0; i < NUM_PARTICLES; i++) {
+            particles.push(new Particle());
+        }
+
+        // Animation loop
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw particles
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            // Update center position
+            CENTER_X = canvas.width / 2;
+            CENTER_Y = canvas.height / 2;
+        });
+
+        // Interactive gravity well
+        canvas.addEventListener('mousemove', (event) => {
+            CENTER_X = event.clientX;
+            CENTER_Y = event.clientY;
+        });
+    </script>
+</body>
+</html>

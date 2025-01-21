@@ -1,0 +1,10 @@
+<h3 class="text-lg font-semibold mb-4">Posts</h3>
+{% if posts %}
+  <div class="space-y-4">
+    {% for post in posts %}
+      <!-- Copy your existing post template here -->
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-gray-500">No posts yet.</p>
+{% endif %}

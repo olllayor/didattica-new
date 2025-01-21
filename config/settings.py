@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+
+
+
 load_dotenv()  # Load environment variables from .env file
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,8 +31,8 @@ SECRET_KEY = "django-insecure-5k8r#gac$aecqip)6=us5s1s_dw0-*516fjs(i-0nru*sytk^p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["demo.jprq.site", "127.0.0.1"]
-CSRF_TRUSTED_ORIGINS = ["https://olllayor.jprq.site", "https://demo.jprq.site"]
+ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["https://*.jprq.site"]
 
 # Application definition
 
@@ -40,13 +43,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "allauth_ui",  # Add this before allauth
+    "debug_toolbar",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "widget_tweaks",  # Add this
-    "slippers",  # Add this
+    "widget_tweaks", 
+    "slippers", 
     "accounts",
+    "community",
+    'ai',
     "django.contrib.sites",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.telegram",
@@ -54,6 +59,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "api_analytics.django.Analytics",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -61,6 +67,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "allauth.account.middleware.AccountMiddleware",
 ]
 
@@ -83,6 +90,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+
+INTERNAL_IPS = [
+    "127.0.0.1"
+]
+
 
 
 # Database
@@ -130,7 +142,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -144,16 +155,17 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-LOGIN_REDIRECT_URL = "/profile/"  # Redirect after successful login
+LOGIN_REDIRECT_URL = "/@<str:username>/"  # Redirect after successful login
 LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # For development
+ALLAUTH_UI_THEME = "cmyk"  # or "dark", "cupcake", etc.
 
 
-ALLAUTH_UI_THEME = "retro"  # or "dark", "cupcake", etc.
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-
-
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -164,6 +176,7 @@ SOCIALACCOUNT_PROVIDERS = {
         },
         "SCOPE": ["profile", "email"],
         "AUTH_PARAMS": {"access_type": "online"},
+        "OAUTH_PKCE_ENABLED": True,
     },
     "telegram": {
         "APP": {
@@ -178,6 +191,79 @@ SOCIALACCOUNT_PROVIDERS = {
         "APP": {
             "client_id": os.getenv("TWITTER_OAUTH_CLIENT_ID"),
             "secret": os.getenv("TWITTER_OAUTH_SECRET"),
-        }
+        },
+        "OAUTH_PKCE_ENABLED": True,
     },
 }
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_PROVIDERS_CALLBACK_URL = "accounts/%(provider)s/login/callback/"
+SOCIALACCOUNT_TEMPLATE_EXTENSION = "html"
+SOCIALACCOUNT_FORMS = {
+    "login": "accounts.forms.CustomSocialLoginForm",
+}
+
+SOCIALACCOUNT_ADAPTER = "accounts.adapter.CustomSocialAccountAdapter"
+
+# Add these settings for social account handling
+SOCIALACCOUNT_AUTO_SIGNUP = True  # Enable automatic signup
+SOCIALACCOUNT_EMAIL_REQUIRED = False  # Make email optional for social signup
+ACCOUNT_USERNAME_REQUIRED = False  # Make username optional initially
+
+ANALYTICS_API_KEY = os.getenv("ANALYTICS_API_KEY")
+
+
+# Cloudflare R2 Configuration
+# CLOUDFLARE_R2_ACCESS_KEY_ID = os.getenv('CLOUDFLARE_R2_ACCESS_KEY_ID')  # Your R2 Access Key ID
+# CLOUDFLARE_R2_SECRET_ACCESS_KEY = os.getenv('CLOUDFLARE_R2_SECRET_ACCESS_KEY')  # Your R2 Secret Access Key
+# CLOUDFLARE_R2_BUCKET_NAME = os.getenv('CLOUDFLARE_R2_BUCKET_NAME')  # Your R2 Bucket Name
+# CLOUDFLARE_R2_ENDPOINT_URL = os.getenv('CLOUDFLARE_R2_ENDPOINT_URL')  # Your R2 Endpoint URL
+
+# # Django Storages Configuration
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# AWS_ACCESS_KEY_ID = CLOUDFLARE_R2_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY = CLOUDFLARE_R2_SECRET_ACCESS_KEY
+# AWS_STORAGE_BUCKET_NAME = CLOUDFLARE_R2_BUCKET_NAME
+# AWS_S3_ENDPOINT_URL = CLOUDFLARE_R2_ENDPOINT_URL
+# AWS_S3_CUSTOM_DOMAIN = f'{CLOUDFLARE_R2_BUCKET_NAME}.r2.cloudflarestorage.com'  # Optional: Use a custom domain
+# AWS_DEFAULT_ACL = 'public-read'  # Set ACL to public-read for public access
+# AWS_QUERYSTRING_AUTH = False  # Disable query string authentication for public files
+
+# # Media files configuration
+# MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'  # URL to access media files
+# MEDIA_ROOT = ''  # Empty because files are stored in R2, not locally
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Use SMTP for production
+# EMAIL_HOST = 'smtp.gmail.com'  # Replace with your SMTP server
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Your email
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Your email password
+
+# # Allauth settings
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Enforce email verification
+# ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # Allow login with username or email
+# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1  # Email confirmation link expiry in days
+# ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN = 180  # Cooldown period in seconds
+# ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5  # Limit login attempts
+# ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300  # Timeout after failed login attempts
+# ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Logout user after password change
+
+# # Allauth customization
+# ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+# ACCOUNT_USERNAME_MIN_LENGTH = 4
+# LOGIN_REDIRECT_URL = "feed"
+# ACCOUNT_LOGOUT_REDIRECT_URL = "index"
+
+# # Template customization
+# ACCOUNT_TEMPLATE_EXTENSION = 'html'
+# ACCOUNT_TEMPLATE_DIR = 'account'  # This tells allauth to look in the templates/account directory
+
+# Add these settings for logout handling
+ACCOUNT_LOGOUT_ON_GET = False  # Require POST request for logout
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Logout after password change
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"  # Where to redirect after logout

@@ -1,0 +1,154 @@
+{% load static %}
+<!-- Mobile Navigation Bar (Tailwind CSS Only) -->
+<div class="fixed bottom-0 left-0 w-full z-50 bg-white shadow-lg md:hidden">
+  <ul class="flex justify-around items-center py-2">
+    <!-- Home -->
+    <li>
+      <a href="{% url 'feed' %}"
+         class="flex flex-col items-center text-gray-600 hover:text-blue-500 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-7 w-7"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path d="M14.5 21H20C20.5523 21 21 20.5523 21 20V10.25C21 9.93524 20.8518 9.63885 20.6 9.45L12 3L3.4 9.45C3.14819 9.63885 3 9.93524 3 10.25V20C3 20.5523 3.44772 21 4 21H9.5M14.5 21H9.5M14.5 21V15.5C14.5 14.1193 13.3807 13 12 13C10.6193 13 9.5 14.1193 9.5 15.5V21" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          </path>
+        </svg>
+      </a>
+    </li>
+    <!-- Search -->
+    <li>
+      <a href="{% url 'search' %}"
+         class="flex flex-col items-center text-gray-600 hover:text-blue-500 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-7 w-7"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path d="M17 17L22 22M19.5 10.75C19.5 15.5825 15.5825 19.5 10.75 19.5C5.91751 19.5 2 15.5825 2 10.75C2 5.91751 5.91751 2 10.75 2C15.5825 2 19.5 5.91751 19.5 10.75Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          </path>
+        </svg>
+      </a>
+    </li>
+    <!-- Create Post -->
+    <li>
+      <a href="{% url 'create_post' %}"
+         class="flex flex-col items-center text-gray-600 hover:text-blue-500 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-7 w-7"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path d="M12 8V16M16 12H8M6 3H18C19.6569 3 21 4.34315 21 6V18C21 19.6569 19.6569 21 18 21H6C4.34315 21 3 19.6569 3 18V6C3 4.34315 4.34315 3 6 3Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          </path>
+        </svg>
+      </a>
+    </li>
+    <!-- AI Saturn -->
+    <li>
+      <a href="#"
+         class="flex flex-col items-center text-gray-600 hover:text-blue-500 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-7 w-7"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path d="M18.1378 6.78518C20.4309 5.98947 22.0586 5.81342 22.4264 6.45046C23.1168 7.64619 19.1068 11.2538 13.4699 14.5082C7.83306 17.7627 2.70382 19.4316 2.01347 18.2359C1.64689 17.601 2.60559 16.286 4.42941 14.705M12 20C7.58176 20 4.00004 16.4183 4.00004 12C4.00004 7.58172 7.58176 4 12 4C16.4183 4 20 7.58172 20 12C20 16.4183 16.4183 20 12 20Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          </path>
+        </svg>
+      </a>
+    </li>
+    <!-- Profile -->
+    <li>
+      <a href="{% url 'profile' username=request.user.username %}"
+         class="flex flex-col items-center text-gray-600 hover:text-blue-500 transition-colors">
+        <div class="w-8 h-8 rounded-full overflow-hidden">
+          <img src="{% if request.user.profile.profile_image %}
+                    {{ request.user.profile.profile_image.url }}
+                {% elif request.user.socialaccount_set.all.0.get_avatar_url %}
+                    {{ request.user.socialaccount_set.all.0.get_avatar_url }}
+                {% else %}
+                    {% static 'images/default_profile.png' %}
+                {% endif %}"
+               alt="{{ request.user.username }}"
+               class="w-full h-full object-cover" />
+        </div>
+      </a>
+    </li>
+  </ul>
+</div>
+<!-- Desktop Sidebar (Vertical Menu) -->
+<div class="hidden md:block fixed left-0 top-0 h-full w-16 flex flex-col items-center justify-center border-r bg-white">
+  <nav class="flex flex-col items-center gap-14">
+    <a href="{% url 'feed' %}"
+       class="mb-8 mt-3 transition-all duration-200 ease-out hover:scale-110 transform">
+      <svg version="1.0"
+           xmlns="http://www.w3.org/2000/svg"
+           class="w-14 h-14"
+           viewBox="0 0 512.000000 512.000000"
+           preserveAspectRatio="xMidYMid meet"
+           fill="currentColor"
+           stroke="none">
+        <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)">
+        <path d="M4320 4655 c-242 -49 -597 -235 -1015 -535 -82 -59 -160 -111 -172 -114 -13 -4 -60 5 -120 23 -393 121 -815 80 -1183 -115 -336 -179 -609 -505 -729 -871 -58 -175 -75 -288 -75 -483 0 -181 15 -284 61 -435 15 -49 27 -104 27 -121 0 -23 -26 -67 -103 -173 -399 -555 -600 -999 -552 -1217 19 -82 73 -136 155 -155 217 -48 662 153 1212 549 77 54 149 102 161 106 13 4 59 -5 120 -23 664 -205 1383 62 1756 651 235 371 297 846 167 1270 -17 53 -30 103 -30 111 0 8 58 96 129 196 381 534 579 975 532 1186 -31 137 -148 189 -341 150z m-36 -387 c-12 -42 -78 -182 -131 -279 -74 -138 -179 -301 -302 -471 -132 -183 -166 -246 -182 -326 -14 -77 -7 -150 26 -252 45 -143 58 -228 58 -375 0 -149 -9 -215 -49 -354 -104 -358 -411 -674 -764 -785 -254 -81 -525 -81 -759 -1 -143 48 -264 43 -374 -18 -31 -18 -125 -81 -209 -141 -181 -131 -400 -267 -546 -341 -113 -57 -212 -98 -218 -92 -8 7 26 88 85 207 96 189 237 413 402 637 38 50 79 113 92 140 53 103 58 229 16 349 -66 191 -83 444 -41 634 68 313 247 580 504 753 205 137 416 200 673 200 147 0 263 -18 389 -62 119 -42 246 -37 347 15 26 13 100 62 165 110 137 100 304 211 419 279 133 78 364 191 398 194 5 1 5 -9 1 -21z" />
+        <path d="M3570 3789 c-25 -8 -93 -68 -248 -222 l-212 -211 -28 17 c-57 38 -190 97 -263 117 -42 11 -117 24 -167 29 -676 62 -1200 -564 -1021 -1219 19 -72 78 -205 116 -262 l17 -28 -211 -212 c-179 -181 -213 -219 -222 -256 -36 -132 78 -247 210 -212 38 10 73 41 256 223 l213 211 37 -23 c235 -141 512 -181 771 -111 266 73 501 272 618 525 135 293 114 634 -57 918 l-23 37 211 213 c182 183 213 218 223 256 14 53 7 98 -23 142 -41 61 -124 89 -197 68z m-857 -625 c33 -8 80 -25 104 -36 l45 -21 -423 -423 c-474 -474 -428 -443 -470 -323 -30 86 -37 247 -15 342 52 223 235 408 454 461 79 20 231 20 305 0z m452 -456 c19 -81 19 -215 0 -296 -52 -220 -237 -405 -457 -457 -126 -29 -296 -14 -404 36 l-46 22 423 423 424 424 22 -45 c13 -24 30 -73 38 -107z" />
+        </g>
+      </svg>
+    </a>
+    <a href="{% url 'feed' %}" class="hover:opacity-70">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="h-7 w-7"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke="currentColor">
+        <path d="M14.5 21H20C20.5523 21 21 20.5523 21 20V10.25C21 9.93524 20.8518 9.63885 20.6 9.45L12 3L3.4 9.45C3.14819 9.63885 3 9.93524 3 10.25V20C3 20.5523 3.44772 21 4 21H9.5M14.5 21H9.5M14.5 21V15.5C14.5 14.1193 13.3807 13 12 13C10.6193 13 9.5 14.1193 9.5 15.5V21" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        </path>
+      </svg>
+    </a>
+    <a href="{% url 'search' %}">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="h-7 w-7"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke="currentColor">
+        <path d="M17 17L22 22M19.5 10.75C19.5 15.5825 15.5825 19.5 10.75 19.5C5.91751 19.5 2 15.5825 2 10.75C2 5.91751 5.91751 2 10.75 2C15.5825 2 19.5 5.91751 19.5 10.75Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        </path>
+      </svg>
+    </a>
+    <a href="{% url 'create_post' %}" class="hover:opacity-70">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="h-7 w-7"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke="currentColor">
+        <path d="M12 8V16M16 12H8M6 3H18C19.6569 3 21 4.34315 21 6V18C21 19.6569 19.6569 21 18 21H6C4.34315 21 3 19.6569 3 18V6C3 4.34315 4.34315 3 6 3Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        </path>
+      </svg>
+    </a>
+    <a href="#" class="hover:opacity-70">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="w-7 h-7"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2">
+        <path d="M18.1378 6.78518C20.4309 5.98947 22.0586 5.81342 22.4264 6.45046C23.1168 7.64619 19.1068 11.2538 13.4699 14.5082C7.83306 17.7627 2.70382 19.4316 2.01347 18.2359C1.64689 17.601 2.60559 16.286 4.42941 14.705M12 20C7.58176 20 4.00004 16.4183 4.00004 12C4.00004 7.58172 7.58176 4 12 4C16.4183 4 20 7.58172 20 12C20 16.4183 16.4183 20 12 20Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        </path>
+      </svg>
+    </a>
+    <a href="{% url 'profile' username=request.user.username %}"
+       class="hover:opacity-70">
+      <div class="w-8 h-8 rounded-full overflow-hidden">
+        <img src="{% if request.user.profile.profile_image %}
+                    {{ request.user.profile.profile_image.url }}
+                {% elif request.user.socialaccount_set.all.0.get_avatar_url %}
+                    {{ request.user.socialaccount_set.all.0.get_avatar_url }}
+                {% else %}
+                    {% static 'images/default.webp' %}
+                {% endif %}"
+             alt="{{ request.user.username }}"
+             class="w-full h-full object-cover" />
+      </div>
+    </a>
+  </nav>
+</div>

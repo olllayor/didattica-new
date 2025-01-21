@@ -1,0 +1,78 @@
+<!-- templates/accounts/follow_list.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  {% if is_followers_page %}Followers{% else %}Following{% endif %} · {{ user.username }}
+{% endblock title %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-5">
+  <div class="bg-white rounded-2xl p-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-xl font-bold">
+        {% if is_followers_page %}
+          Followers
+        {% else %}
+          Following
+        {% endif %}
+      </h1>
+      <a href="{% url 'profile' username=user.username %}" class="text-gray-500 hover:text-gray-700">
+        Back to profile
+      </a>
+    </div>
+
+    <!-- Users List -->
+    <div class="space-y-4">
+      {% if is_followers_page %}
+        {% for follower in followers %}
+          <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+            <div class="flex items-center gap-3">
+              <img src="{% if follower.profile.profile_image %}{{ follower.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+                   alt="{{ follower.username }}"
+                   class="w-12 h-12 rounded-full object-cover">
+              <div>
+                <a href="{% url 'profile' username=follower.username %}" class="font-medium hover:underline">
+                  {{ follower.get_full_name|default:follower.username }}
+                </a>
+                <p class="text-sm text-gray-500">@{{ follower.username }}</p>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <p class="text-gray-500 text-center py-4">No followers yet</p>
+        {% endfor %}
+      {% else %}
+        {% for followed_user in following %}
+          <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+            <div class="flex items-center gap-3">
+              <img src="{% if followed_user.profile.profile_image %}{{ followed_user.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+                   alt="{{ followed_user.username }}"
+                   class="w-12 h-12 rounded-full object-cover">
+              <div>
+                <a href="{% url 'profile' username=followed_user.username %}" class="font-medium hover:underline">
+                  {{ followed_user.get_full_name|default:followed_user.username }}
+                </a>
+                <p class="text-sm text-gray-500">@{{ followed_user.username }}</p>
+              </div>
+            </div>
+            {% if user == request.user %}
+              {% comment %} <button class="follow-button px-4 py-2 rounded-full border {% if request.user.profile.is_following|default:False %}bg-gray-200{% else %}bg-blue-500 text-white{% endif %}"
+                      data-username="{{ followed_user.username }}">
+                {% if request.user.profile.is_following|default:False %}
+                  Following
+                {% else %}
+                  Follow
+                {% endif %}
+              </button> {% endcomment %}
+            {% endif %}
+          </div>
+        {% empty %}
+          <p class="text-gray-500 text-center py-4">Not following anyone yet</p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

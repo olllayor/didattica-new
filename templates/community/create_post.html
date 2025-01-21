@@ -1,0 +1,291 @@
+{% extends "base.html" %} 
+{% load static %} 
+{% block content %}
+<div class="max-w-2xl mx-auto pt-8 px-4">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <a
+      href="{% url 'feed' %}"
+      class="text-gray-600 hover:text-gray-500 text-base font-normal"
+    >
+      Back
+    </a>
+    <h1 class="font-semibold text-xl">New Post</h1>
+    <div class="invisible">Back</div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow">
+    <form
+      method="POST"
+      action="{% url 'create_post' %}"
+      class="space-y-4 p-6"
+      enctype="multipart/form-data"
+      id="createPostForm"
+    >
+      {% csrf_token %}
+      <div class="flex gap-3">
+        <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+          <img
+            src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
+            alt="{{ user.username }}"
+            class="w-full h-full object-cover rounded-full"
+          />
+        </div>
+        <div class="flex-1">
+          <textarea
+            name="content"
+            id="post-content"
+            class="w-full resize-none border-0 bg-transparent text-base placeholder:text-gray-500 focus:outline-none font-mono drop-zone"
+            placeholder="What's new?"
+            rows="4"
+            data-drag-text="Drop images here"></textarea>
+        </div>
+      </div>
+
+      <div class="border-t pt-4">
+        <div class="flex items-center gap-2">
+          <label
+            for="image-upload"
+            class="p-2 rounded-full hover:bg-gray-100 cursor-pointer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+            <input
+              type="file"
+              name="images"
+              id="image-upload"
+              class="hidden"
+              accept="image/*"
+              multiple
+            />
+          </label>
+        </div>
+
+        <!-- Image Previews -->
+        <div
+          id="image-preview-container"
+          class="mt-2 flex gap-2 overflow-x-auto"
+        >
+          <!-- Image previews will be added here -->
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between border-t pt-4">
+        <p class="text-sm text-gray-500">Anyone can reply & quote</p>
+        <button
+          type="submit"
+          id="post-button"
+          disabled
+          class="bg-black text-white rounded-full px-4 py-2 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed font-mono"
+        >
+          Post
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Draft Modal -->
+<div
+  id="saveDraftModal"
+  class="hidden fixed inset-0 bg-black/50 z-[70] flex items-center justify-center"
+>
+  <div class="bg-white rounded-lg p-6 w-96">
+    <h2 class="text-xl font-bold mb-4">Save to Drafts?</h2>
+    <p class="text-gray-600 mb-6">
+      Save this post as a draft to edit and post at a later time.
+    </p>
+    <div class="flex justify-end gap-4">
+      <button
+        onclick="closeSaveDraftModal()"
+        class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+      >
+        Cancel
+      </button>
+      <button
+        onclick="saveAsDraft()"
+        class="px-4 py-2 bg-black text-white rounded-lg hover:opacity-90"
+      >
+        Save Draft
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openSaveDraftModal() {
+    document.getElementById('saveDraftModal').classList.remove('hidden');
+  }
+
+  function closeSaveDraftModal() {
+    document.getElementById('saveDraftModal').classList.add('hidden');
+  }
+
+  function saveAsDraft() {
+    const form = document.getElementById('createPostForm');
+    const statusInput = document.createElement('input');
+    statusInput.type = 'hidden';
+    statusInput.name = 'status';
+    statusInput.value = 'draft';
+    form.appendChild(statusInput);
+    form.submit();
+  }
+
+  // Show the modal when the user clicks "Cancel" or "Back"
+  document.addEventListener('DOMContentLoaded', function() {
+    const cancelButton = document.querySelector('a[href="{% url 'feed' %}"]');
+    if (cancelButton) {
+      cancelButton.addEventListener('click', function(event) {
+        const textarea = document.getElementById('post-content');
+        if (textarea.value.trim() !== '') {
+          event.preventDefault(); // Prevent default navigation
+          openSaveDraftModal();
+        }
+      });
+    }
+  });
+</script>
+
+<!-- Existing script for image uploads -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const textarea = document.getElementById("post-content");
+    const postButton = document.getElementById("post-button");
+    const imageUpload = document.getElementById("image-upload");
+    const imagePreviewContainer = document.getElementById(
+      "image-preview-container"
+    );
+    const maxImages = 4;
+    let currentFiles = []; // Track current files
+
+    function updatePostButtonState() {
+      const hasContent = textarea.value.trim() !== "";
+      const hasImages = currentFiles.length > 0;
+      postButton.disabled = !(hasContent || hasImages);
+    }
+
+    textarea.addEventListener("input", updatePostButtonState);
+
+    imageUpload.addEventListener("change", function (event) {
+      const files = Array.from(event.target.files);
+
+      if (files.length > maxImages) {
+        alert(`You can upload a maximum of ${maxImages} images.`);
+        event.target.value = "";
+        currentFiles = [];
+        imagePreviewContainer.innerHTML = "";
+        return;
+      }
+
+      // Clear previous previews
+      imagePreviewContainer.innerHTML = "";
+      currentFiles = files;
+
+      files.forEach((file) => {
+        if (file.type.startsWith("image/")) {
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            const preview = document.createElement("div");
+            preview.className =
+              "relative w-20 h-20 rounded-md overflow-hidden flex-shrink-0";
+
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.alt = file.name;
+            img.className = "object-cover w-full h-full";
+
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.classList.add(
+              "absolute",
+              "top-1",
+              "right-1",
+              "bg-gray-800",
+              "rounded-full",
+              "p-1",
+              "hover:bg-gray-700"
+            );
+            removeButton.innerHTML =
+              '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>';
+
+            removeButton.addEventListener("click", () => {
+              preview.remove();
+              currentFiles = currentFiles.filter((f) => f !== file);
+              updatePostButtonState();
+
+              // Reset file input if all images are removed
+              if (currentFiles.length === 0) {
+                imageUpload.value = "";
+              }
+            });
+
+            preview.appendChild(img);
+            preview.appendChild(removeButton);
+            imagePreviewContainer.appendChild(preview);
+          };
+
+          reader.readAsDataURL(file);
+        }
+      });
+
+      updatePostButtonState();
+    });
+
+    updatePostButtonState();
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      textarea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    // Handle drag enter/leave visual feedback
+    textarea.addEventListener('dragenter', function(e) {
+      this.classList.add('border-2', 'border-dashed', 'border-gray-400', 'bg-gray-50');
+    });
+
+    textarea.addEventListener('dragleave', function(e) {
+      this.classList.remove('border-2', 'border-dashed', 'border-gray-400', 'bg-gray-50');
+    });
+
+    // Handle drop
+    textarea.addEventListener('drop', function(e) {
+      this.classList.remove('border-2', 'border-dashed', 'border-gray-400', 'bg-gray-50');
+      
+      const droppedFiles = e.dataTransfer.files;
+      const imageFiles = Array.from(droppedFiles).filter(file => file.type.startsWith('image/'));
+      
+      if (imageFiles.length > 0) {
+        // Create a new FileList-like object
+        const dtFiles = new DataTransfer();
+        
+        // Add dropped image files
+        imageFiles.forEach(file => dtFiles.items.add(file));
+        
+        // Set the files to the input
+        const imageInput = document.getElementById('image-upload');
+        imageInput.files = dtFiles.files;
+        
+        // Trigger the change event
+        const changeEvent = new Event('change', { bubbles: true });
+        imageInput.dispatchEvent(changeEvent);
+      }
+    });
+  });
+</script>
+{% endblock %}

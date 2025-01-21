@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Noid</title>
+</head>
+<body class="bg-white p-4">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-8">
+        <button class="p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="flex items-center gap-2">
+            <span class="font-medium">Noid 2</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </div>
+        <button class="p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-2xl mx-auto">
+        <h1 class="text-4xl font-bold text-center mb-8">Noid</h1>
+        
+        <!-- Search Input -->
+        <div class="relative mb-4">
+            <input type="text" placeholder="Ask anything" class="w-full p-4 pr-12 rounded-full bg-gray-100 focus:outline-none">
+            <button class="absolute right-4 top-1/2 transform -translate-y-1/2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </button>
+        </div>
+        
+        <p class="text-center text-gray-400 mb-8">Noid can make mistakes. Verify its outputs.</p>
+
+        <!-- Suggestion Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="p-4 bg-gray-100 rounded-lg">
+                <div class="text-blue-500 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
+                    </svg>
+                </div>
+                <p>What are some gift ideas?</p>
+            </div>
+            <div class="p-4 bg-gray-100 rounded-lg">
+                <div class="text-blue-500 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+                <p>Role-play with me</p>
+            </div>
+            <div class="p-4 bg-gray-100 rounded-lg">
+                <div class="text-blue-500 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <p>Give me a recipe for...</p>
+            </div>
+            <div class="p-4 bg-gray-100 rounded-lg">
+                <div class="text-blue-500 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <p>How do I build strength?</p>
+            </div>
+        </div>
+
+        <!-- Image Cards -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="relative rounded-lg overflow-hidden">
+                <img src="/api/placeholder/600/400" alt="Flying Cat" class="w-full h-48 object-cover">
+                <div class="absolute bottom-4 left-4 bg-white px-3 py-1 rounded-full text-sm">
+                    A flying cat
+                </div>
+            </div>
+            <div class="relative rounded-lg overflow-hidden">
+                <img src="/api/placeholder/600/400" alt="Mount Fuji" class="w-full h-48 object-cover">
+                <div class="absolute bottom-4 left-4 bg-white px-3 py-1 rounded-full text-sm">
+                    Mount Fuji
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
