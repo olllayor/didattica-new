@@ -23,4 +23,3 @@ class UserAPIToken(models.Model):
     def __str__(self):
         return f"{self.user.username}'s API Token"
 
-# Create your models here.

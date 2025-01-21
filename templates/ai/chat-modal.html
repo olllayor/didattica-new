@@ -21,16 +21,6 @@
         </label>
       </div>
       
-      <!-- Post Context -->
-      {% if post_content or post_image %}
-      <div class="bg-base-300 rounded-lg p-4 mb-4">
-        {% if post_image %}
-        <img src="{{ post_image }}" alt="Post image" class="w-full h-32 object-cover rounded mb-2">
-        {% endif %}
-        <p class="text-sm">{{ post_content }}</p>
-      </div>
-      {% endif %}
-      
       <!-- Chat content - reuse content from chat_noid.html -->
       <!-- ...existing chat interface code... -->
     </div>

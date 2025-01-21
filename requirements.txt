@@ -18,3 +18,4 @@ locust # for load testing
 # Additional Dependencies
 python-dotenv
 Pillow
+django-user-agents

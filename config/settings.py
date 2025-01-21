@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "slippers", 
     "accounts",
     "community",
-    'ai',
+    "aichat",
     "django.contrib.sites",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.telegram",
@@ -68,6 +68,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    'django_user_agents.middleware.UserAgentMiddleware',
     "allauth.account.middleware.AccountMiddleware",
 ]
 
