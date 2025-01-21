@@ -3,6 +3,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from accounts.views import index
+from debug_toolbar.toolbar import debug_toolbar_urls
+
 
 urlpatterns = [
     path('', index, name='index'),  # Root URL pattern
@@ -11,3 +13,6 @@ urlpatterns = [
     path('community/', include('community.urls')),
     path('', include('accounts.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) if settings.DEBUG else []
+
+if settings.DEBUG:
+    urlpatterns += debug_toolbar_urls()
