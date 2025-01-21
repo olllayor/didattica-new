@@ -1,0 +1,20 @@
+# Core Django
+Django>=5.1.0
+
+# Development Tools
+django-debug-toolbar
+
+# Authentication & Social Auth
+django-allauth
+django-widget-tweaks
+
+slippers
+requests
+jwt
+requests-oauthlib
+api-analytics
+locust # for load testing
+
+# Additional Dependencies
+python-dotenv
+Pillow

@@ -13,8 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-import boto3
-from storages.backends.s3boto3 import S3Boto3Storage
+
+
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -32,7 +32,7 @@ SECRET_KEY = "django-insecure-5k8r#gac$aecqip)6=us5s1s_dw0-*516fjs(i-0nru*sytk^p
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ["https://olllayor.jprq.site", "https://demo.jprq.site"]
+CSRF_TRUSTED_ORIGINS = ["https://*.jprq.site"]
 
 # Application definition
 
@@ -47,11 +47,12 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "widget_tweaks",  # Add this
-    "slippers",  # Add this
+    "widget_tweaks", 
+    "slippers", 
     "accounts",
     "community",
-    "django.contrib.sites",  # Required for allauth
+    'ai',
+    "django.contrib.sites",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.telegram",
     "allauth.socialaccount.providers.twitter",
@@ -89,6 +90,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+
+INTERNAL_IPS = [
+    "127.0.0.1"
+]
+
 
 
 # Database

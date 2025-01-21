@@ -16,10 +16,13 @@ def create_post(request):
     if request.method == "POST":
         # Check if user can post
         if not request.user.profile.can_post():
-            remaining_time = 100 - (timezone.now() - request.user.profile.last_post_time).total_seconds()
+            remaining_time = (
+                100
+                - (timezone.now() - request.user.profile.last_post_time).total_seconds()
+            )
             messages.error(
-                request, 
-                f"Please wait {int(remaining_time)} seconds before creating another post."
+                request,
+                f"Please wait {int(remaining_time)} seconds before creating another post.",
             )
             return redirect("feed")
 
