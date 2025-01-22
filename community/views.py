@@ -250,3 +250,11 @@ def post_detail(request, post_id):
     return render(
         request, "community/post_detail.html", {"post": post, "replies": replies}
     )
+
+
+def post_detail(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    return JsonResponse({
+        'content': post.content,
+        'image': post.image.url if post.image else None,
+    })

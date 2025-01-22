@@ -19,3 +19,7 @@ locust # for load testing
 python-dotenv
 Pillow
 django-user-agents
+Jinja2
+google-generativeai
+tiktoken
+httpx

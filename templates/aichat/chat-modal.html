@@ -15,7 +15,8 @@
           <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <span class="font-bold text-xl text-primary-content">N</span>
           </div>
-          <span class="font-bold text-xl">Noid</span>
+          {% endif %}
+          <span class="font-bold text-xl">{{ selected_ai.name|default:"AI Assistant" }}</span>
         </div>
         <label for="chat-drawer" class="btn btn-ghost btn-circle">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,9 +52,9 @@
         </div>
         
         <div class="flex gap-2">
-          <textarea class="textarea textarea-bordered flex-1" placeholder="Ask about the post..."></textarea>
-          <button class="btn btn-primary">Send</button>
-        </div>
+            <textarea id="chat-input" class="textarea textarea-bordered flex-1" placeholder="Ask about the post..."></textarea>
+            <button class="btn btn-primary" id="send-button">Send</button>
+         </div>
       </div>
     </div>
   </div>
@@ -63,7 +64,7 @@
 document.addEventListener('loadPostInDrawer', async (e) => {
     const postId = e.detail.postId;
     try {
-        const response = await fetch(`/api/posts/${postId}/`);
+        const response = await fetch(`/community/post/${postId}/`);
         const post = await response.json();
         
         // Show post preview
@@ -85,4 +86,66 @@ document.addEventListener('loadPostInDrawer', async (e) => {
         console.error('Error loading post:', error);
     }
 });
+
+ document.addEventListener("DOMContentLoaded", function () {
+    const sendButton = document.getElementById("send-button");
+    sendButton.addEventListener("click", async () => {
+    const chatInput = document.getElementById("chat-input");
+    const aiMessages = document.getElementById("chat-messages");
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        aiMessages.innerHTML += `
+              <div class="flex justify-end">
+                <div class="bg-blue-200 dark:bg-blue-700 rounded-lg p-2 w-fit text-right">
+                  ${message}
+                </div>
+              </div>
+            `
+
+        const selectedAI =  document.querySelector('select[name="model"]');
+        let selectedValue;
+        if (selectedAI && selectedAI.value) {
+          selectedValue = selectedAI.value
+        } else {
+         selectedValue = document.querySelector('select').value;
+        }
+        
+        const formData = new FormData()
+        formData.append('message', message);
+        formData.append('model_id', selectedValue);
+        const response = await fetch("/ai/get-ai-response/", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+        });
+    
+
+        const data = await response.json()
+         if(data.error){
+            aiMessages.innerHTML += `
+                    <div class="flex justify-start">
+                    <div class="bg-red-200 dark:bg-red-700 rounded-lg p-2 w-fit" >
+                        ${data.error}
+                    </div>
+                    </div>
+                `
+         }else{
+             aiMessages.innerHTML += `
+                  <div class="flex justify-start">
+                    <div class="bg-gray-200 dark:bg-gray-700 rounded-lg p-2 w-fit" >
+                      ${data.response}
+                    </div>
+                  </div>
+             `
+        }
+
+
+        chatInput.value = ""; // Clear input field
+        aiMessages.scrollTop = aiMessages.scrollHeight;
+    });
+});
+
 </script>

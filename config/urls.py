@@ -12,6 +12,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),  # This includes all allauth URLs
     path('community/', include('community.urls')),
     path('', include('accounts.urls')),
+    path('ai/', include('aichat.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) if settings.DEBUG else []
 
 if settings.DEBUG:
