@@ -14,21 +14,22 @@
       <div>
         <div class="flex items-center gap-1">
           <span class="font-bold">{{ post.author.username }}</span>
-          <span class="text-gray-500">· {{ post.created_at|timesince }}</span>
-        </div>
+          <span class="text-gray-500" 
+            data-timestamp="{{ post.created_at.isoformat }}">· {{ post.created_at|timesince }}</span>
+       </div>
       </div>
     </div>
   </div>
 
   {% if post.content %}
   <div class="mt-3 whitespace-pre-wrap">{{ post.content }}</div>
-  {% endif %} {% if post.post_images.all %}
+  {% endif %}
+
+  {% if post.post_images.all %}
   <div class="mt-4 overflow-x-auto scrollbar-hide post-images">
     <div class="flex gap-2">
       {% for image in post.post_images.all %}
-      <div
-        class="relative aspect-square w-60 md:w-80 rounded-xl overflow-hidden flex-shrink-0"
-      >
+      <div class="relative aspect-square w-60 md:w-80 rounded-xl overflow-hidden flex-shrink-0">
         <img
           src="{{ image.image.url }}"
           alt="Post image"
@@ -112,6 +113,21 @@
       <span>{{ post.views }}</span>
     </button>
   </div>
+    <!-- Add this script only if not in detail view -->
+    {% if not is_detail %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const article = document.querySelector('.post-component').closest('article');
+        if (article) {
+          article.addEventListener('click', function(e) {
+            if (!e.target.closest('button') && !e.target.closest('.dropdown') && !e.target.closest('img')) {
+              window.location.href = '/home/post/{{ post.id }}/';
+            }
+          });
+        }
+      });
+    </script>
+    {% endif %}
 
   <!-- Add this script at the bottom of the component -->
   <script>
@@ -132,6 +148,62 @@
           });
         }
       });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Existing button and image handlers
+      const buttons = document.querySelectorAll('.post-component button, .post-component .dropdown');
+      buttons.forEach(button => {
+        button.addEventListener('click', (e) => e.stopPropagation());
+      });
+      
+      const images = document.querySelectorAll('.post-component img');
+      images.forEach(img => {
+        if (img.closest('.post-images')) {
+          img.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const imageUrls = [...img.closest('.post-images').querySelectorAll('img')].map(img => img.src);
+            const index = imageUrls.indexOf(img.src);
+            openImagePreviewModal(imageUrls, index);
+          });
+        }
+      });
+  
+      // Add timestamp update logic
+      function updateTimestamps() {
+        const timestamps = document.querySelectorAll('[data-timestamp]');
+        timestamps.forEach(span => {
+          const timestamp = new Date(span.dataset.timestamp);
+          const now = new Date();
+          const diffInSeconds = Math.floor((now - timestamp) / 1000);
+  
+          let timeAgo;
+          if (diffInSeconds < 60) {
+            timeAgo = 'just now';
+          } else if (diffInSeconds < 3600) {
+            const minutes = Math.floor(diffInSeconds / 60);
+            timeAgo = `${minutes}m`;
+          } else if (diffInSeconds < 86400) {
+            const hours = Math.floor(diffInSeconds / 3600);
+            timeAgo = `${hours}h`;
+          } else if (diffInSeconds < 604800) {
+            const days = Math.floor(diffInSeconds / 86400);
+            timeAgo = `${days}d`;
+          } else if (diffInSeconds < 2592000) {
+            const weeks = Math.floor(diffInSeconds / 604800);
+            timeAgo = `${weeks}w`;
+          } else {
+            const months = Math.floor(diffInSeconds / 2592000);
+            timeAgo = `${months}mo`;
+          }
+  
+          span.textContent = `· ${timeAgo}`;
+        });
+      }
+  
+      // Update timestamps immediately and then every minute
+      updateTimestamps();
+      setInterval(updateTimestamps, 60000);
     });
   </script>
 </div>

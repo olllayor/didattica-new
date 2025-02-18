@@ -198,7 +198,7 @@
         event.preventDefault();
         const postId = event.currentTarget.dataset.postId;
 
-        fetch(`/community/post/${postId}/like/`, {
+        fetch(`/home/post/${postId}/like/`, {
           method: "POST",
           headers: {
             "X-CSRFToken": "{{ csrf_token }}",

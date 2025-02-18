@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from PIL import Image
+from django.utils import timezone
 
 
 def profile_image_upload_path(instance, filename):
@@ -24,14 +25,8 @@ def get_default_profile_image():
     """Returns a random default profile image path"""
     # List of default image names (you'll need to add these images to your media folder)
     default_images = [
-        "default1.webp",
-        "default2.webp",
-        "default3.webp",
-        "default4.webp",
-        "default5.webp",
-        "default6.webp",
-        "default7.webp",
-        "default8.webp",
+        "default1.jpg",
+        "default2.jpg",
     ]
     return f"default_profile_images/{random.choice(default_images)}"
 
@@ -51,7 +46,7 @@ class Profile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     last_post_time = models.DateTimeField(null=True, blank=True)
 
-    # Add follow relationships
+    # Social relationships
     followers = models.ManyToManyField(
         User, related_name="followed_profiles", blank=True
     )
@@ -59,6 +54,7 @@ class Profile(models.Model):
         User, related_name="follower_profiles", blank=True
     )
 
+    # Social methods
     def follow(self, user_to_follow):
         """Follow a user and update both follower and following relationships"""
         if user_to_follow != self.user:
@@ -74,11 +70,9 @@ class Profile(models.Model):
         """Check if we're following a specific user"""
         return user in self.following.all()
 
+    # Counting methods
     def get_reaction_count(self):
         return self.reactions.count()
-
-    def __str__(self):
-        return f"@{self.user.username}"
 
     def get_followers_count(self):
         return self.followers.count()
@@ -96,38 +90,29 @@ class Profile(models.Model):
         """Check if user can create a new post based on time limit"""
         if not self.last_post_time:
             return True
-        from django.utils import timezone
-
         time_diff = timezone.now() - self.last_post_time
-        return time_diff.total_seconds() >= 100
+        return time_diff.total_seconds() >= 10
 
     def save(self, *args, **kwargs):
-        # Only process the image if it's a new upload
+        # Image processing logic
         if self.profile_image and not self.pk:
-            # Open the image using Pillow
             img = Image.open(self.profile_image)
-
-            # Convert the image to RGB mode if it's not already
             if img.mode in ("RGBA", "LA"):
                 background = Image.new("RGB", img.size, (255, 255, 255))
-                background.paste(
-                    img, mask=img.split()[-1]
-                )  # Paste using alpha channel as mask
+                background.paste(img, mask=img.split()[-1])
                 img = background
-
-            # Convert the image to WebP format with the best quality
             buffer = BytesIO()
             img.save(buffer, format="WEBP", quality=100)
             webp_image = ContentFile(buffer.getvalue())
-
-            # Save the WebP image with the same name but with .webp extension
             filename = os.path.splitext(self.profile_image.name)[0] + ".webp"
             self.profile_image.save(filename, webp_image, save=False)
-
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f"@{self.user.username}"
 
-# Signal to create a profile when a user is created
+
+# Profile creation signals
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -136,7 +121,6 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    # Ensure the profile exists before saving
     if not hasattr(instance, "profile"):
         Profile.objects.create(user=instance)
     instance.profile.save()

@@ -233,6 +233,8 @@ def react_to_post(request, post_id):
     )
 
 
+
+
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     replies = Post.objects.filter(reply_to=post).order_by("-created_at")
@@ -247,14 +249,13 @@ def post_detail(request, post_id):
         request.session["viewed_posts"].append(post.id)
         request.session.modified = True
 
+    # Check if it's an AJAX request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'content': post.content,
+            'image': post.image.url if post.image else None,
+        })
+
     return render(
         request, "community/post_detail.html", {"post": post, "replies": replies}
     )
-
-
-def post_detail(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    return JsonResponse({
-        'content': post.content,
-        'image': post.image.url if post.image else None,
-    })

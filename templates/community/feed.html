@@ -114,7 +114,7 @@
       <div class="divide-y" id="posts-feed">
         {% for post in posts %}
           <article class="p-4 hover:bg-gray-50 transition-colors duration-150 relative"
-                   onclick="if (event.target.tagName !== 'BUTTON' && !event.target.closest('button') && !event.target.closest('.dropdown') && !event.target.closest('img')) window.location.href='/community/post/{{ post.id }}/'">
+                   onclick="if (event.target.tagName !== 'BUTTON' && !event.target.closest('button') && !event.target.closest('.dropdown') && !event.target.closest('img')) window.location.href='/home/post/{{ post.id }}/'">
             <!-- Repost Badge -->
             {% if post.shared_post %}
               <div class="repost-badge">
@@ -152,9 +152,9 @@
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <a href="#" onclick="handlePlanetClick('{{ post.id }}'); return false;" class="flex items-center gap-2">
-                    <i class="ai-planet text-gray-500 hover:text-blue-500 cursor-pointer transform scale-x-[-1] text-2xl font-bold"></i>
-                </a>
+                <button onclick="handlePlanetClick('{{ post.id }}'); return false;" class="flex items-center gap-2">
+                  <i class="ai-planet text-gray-500 hover:text-blue-500 cursor-pointer transform scale-x-[-1] text-2xl font-bold"></i>
+                </button>
                 <!-- Reaction Dropdown -->
                 <div class="dropdown dropdown-left">
                   <div tabindex="0" role="button" class="p-2 hover:bg-gray-100 rounded-full">
@@ -220,33 +220,7 @@
                   </svg>
                   <span>{{ post.get_likes_count }}</span>
                 </button>
-                <!-- Reply and Repost Dropdown -->
-                {% comment %} <div class="dropdown dropdown-end">
-            <button tabindex="0" class="flex items-center gap-2 text-gray-500 hover:text-blue-500" onclick="event.preventDefault()">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-              </svg>
-              <span>{{ post.get_replies_count|add:post.get_reposts_count }}</span>
-            </button>
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow border border-gray-200">
-              <li>
-                <a onclick="openReplyModal('{{ post.id }}')" class="dropdown-item text-sm font-medium flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
-                  </svg>
-                  Reply
-                </a>
-              </li>
-              <li>
-                <a onclick="repostPost('{{ post.id }}')" class="dropdown-item text-sm font-medium flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
-                  </svg>
-                  Repost
-                </a>
-              </li>
-            </ul>
-                </div> {% endcomment %}
+
                 <!-- Reply Button -->
                 <button class="flex items-center gap-2 text-gray-500 hover:text-blue-500"
                         onclick="event.stopPropagation(); openReplyModal('{{ post.id }}')">
@@ -385,7 +359,7 @@
   });
 
   function reactToPost(postId, reaction) {
-    fetch(`/community/post/${postId}/react/`, {
+    fetch(`/home/post/${postId}/react/`, {
       method: "POST",
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
@@ -417,7 +391,7 @@
   }
 
   function copyPostLink(postId) {
-    const postLink = `${window.location.origin}/community/post/${postId}/`;
+    const postLink = `${window.location.origin}/home/post/${postId}/`;
     navigator.clipboard.writeText(postLink).then(() => {
       alert("Link copied to clipboard!");
     });
@@ -431,7 +405,7 @@
       const postId = button.dataset.postId;
 
       // Check if the post is already liked
-      fetch(`/community/post/${postId}/check_like/`, {
+      fetch(`/home/post/${postId}/check_like/`, {
         headers: {
           "X-CSRFToken": "{{ csrf_token }}",
         },
@@ -448,7 +422,7 @@
 
       // Add click event listener for liking/unliking
       button.addEventListener("click", function () {
-        fetch(`/community/post/${postId}/like/`, {
+        fetch(`/home/post/${postId}/like/`, {
           method: "POST",
           headers: {
             "X-CSRFToken": "{{ csrf_token }}",
@@ -493,7 +467,7 @@
       `;
     document.querySelector(".divide-y").appendChild(skeletonShimmer);
     // Fetch the next page of posts
-    fetch(`/community/feed/?page=${currentPage + 1}`, {
+    fetch(`/home/feed/?page=${currentPage + 1}`, {
       headers: {
         "X-Requested-With": "XMLHttpRequest",
       },
@@ -630,7 +604,7 @@
   }
 
   function getEmbedCode(postId) {
-    const embedCode = `<iframe src="${window.location.origin}/community/post/${postId}/embed/" width="500" height="300"></iframe>`;
+    const embedCode = `<iframe src="${window.location.origin}/home/post/${postId}/embed/" width="500" height="300"></iframe>`;
     navigator.clipboard.writeText(embedCode).then(() => {
       alert("Embed code copied to clipboard!");
     });
@@ -644,7 +618,7 @@
   });
 
   function repostPost(postId) {
-    fetch(`/community/post/${postId}/repost/`, {
+    fetch(`/home/post/${postId}/repost/`, {
       method: "POST",
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
@@ -675,14 +649,15 @@
     document.body.classList.remove("overflow-hidden");
   }
 
-  // Add this to your JS where the planet icon is used
-function handlePlanetClick(postId) {
+  function handlePlanetClick(postId) {
     fetch('/ai/check-device/')
         .then(response => response.json())
         .then(data => {
             if (data.is_mobile) {
+                // Redirect to mobile chat view
                 window.location.href = `/ai/chat/?post_id=${postId}`;
             } else {
+                // Open chat drawer for desktop
                 const drawerToggle = document.getElementById('chat-drawer');
                 if (drawerToggle) {
                     drawerToggle.checked = true;
@@ -690,10 +665,16 @@ function handlePlanetClick(postId) {
                     document.dispatchEvent(new CustomEvent('loadPostInDrawer', {
                         detail: { postId: postId }
                     }));
+                } else {
+                    // Fallback to full chat page if drawer not available
+                    window.location.href = `/ai/chat/?post_id=${postId}`;
                 }
             }
+        })
+        .catch(error => {
+            console.error('Error checking device:', error);
+            // Fallback to full chat page
+            window.location.href = `/ai/chat/?post_id=${postId}`;
         });
-}
-
       </script>
 {% endblock content %}

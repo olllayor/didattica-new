@@ -400,7 +400,7 @@
       const postId = button.dataset.postId;
 
       // Check initial like status
-      fetch(`/community/post/${postId}/check_like/`, {
+      fetch(`/home/post/${postId}/check_like/`, {
         headers: {
           "X-CSRFToken": "{{ csrf_token }}",
         },
@@ -420,7 +420,7 @@
     const svg = button.querySelector("svg");
     const likesCount = button.querySelector(".likes-count");
 
-    fetch(`/community/post/${postId}/like/`, {
+    fetch(`/home/post/${postId}/like/`, {
       method: "POST",
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
@@ -469,7 +469,7 @@
     event.preventDefault();
     const postId = event.currentTarget.dataset.postId;
 
-    fetch(`/community/post/${postId}/like/`, {
+    fetch(`/home/post/${postId}/like/`, {
       method: "POST",
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
@@ -524,7 +524,7 @@
   }
 
   function handleLikeAction(postId, button) {
-    fetch(`/community/post/${postId}/like/`, {
+    fetch(`/home/post/${postId}/like/`, {
       method: "POST",
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
@@ -552,14 +552,14 @@
   }
 
   function copyPostLink(postId) {
-    const postLink = `${window.location.origin}/community/post/${postId}/`;
+    const postLink = `${window.location.origin}/home/post/${postId}/`;
     navigator.clipboard.writeText(postLink).then(() => {
       alert("Link copied to clipboard!");
     });
   }
 
   function getEmbedCode(postId) {
-    const embedCode = `<iframe src="${window.location.origin}/community/post/${postId}/embed/" width="500" height="300"></iframe>`;
+    const embedCode = `<iframe src="${window.location.origin}/home/post/${postId}/embed/" width="500" height="300"></iframe>`;
     navigator.clipboard.writeText(embedCode).then(() => {
       alert("Embed code copied to clipboard!");
     });
@@ -575,7 +575,7 @@
         // Disable button during request
         followButton.disabled = true;
 
-        fetch(`/community/@${username}/follow/`, {
+        fetch(`/home/@${username}/follow/`, {
           method: "POST",
           headers: {
             "X-CSRFToken": "{{ csrf_token }}",

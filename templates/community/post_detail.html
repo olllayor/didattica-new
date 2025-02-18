@@ -4,17 +4,18 @@
 {% block content %}
 <div class="max-w-2xl mx-auto mt-5">
   <!-- Original Post -->
-  <div class="bg-white rounded-2xl p-4 mb-4">
-    {% include "components/post.html" with post=post %}
+  <div class="bg-white rounded-2xl p-4 mb-4 cursor-pointer">
+    {% include "components/post.html" with post=post is_detail=True %}
   </div>
 
   <!-- Reply Input -->
+  {% if user.is_authenticated %}
   <div class="bg-white rounded-2xl p-4 mb-4">
     <div class="flex gap-3">
       <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
         <img src="{% if request.user.profile.profile_image %}{{ request.user.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
-             alt="{{ request.user.username }}"
-             class="w-full h-full object-cover rounded-full" />
+            alt="{{ user.username }}"
+            class="w-full h-full object-cover rounded-full" />
       </div>
       <div class="flex-1">
         <div class="w-full p-2 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50"
@@ -24,6 +25,7 @@
       </div>
     </div>
   </div>
+  {% endif %}
 
   <!-- Replies Section -->
   <div class="bg-white rounded-2xl p-4">

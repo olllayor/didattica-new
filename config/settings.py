@@ -268,3 +268,5 @@ ANALYTICS_API_KEY = os.getenv("ANALYTICS_API_KEY")
 ACCOUNT_LOGOUT_ON_GET = False  # Require POST request for logout
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Logout after password change
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"  # Where to redirect after logout
+
+LOGIN_URL = '/accounts/login/'
