@@ -27,7 +27,7 @@ def check_auth(request):
 
 urlpatterns = [
     # Main views
-    path("", views.index, name="index"),
+    path("", views.index, name="ai"),
     # Authentication endpoints
     path("auth/check/", check_auth, name="auth_check"),
     # Chat endpoints

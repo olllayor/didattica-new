@@ -1,57 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perplexity UI Clone</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                sidebar.classList.add('translate-x-0');
-            } else {
-                sidebar.classList.remove('translate-x-0');
-                sidebar.classList.add('-translate-x-full');
-            }
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <title>Drawer Example with Tailwind</title>
+  <!-- Tailwind CSS CDN; for production, consider compiling locally -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white">
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="w-64 bg-gray-800 p-4 space-y-4 fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-500 ease-in-out md:translate-x-0">
-            <div class="flex justify-between items-center">
-                <h1 class="text-xl font-bold text-blue-400">Perplexity</h1>
-                <button onclick="toggleSidebar()" class="text-white p-2">✖</button>
-            </div>
-            <nav class="space-y-2">
-                <a href="#" class="block px-4 py-2 bg-gray-700 rounded">Home</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700 rounded">Discover</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700 rounded">Spaces</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-700 rounded">Library</a>
-            </nav>
-        </aside>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="relative max-w-sm w-full bg-white border rounded shadow-sm p-4">
+    <h1 class="text-xl font-bold mb-2">Sample Post</h1>
+    <p class="mb-4">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    </p>
+    <button
+      id="grok-button"
+      class="px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 transition-colors"
+    >
+      Grok
+    </button>
 
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col items-center justify-center ml-0 md:ml-64">
-            <button onclick="toggleSidebar()" class="absolute top-4 left-4 bg-gray-700 p-2 rounded">☰</button>
-            <h2 class="text-3xl mb-4">What do you want to know?</h2>
-            <div class="relative w-1/2 flex items-center bg-gray-700 rounded-lg p-3">
-                <button class="mr-2 text-gray-400">📎</button>
-                <input type="text" placeholder="Ask anything..." class="w-full bg-transparent text-white outline-none">
-                <button class="ml-2 text-gray-400">🔍</button>
-                <button class="ml-2 bg-blue-500 px-4 py-1 rounded-lg">➤</button>
-            </div>
-
-            <!-- Cards Section -->
-            <div class="grid grid-cols-3 gap-4 mt-6">
-                <div class="bg-gray-800 p-4 rounded-lg">Try DeepSeek R1</div>
-                <div class="bg-gray-800 p-4 rounded-lg">☽ 34°F Tashkent</div>
-                <div class="bg-gray-800 p-4 rounded-lg">Meta Creates "War Rooms"</div>
-            </div>
-        </main>
+    <!-- Drawer -->
+    <div
+      id="grok-drawer"
+      class="fixed top-0 right-0 h-full w-64 bg-white shadow-2xl transform translate-x-full transition-transform duration-300"
+    >
+      <div class="flex flex-col h-full">
+        <div class="flex items-center justify-between p-4 border-b">
+          <h2 class="font-bold">Additional Details</h2>
+          <button
+            id="drawer-close-button"
+            class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded"
+          >
+            Close
+          </button>
+        </div>
+        <div class="flex-1 overflow-auto p-4">
+          <h2 class="font-bold mb-2">Insights</h2>
+          <p class="mb-2">Deeper insights about this post include:</p>
+          <ul class="list-disc list-inside">
+            <li>Detail One</li>
+            <li>Detail Two</li>
+            <li>Detail Three</li>
+          </ul>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <script>
+    const grokButton = document.getElementById('grok-button');
+    const grokDrawer = document.getElementById('grok-drawer');
+    const closeButton = document.getElementById('drawer-close-button');
+    
+    function toggleDrawer() {
+      grokDrawer.classList.toggle('translate-x-full');
+    }
+
+    grokButton.addEventListener('click', toggleDrawer);
+    closeButton.addEventListener('click', toggleDrawer);
+  </script>
 </body>
 </html>

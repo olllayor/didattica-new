@@ -19,7 +19,6 @@ load_dotenv()
 
 @login_required
 def index(request):
-  
     return render(request, "aichat/index.html")
 
 

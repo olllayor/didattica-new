@@ -238,3 +238,11 @@ class MessageImageAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+admin.site.site_header = "AI Chat Admin"
+admin.site.site_title = "AI Chat Admin"
+admin.site.index_title = "AI Chat Administration"
+
+
+
+

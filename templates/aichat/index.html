@@ -219,20 +219,6 @@
             <div class="sidebar-header flex justify-end">
                 <!-- Toggle Button will be inserted here by JavaScript when sidebar is open -->
             </div>
-
-            <!-- Chat History -->
-            <div class="mt-4">
-                <h3 class="text-sm font-semibold text-gray-500">Chat History</h3>
-                <ul class="mt-2 space-y-1">
-                    {% for chat in request.user.chats.all %}
-                        <li>
-                            <a href="#" class="block px-2 py-1 rounded hover:bg-gray-100">
-                                {{ chat.title }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
         </div>
     </aside>
 
@@ -326,111 +312,105 @@
                             class="w-full p-2 border-none focus:outline-none resize-none overflow-y-auto"
                             aria-label="Chat input"
                     ></textarea>
+
                     <!-- Hidden file input for attachments -->
-                    <div
-                            id="image-preview"
-                    ="file"
-                    class="w-full mt-2 flex flex-wrap gap-2 hidden"input"
-                    >
-                </div>
+                    <input
+                            type="file"
+                            id="attach-input"
+                            multiple
+                            style="display: none"
+                            aria-label="Attach files"
+                    />
 
-                <!-- Hidden file input for attachments -->
-                <input
-                        type="file"
-                        id="attach-input"
-                        multiple
-                        style="display: none"
-                        aria-label="Attach files"
-                />
+                    <div class="flex items-center justify-between w-full mt-2">
+                        <div class="flex items-center gap-2">
+                            <button
+                                    id="attach-button"
+                                    class="p-2 border border-gray-300 rounded-full hover:bg-gray-200 transition-colors"
+                                    aria-label="Attach file"
+                            >
+                                <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                >
+                                    <path
+                                            d="M6 7.91V16a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v9.182a2 2 0 0 0 2 2v0a2 2 0 0 0 2-2V8"
+                                    ></path>
+                                </svg>
+                            </button>
 
-                <div class="flex items-center justify-between w-full mt-2">
-                    <div class="flex items-center gap-2">
-                        <button
-                                id="attach-button"
-                                class="p-2 border border-gray-300 rounded-full hover:bg-gray-200 transition-colors"
-                                aria-label="Attach file"
-                        >
-                            <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                            <button
+                                    id="search-button"
+                                    class="p-2 border border-gray-300 rounded-full hover:bg-blue-300 transition-colors"
+                                    aria-label="Search"
                             >
-                                <path
-                                        d="M6 7.91V16a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V6a4 4 0 0 0-4-4v0a4 4 0 0 0-4 4v9.182a2 2 0 0 0 2 2v0a2 2 0 0 0 2-2V8"
-                                ></path>
-                            </svg>
-                        </button>
-
-                        <button
-                                id="search-button"
-                                class="p-2 border border-gray-300 rounded-full hover:bg-blue-300 transition-colors"
-                                aria-label="Search"
-                        >
-                            <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                >
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <ellipse
+                                            cx="12"
+                                            cy="12"
+                                            rx="10"
+                                            ry="4"
+                                            transform="rotate(90 12 12)"
+                                    ></ellipse>
+                                    <path d="M2 12h20"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button
+                                    id="stop-button"
+                                    class="hidden p-2 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
+                                    aria-label="Stop streaming"
                             >
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <ellipse
-                                        cx="12"
-                                        cy="12"
-                                        rx="10"
-                                        ry="4"
-                                        transform="rotate(90 12 12)"
-                                ></ellipse>
-                                <path d="M2 12h20"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button
-                                id="stop-button"
-                                class="hidden p-2 border border-gray-300 rounded-full hover:bg-gray-100 transition-colors"
-                                aria-label="Stop streaming"
-                        >
-                            <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="currentColor"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="currentColor"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                >
+                                    <rect x="6" y="6" width="12" height="12"></rect>
+                                </svg>
+                            </button>
+                            <button
+                                    id="submit-button"
+                                    class="p-2 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-colors"
+                                    aria-label="Submit message"
                             >
-                                <rect x="6" y="6" width="12" height="12"></rect>
-                            </svg>
-                        </button>
-                        <button
-                                id="submit-button"
-                                class="p-2 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-colors"
-                                aria-label="Submit message"
-                        >
-                            <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                            >
-                                <path d="M12 20V4"></path>
-                                <path d="M5 11l7-7 7 7"></path>
-                            </svg>
-                        </button>
+                                <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                >
+                                    <path d="M12 20V4"></path>
+                                    <path d="M5 11l7-7 7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1047,6 +1027,47 @@
             }
         });
     });
+
+    // Add to your DOMContentLoaded event listener
+document.addEventListener('loadPostInChat', (event) => {
+    const { postId, content, image } = event.detail;
+    
+    // Prepare the chat input
+    const chatInput = document.getElementById('chat-input');
+    chatInput.value = content;
+
+    // Handle image if present
+    if (image) {
+        const imagePreview = document.getElementById('image-preview');
+        imagePreview.classList.remove('hidden');
+        
+        const previewContainer = document.createElement('div');
+        previewContainer.className = 'relative inline-block';
+        previewContainer.innerHTML = `
+            <img src="${image}" alt="Post image" class="h-20 w-20 object-cover rounded-lg">
+            <button onclick="removePreviewImage(0)" class="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        `;
+        imagePreview.appendChild(previewContainer);
+
+        // Create a file from the image URL and add it to the file input
+        fetch(image)
+            .then(res => res.blob())
+            .then(blob => {
+                const file = new File([blob], "post_image.jpg", { type: "image/jpeg" });
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                document.getElementById('attach-input').files = dt.files;
+            });
+    }
+
+    // Auto-resize the textarea
+    chatInput.style.height = 'auto';
+    chatInput.style.height = chatInput.scrollHeight + 'px';
+});
 </script>
 </body>
 </html>

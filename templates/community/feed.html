@@ -649,32 +649,46 @@
     document.body.classList.remove("overflow-hidden");
   }
 
-  function handlePlanetClick(postId) {
-    fetch('/ai/check-device/')
-        .then(response => response.json())
-        .then(data => {
-            if (data.is_mobile) {
-                // Redirect to mobile chat view
-                window.location.href = `/ai/chat/?post_id=${postId}`;
-            } else {
-                // Open chat drawer for desktop
-                const drawerToggle = document.getElementById('chat-drawer');
-                if (drawerToggle) {
-                    drawerToggle.checked = true;
-                    // Trigger event to load post content in drawer
-                    document.dispatchEvent(new CustomEvent('loadPostInDrawer', {
-                        detail: { postId: postId }
-                    }));
-                } else {
-                    // Fallback to full chat page if drawer not available
-                    window.location.href = `/ai/chat/?post_id=${postId}`;
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error checking device:', error);
-            // Fallback to full chat page
-            window.location.href = `/ai/chat/?post_id=${postId}`;
-        });
+
+function handlePlanetClick(postId) {
+  // Prevent default navigation
+  event.preventDefault();
+  event.stopPropagation();
+
+  // Get post content and images
+  fetch(`/home/post/${postId}/`)
+      .then(response => response.json())
+      .then(postData => {
+          // Prepare the chat URL with post data
+          let chatUrl = `/ai/chat/?post_id=${postId}`;
+          
+          // Check device type and handle navigation
+          fetch('/ai/check-device/')
+              .then(response => response.json())
+              .then(data => {
+                  if (data.is_mobile) {
+                      // Redirect to mobile chat view
+                      window.location.href = chatUrl;
+                  } else {
+                      // Open chat drawer for desktop
+                      const drawerToggle = document.getElementById('chat-drawer');
+                      if (drawerToggle) {
+                          drawerToggle.checked = true;
+                          // Trigger event to load post content in drawer
+                          document.dispatchEvent(new CustomEvent('loadPostInChat', {
+                              detail: { 
+                                  postId: postId,
+                                  content: postData.content,
+                                  image: postData.image
+                              }
+                          }));
+                      } else {
+                          // Fallback to full chat page
+                          window.location.href = chatUrl;
+                      }
+                  }
+              });
+      });
+}
       </script>
 {% endblock content %}
