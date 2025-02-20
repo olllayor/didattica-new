@@ -10,6 +10,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from PIL import Image
 from django.utils import timezone
+from notifications.signals import follow_created
 
 
 def profile_image_upload_path(instance, filename):
@@ -60,6 +61,8 @@ class Profile(models.Model):
         if user_to_follow != self.user:
             self.following.add(user_to_follow)
             user_to_follow.profile.followers.add(self.user)
+            # Trigger follow notification
+            follow_created.send(sender=self.__class__, follower=self.user, followed_user=user_to_follow)
 
     def unfollow(self, user_to_unfollow):
         """Unfollow a user and update both follower and following relationships"""

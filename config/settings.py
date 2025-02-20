@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "accounts",
     "community",
     "aichat",
+    'notifications',
     "django.contrib.sites",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.telegram",

@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 import logging
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_protect
+from notifications.signals import follow_created
 
 
 
@@ -111,7 +112,8 @@ def follow_user(request, username):
             # Follow
             current_user_profile.follow(user_to_follow)
             followed = True
-
+            # Trigger follow notification
+            follow_created.send(sender=Profile, follower=request.user, followed_user=user_to_follow)
         # Return updated counts
         return JsonResponse({
             'followed': followed,

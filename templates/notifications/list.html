@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-5">
+  <div class="flex justify-between items-center mb-4 px-4">
+    <h2 class="text-2xl font-bold">Activity</h2>
+    <button id="read-all-btn" class="flex items-center gap-1 text-sm text-gray-500 hover:text-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12l5.25 5 2.625-3"/>
+        <path d="M8 12l5.25 5L22 7"/>
+        <path d="M16 7l-3.5 4"/>
+      </svg>
+      <span>Read All</span>
+    </button>
+  </div>
+  <div id="notifications-list" class="space-y-2">
+    {% for notification in notifications %}
+      <div class="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 {% if not notification.is_read %}bg-blue-50{% endif %}"
+           data-notification-id="{{ notification.id }}"
+           {% if notification.post %}data-post-id="{{ notification.post.id }}"{% endif %}
+           onclick="handleNotificationClick(event, '{{ notification.id }}', {% if notification.post %}'{{ notification.post.id }}'{% else %}null{% endif %})">
+        <!-- Sender Profile Image -->
+        <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+          <img src="{% if notification.sender.profile.profile_image %}{{ notification.sender.profile.profile_image.url }}{% else %}{% static 'images/default.webp' %}{% endif %}"
+               alt="{{ notification.sender.username }}"
+               class="w-full h-full object-cover" />
+        </div>
+        
+        <!-- Notification Content -->
+        <div class="flex-1 flex items-center justify-between gap-2">
+          <div class="flex-1">
+            <p class="text-sm">
+              <span class="font-semibold">{{ notification.sender.username }}</span>
+              {% if notification.notification_type == 'like' %}
+                liked your post
+              {% elif notification.notification_type == 'repost' %}
+                reposted your post
+              {% elif notification.notification_type == 'comment' %}
+                commented on your post
+              {% elif notification.notification_type == 'follow' %}
+                followed you
+              {% endif %}
+              <span class="text-gray-500" data-timestamp="{{ notification.created_at.isoformat }}">· {{ notification.created_at|timesince }}</span>
+            </p>
+          </div>
+          
+          <!-- Post Preview (Image or Text) -->
+          {% if notification.post and notification.post.post_images.all %}
+            <div class="w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
+              <img src="{{ notification.post.post_images.first.image.url }}"
+                   alt="Post preview"
+                   class="w-full h-full object-cover cursor-pointer"
+                   onclick="event.stopPropagation(); openImagePreviewModal(['{{ notification.post.post_images.first.image.url }}'], 0)" />
+            </div>
+          {% elif notification.post and notification.post.content %}
+            <div class="w-12 h-12 flex items-center justify-center text-xs text-gray-500 bg-gray-100 rounded-md flex-shrink-0 truncate p-1">
+              {{ notification.post.content|truncatechars:20 }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-gray-500 px-4 py-2">No notifications yet.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const readAllBtn = document.getElementById('read-all-btn');
+  const notificationItems = document.querySelectorAll('[data-notification-id]');
+
+  readAllBtn.addEventListener('click', () => {
+    fetch('/notifications/read-all/', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        notificationItems.forEach(item => {
+          item.classList.remove('bg-gray-50');
+        });
+        readAllBtn.disabled = true;
+      }
+    });
+  });
+
+  function updateTimestamps() {
+    const timestamps = document.querySelectorAll('[data-timestamp]');
+    timestamps.forEach(span => {
+      const timestamp = new Date(span.dataset.timestamp);
+      const now = new Date();
+      const diffInSeconds = Math.floor((now - timestamp) / 1000);
+      let timeAgo;
+      if (diffInSeconds < 60) timeAgo = 'just now';
+      else if (diffInSeconds < 3600) timeAgo = `${Math.floor(diffInSeconds / 60)}m`;
+      else if (diffInSeconds < 86400) timeAgo = `${Math.floor(diffInSeconds / 3600)}h`;
+      else if (diffInSeconds < 604800) timeAgo = `${Math.floor(diffInSeconds / 86400)}d`;
+      else if (diffInSeconds < 2592000) timeAgo = `${Math.floor(diffInSeconds / 604800)}w`;
+      else timeAgo = `${Math.floor(diffInSeconds / 2592000)}mo`;
+      span.textContent = `· ${timeAgo}`;
+    });
+  }
+  updateTimestamps();
+  setInterval(updateTimestamps, 60000);
+
+  function updateReadAllButtonState() {
+    const hasUnread = Array.from(notificationItems).some(item => 
+      item.classList.contains('bg-gray-50')
+    );
+    readAllBtn.disabled = !hasUnread;
+  }
+  updateReadAllButtonState();
+});
+
+function handleNotificationClick(event, notificationId, postId) {
+  if (event.target.tagName === 'IMG') return;
+
+  fetch(`/notifications/${notificationId}/read/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}',
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      const notificationItem = document.querySelector(`[data-notification-id="${notificationId}"]`);
+      notificationItem.classList.remove('bg-gray-50');
+      document.getElementById('read-all-btn').disabled = !Array.from(document.querySelectorAll('[data-notification-id]')).some(item => item.classList.contains('bg-gray-50'));
+      if (postId) {
+        window.location.href = `/home/post/${postId}/`;
+      } else {
+        window.location.href = `/notifications/`; // Stay on notifications page for follow notifications
+      }
+    }
+  })
+  .catch(error => {
+    console.error('Error marking notification as read:', error);
+    if (postId) {
+      window.location.href = `/home/post/${postId}/`;
+    } else {
+      window.location.href = `/notifications/`;
+    }
+  });
+}
+</script>
+{% endblock %}

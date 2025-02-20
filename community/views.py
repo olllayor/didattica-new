@@ -42,8 +42,9 @@ def create_post(request):
             if reply_to_id:
                 reply_to = get_object_or_404(Post, id=reply_to_id)
                 post.reply_to = reply_to
-
+            
             post.save()
+            form.save_m2m()
 
             # Handle multiple image uploads
             images = request.FILES.getlist("images")  # Get list of uploaded images
@@ -134,17 +135,19 @@ def feed(request):
 @require_POST
 def like_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    user = request.user
-
-    # Toggle like
-    if user in post.likes.all():
-        post.likes.remove(user)
-        liked = False
-    else:
-        post.likes.add(user)
-        liked = True
-
-    return JsonResponse({"liked": liked, "likes_count": post.likes.count()})
+    if request.method == 'POST':
+        if request.user in post.likes.all():
+            post.unlike(request.user)
+            liked = False
+        else:
+            post.like(request.user)  # This will trigger the notification
+            liked = True
+        return JsonResponse({
+            'success': True,
+            'liked': liked,
+            'likes_count': post.likes.count()
+        })
+    return JsonResponse({'success': False}, status=400)
 
 
 @login_required
@@ -259,3 +262,17 @@ def post_detail(request, post_id):
     return render(
         request, "community/post_detail.html", {"post": post, "replies": replies}
     )
+    
+@login_required
+def repost_post(request, post_id):
+    if request.method == 'POST':
+        original_post = get_object_or_404(Post, id=post_id)
+        if request.user != original_post.author:  # Prevent self-reposting
+            new_post = Post.objects.create(
+                author=request.user,
+                shared_post=original_post,
+                status='published'
+            )
+            return JsonResponse({'success': True})
+        return JsonResponse({'success': False, 'error': 'Cannot repost own post'}, status=400)
+    return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
