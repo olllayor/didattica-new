@@ -10,26 +10,35 @@
           alt="{{ post.author.username }}"
           class="w-full h-full object-cover rounded-full"
         />
+        <!-- Online Indicator -->
+        <span
+          class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white hidden"
+          data-user-id="{{ post.author.id }}"
+          id="online-indicator-{{ post.author.id }}"
+        ></span>
       </div>
       <div>
         <div class="flex items-center gap-1">
           <span class="font-bold">{{ post.author.username }}</span>
-          <span class="text-gray-500" 
-            data-timestamp="{{ post.created_at.isoformat }}">· {{ post.created_at|timesince }}</span>
-       </div>
+          <span
+            class="text-gray-500"
+            data-timestamp="{{ post.created_at.isoformat }}"
+            >· {{ post.created_at|timesince }}</span
+          >
+        </div>
       </div>
     </div>
   </div>
 
   {% if post.content %}
   <div class="mt-3 whitespace-pre-wrap">{{ post.content }}</div>
-  {% endif %}
-
-  {% if post.post_images.all %}
+  {% endif %} {% if post.post_images.all %}
   <div class="mt-4 overflow-x-auto scrollbar-hide post-images">
     <div class="flex gap-2">
       {% for image in post.post_images.all %}
-      <div class="relative aspect-square w-60 md:w-80 rounded-xl overflow-hidden flex-shrink-0">
+      <div
+        class="relative aspect-square w-60 md:w-80 rounded-xl overflow-hidden flex-shrink-0"
+      >
         <img
           src="{{ image.image.url }}"
           alt="Post image"
@@ -113,36 +122,46 @@
       <span>{{ post.views }}</span>
     </button>
   </div>
-    <!-- Add this script only if not in detail view -->
-    {% if not is_detail %}
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const article = document.querySelector('.post-component').closest('article');
-        if (article) {
-          article.addEventListener('click', function(e) {
-            if (!e.target.closest('button') && !e.target.closest('.dropdown') && !e.target.closest('img')) {
-              window.location.href = '/home/post/{{ post.id }}/';
-            }
-          });
-        }
-      });
-    </script>
-    {% endif %}
+  <!-- Add this script only if not in detail view -->
+  {% if not is_detail %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const article = document
+        .querySelector(".post-component")
+        .closest("article");
+      if (article) {
+        article.addEventListener("click", function (e) {
+          if (
+            !e.target.closest("button") &&
+            !e.target.closest(".dropdown") &&
+            !e.target.closest("img")
+          ) {
+            window.location.href = "/home/post/{{ post.id }}/";
+          }
+        });
+      }
+    });
+  </script>
+  {% endif %}
 
   <!-- Add this script at the bottom of the component -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const buttons = document.querySelectorAll('.post-component button, .post-component .dropdown');
-      buttons.forEach(button => {
-        button.addEventListener('click', (e) => e.stopPropagation());
+    document.addEventListener("DOMContentLoaded", function () {
+      const buttons = document.querySelectorAll(
+        ".post-component button, .post-component .dropdown"
+      );
+      buttons.forEach((button) => {
+        button.addEventListener("click", (e) => e.stopPropagation());
       });
-      
-      const images = document.querySelectorAll('.post-component img');
-      images.forEach(img => {
-        if (img.closest('.post-images')) {
-          img.addEventListener('click', (e) => {
+
+      const images = document.querySelectorAll(".post-component img");
+      images.forEach((img) => {
+        if (img.closest(".post-images")) {
+          img.addEventListener("click", (e) => {
             e.stopPropagation();
-            const imageUrls = [...img.closest('.post-images').querySelectorAll('img')].map(img => img.src);
+            const imageUrls = [
+              ...img.closest(".post-images").querySelectorAll("img"),
+            ].map((img) => img.src);
             const index = imageUrls.indexOf(img.src);
             openImagePreviewModal(imageUrls, index);
           });
@@ -150,36 +169,40 @@
       });
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener("DOMContentLoaded", function () {
       // Existing button and image handlers
-      const buttons = document.querySelectorAll('.post-component button, .post-component .dropdown');
-      buttons.forEach(button => {
-        button.addEventListener('click', (e) => e.stopPropagation());
+      const buttons = document.querySelectorAll(
+        ".post-component button, .post-component .dropdown"
+      );
+      buttons.forEach((button) => {
+        button.addEventListener("click", (e) => e.stopPropagation());
       });
-      
-      const images = document.querySelectorAll('.post-component img');
-      images.forEach(img => {
-        if (img.closest('.post-images')) {
-          img.addEventListener('click', (e) => {
+
+      const images = document.querySelectorAll(".post-component img");
+      images.forEach((img) => {
+        if (img.closest(".post-images")) {
+          img.addEventListener("click", (e) => {
             e.stopPropagation();
-            const imageUrls = [...img.closest('.post-images').querySelectorAll('img')].map(img => img.src);
+            const imageUrls = [
+              ...img.closest(".post-images").querySelectorAll("img"),
+            ].map((img) => img.src);
             const index = imageUrls.indexOf(img.src);
             openImagePreviewModal(imageUrls, index);
           });
         }
       });
-  
+
       // Add timestamp update logic
       function updateTimestamps() {
-        const timestamps = document.querySelectorAll('[data-timestamp]');
-        timestamps.forEach(span => {
+        const timestamps = document.querySelectorAll("[data-timestamp]");
+        timestamps.forEach((span) => {
           const timestamp = new Date(span.dataset.timestamp);
           const now = new Date();
           const diffInSeconds = Math.floor((now - timestamp) / 1000);
-  
+
           let timeAgo;
           if (diffInSeconds < 60) {
-            timeAgo = 'just now';
+            timeAgo = "just now";
           } else if (diffInSeconds < 3600) {
             const minutes = Math.floor(diffInSeconds / 60);
             timeAgo = `${minutes}m`;
@@ -196,14 +219,45 @@
             const months = Math.floor(diffInSeconds / 2592000);
             timeAgo = `${months}mo`;
           }
-  
+
           span.textContent = `· ${timeAgo}`;
         });
       }
-  
+
       // Update timestamps immediately and then every minute
       updateTimestamps();
       setInterval(updateTimestamps, 60000);
     });
+
+    const presenceSocket = new WebSocket(
+      "ws://" + window.location.host + "/ws/presence/"
+    );
+
+    presenceSocket.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      const onlineUsers = data.online_users;
+      console.log("Online users received:", onlineUsers); // Debug
+      document
+        .querySelectorAll("[id^='online-indicator-']")
+        .forEach((indicator) => {
+          const userId = parseInt(indicator.dataset.userId);
+          indicator.classList.toggle("hidden", !onlineUsers.includes(userId));
+        });
+    };
+
+    presenceSocket.onopen = function () {
+      console.log("WebSocket connected"); // Debug
+      setInterval(() => {
+        presenceSocket.send(JSON.stringify({ type: "heartbeat" }));
+      }, 25000);
+    };
+
+    presenceSocket.onerror = function (error) {
+      console.error("WebSocket error:", error); // Debug
+    };
+
+    presenceSocket.onclose = function (e) {
+      console.error("Presence socket closed:", e); // Debug
+    };
   </script>
 </div>

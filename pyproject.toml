@@ -1,0 +1,13 @@
+[project]
+name = "didattica-new"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "django>=5.1.6",
+    "firebase-admin>=6.6.0",
+    "py-vapid>=1.9.2",
+    "pywebpush>=2.0.3",
+    "webpush>=1.0.5",
+]

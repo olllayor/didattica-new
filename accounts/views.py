@@ -1,18 +1,20 @@
-from django.http import JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.models import User
-from django.contrib import messages  # Import the messages framework
-from allauth.socialaccount.models import SocialAccount
-from .forms import ProfileForm
-from .models import Profile
-from community.models import Post  # Import the Post model from the community app
-from django.contrib.auth.decorators import login_required
 import logging
+
+from allauth.socialaccount.models import SocialAccount
+from django.contrib import messages  # Import the messages framework
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_protect
+
+from community.models import Post  # Import the Post model from the community app
 from notifications.signals import follow_created
 
-
+from .forms import ProfileForm
+from .models import Profile
+from .utils import get_online_users
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +41,8 @@ def profile(request, username):
     # Fetch the user's posts
     posts = Post.objects.filter(author=user, reply_to=None).order_by('-created_at')
     reply_posts = Post.objects.filter(author=user).exclude(reply_to=None).order_by('-created_at')
-
+    online_user_ids = get_online_users()
+    print("Online user ids", online_user_ids)
 
     # Only allow the profile owner to edit the profile
     if request.method == 'POST':
@@ -65,6 +68,7 @@ def profile(request, username):
         'form': form,
         'posts': posts,
         'reply_posts': reply_posts,
+        'is_online': user.id in online_user_ids,
     }
     return render(request, 'accounts/profile.html', context)
 

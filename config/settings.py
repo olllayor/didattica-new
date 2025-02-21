@@ -37,12 +37,14 @@ CSRF_TRUSTED_ORIGINS = ["https://*.jprq.site"]
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',  # Add this
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'webpush',  # Add this
     "debug_toolbar",
     "allauth",
     "allauth.account",
@@ -86,10 +88,22 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "notifications.context_processors.notification_count",  # Add this line
             ],
         },
     },
 ]
+
+ASGI_APPLICATION = 'config.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],  # Adjust if using a Redis service
+        },
+    },
+}
 
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -271,3 +285,9 @@ ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Logout after password change
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"  # Where to redirect after logout
 
 LOGIN_URL = '/accounts/login/'
+
+WEBPUSH_SETTINGS = {
+    "VAPID_PUBLIC_KEY": "your-public-vapid-key",
+    "VAPID_PRIVATE_KEY": "your-private-vapid-key",
+    "VAPID_ADMIN_EMAIL": "muhammadnabiyevolloyor@gmail.com",
+}
