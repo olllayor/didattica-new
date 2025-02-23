@@ -28,7 +28,7 @@
         <div class="flex-1 flex items-center justify-between gap-2">
           <div class="flex-1">
             <p class="text-sm">
-              <span class="font-semibold">{{ notification.sender.username }}</span>
+              <a href="{% url 'profile' username=notification.sender.username %}" class="font-semibold" onclick="event.stopPropagation();">{{ notification.sender.username }}</a>
               {% if notification.notification_type == 'like' %}
                 liked your post
               {% elif notification.notification_type == 'repost' %}
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateTimestamps, 60000);
 
   function updateReadAllButtonState() {
-    const hasUnread = Array.from(notificationItems).some(item => 
+    const hasUnread = Array.from(notificationItems).some(item =>
       item.classList.contains('bg-gray-50')
     );
     readAllBtn.disabled = !hasUnread;
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     div.dataset.notificationId = notification.id;
     if (notification.post_id) div.dataset.postId = notification.post_id;
     div.setAttribute('onclick', `handleNotificationClick(event, '${notification.id}', ${notification.post_id ? `'${notification.post_id}'` : 'null'})`);
-    
+
     div.innerHTML = `
       <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
         <img src="{% static 'images/default.webp' %}" alt="${notification.sender}" class="w-full h-full object-cover" />
@@ -140,15 +140,15 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="flex-1">
           <p class="text-sm">
             <span class="font-semibold">${notification.sender}</span>
-            ${notification.type === 'like' ? 'liked your post' : 
-              notification.type === 'repost' ? 'reposted your post' : 
-              notification.type === 'comment' ? 'commented on your post' : 
+            ${notification.type === 'like' ? 'liked your post' :
+              notification.type === 'repost' ? 'reposted your post' :
+              notification.type === 'comment' ? 'commented on your post' :
               'followed you'}
             <span class="text-gray-500" data-timestamp="${notification.created_at}">· just now</span>
           </p>
         </div>
       </div>`;
-    
+
     list.prepend(div);
     updateReadAllButtonState();
   };
