@@ -162,12 +162,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "APP": {
-            "client_id": "248653845732-avfirojebhorb17mbqk2dkqq893j6107.apps.googleusercontent.com",
-            "secret": "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",
+            "client_id": os.getenv("GOOGLE_OAUTH_CLIENT_ID"),
+            "secret": os.getenv("GOOGLE_OAUTH_SECRET"),
             "key": "",
         },
         "SCOPE": ["profile", "email"],
@@ -176,17 +175,17 @@ SOCIALACCOUNT_PROVIDERS = {
     },
     "telegram": {
         "APP": {
-            "client_id": "7589401489",
-            "secret": "7589401489:AAG0kylN2eKjsVWYI9CbXKjNFTUBwj-qmFw",
+            "client_id": os.getenv("TELEGRAM_CLIENT_ID"),
+            "secret": os.getenv("TELEGRAM_CLIENT_SECRET"),
         },
         "AUTH_PARAMS": {
-            "auth_date_validity": 30,  # Optional: Set expiration time in seconds
+            "auth_date_validity": 30,
         },
     },
     "twitter": {
         "APP": {
-            "client_id": "3ZCnHaMBbyyymAblei5MEhrdC",
-            "secret": "i5YowPQf1evZ0p6oEpMgWaJi3k8Vj8RFHuIbp6YfeRd1WzM2AL",
+            "client_id": os.getenv("TWITTER_OAUTH_CLIENT_ID"),
+            "secret": os.getenv("TWITTER_OAUTH_SECRET"),
         },
         "OAUTH_PKCE_ENABLED": True,
     },
