@@ -48,10 +48,6 @@
                    class="w-full h-full object-cover cursor-pointer"
                    onclick="event.stopPropagation(); openImagePreviewModal(['{{ notification.post.post_images.first.image.url }}'], 0)" />
             </div>
-          {% elif notification.post and notification.post.content %}
-            <div class="w-12 h-12 flex items-center justify-center text-xs text-gray-500 bg-gray-100 rounded-md flex-shrink-0 truncate p-1">
-              {{ notification.post.content|truncatechars:20 }}
-            </div>
           {% endif %}
         </div>
       </div>

@@ -64,7 +64,7 @@
           <div class="flex items-center justify-between w-full mt-4 text-sm text-gray-600">
             <div>
               {% if profile.website %}
-                <a href="{{ profile.website }}" class="text-blue-500 hover:underline">{{ profile.website }}</a>
+                <a href="{{ profile.website }}" class="text-blue-500 hover:underline" target="_blank">{{ profile.website }}</a>
               {% endif %}
             </div>
             {% if social_accounts %}
