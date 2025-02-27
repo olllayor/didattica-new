@@ -1,10 +1,11 @@
 # community/models.py
-from django.db import models
-from django.contrib.auth import get_user_model
-from PIL import Image
-from io import BytesIO
-from django.core.files.base import ContentFile
 import os
+from io import BytesIO
+
+from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
+from django.db import models
+from PIL import Image
 
 User = get_user_model()
 
@@ -28,7 +29,7 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     likes = models.ManyToManyField(User, related_name="liked_posts", blank=True)
     views = models.PositiveIntegerField(default=0)
-
+    # repost_of = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='reposts')  # Added field
     shared_post = models.ForeignKey(
         "self", on_delete=models.SET_NULL, null=True, blank=True, related_name="shares"
     )
@@ -55,6 +56,20 @@ class Post(models.Model):
 
     def get_replies_count(self):
         return self.replies.count()
+    
+    def like(self, user):
+        if user not in self.likes.all():
+            self.likes.add(user)
+            from notifications.signals import like_created
+            like_created.send(sender=self.__class__, post=self, user=user)
+            
+    def unlike(self, user):
+        """Remove a like"""
+        if user in self.likes.all():
+            self.likes.remove(user)
+            
+    class Meta:
+        ordering = ['-created_at']
 
 
 class PostImage(models.Model):

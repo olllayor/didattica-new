@@ -21,6 +21,9 @@
                    width="64"
                    height="64"
                    class="w-full h-full object-cover rounded-full" />
+                   {% if is_online %}
+                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white">22</span>
+                  {% endif %}
             </div>
           </div>
           <!-- Follow/Unfollow Button -->
@@ -61,7 +64,7 @@
           <div class="flex items-center justify-between w-full mt-4 text-sm text-gray-600">
             <div>
               {% if profile.website %}
-                <a href="{{ profile.website }}" class="text-blue-500 hover:underline">{{ profile.website }}</a>
+                <a href="{{ profile.website }}" class="text-blue-500 hover:underline" target="_blank">{{ profile.website }}</a>
               {% endif %}
             </div>
             {% if social_accounts %}
@@ -400,7 +403,7 @@
       const postId = button.dataset.postId;
 
       // Check initial like status
-      fetch(`/community/post/${postId}/check_like/`, {
+      fetch(`/home/post/${postId}/check_like/`, {
         headers: {
           "X-CSRFToken": "{{ csrf_token }}",
         },
@@ -420,7 +423,7 @@
     const svg = button.querySelector("svg");
     const likesCount = button.querySelector(".likes-count");
 
-    fetch(`/community/post/${postId}/like/`, {
+    fetch(`/home/post/${postId}/like/`, {
       method: "POST",
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
@@ -469,7 +472,7 @@
     event.preventDefault();
     const postId = event.currentTarget.dataset.postId;
 
-    fetch(`/community/post/${postId}/like/`, {
+    fetch(`/home/post/${postId}/like/`, {
       method: "POST",
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
@@ -524,7 +527,7 @@
   }
 
   function handleLikeAction(postId, button) {
-    fetch(`/community/post/${postId}/like/`, {
+    fetch(`/home/post/${postId}/like/`, {
       method: "POST",
       headers: {
         "X-CSRFToken": "{{ csrf_token }}",
@@ -552,14 +555,14 @@
   }
 
   function copyPostLink(postId) {
-    const postLink = `${window.location.origin}/community/post/${postId}/`;
+    const postLink = `${window.location.origin}/home/post/${postId}/`;
     navigator.clipboard.writeText(postLink).then(() => {
       alert("Link copied to clipboard!");
     });
   }
 
   function getEmbedCode(postId) {
-    const embedCode = `<iframe src="${window.location.origin}/community/post/${postId}/embed/" width="500" height="300"></iframe>`;
+    const embedCode = `<iframe src="${window.location.origin}/home/post/${postId}/embed/" width="500" height="300"></iframe>`;
     navigator.clipboard.writeText(embedCode).then(() => {
       alert("Embed code copied to clipboard!");
     });
@@ -575,7 +578,7 @@
         // Disable button during request
         followButton.disabled = true;
 
-        fetch(`/community/@${username}/follow/`, {
+        fetch(`/home/@${username}/follow/`, {
           method: "POST",
           headers: {
             "X-CSRFToken": "{{ csrf_token }}",

@@ -42,7 +42,7 @@ function closeRepostDialog() {
 function confirmRepost() {
   if (!currentRepostId) return;
   
-  fetch(`/community/post/${currentRepostId}/repost/`, {
+  fetch(`/home/post/${currentRepostId}/repost/`, {
     method: 'POST',
     headers: {
       'X-CSRFToken': '{{ csrf_token }}',

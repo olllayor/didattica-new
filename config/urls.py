@@ -10,8 +10,10 @@ urlpatterns = [
     path('', index, name='index'),  # Root URL pattern
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),  # This includes all allauth URLs
-    path('community/', include('community.urls')),
+    path('home/', include('community.urls')),
     path('', include('accounts.urls')),
+    path('ai/', include('aichat.urls')),
+    path('notifications/', include('notifications.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) if settings.DEBUG else []
 
 if settings.DEBUG:
