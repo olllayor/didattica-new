@@ -69,4 +69,3 @@ def stream_gemini_completion(messages, model_name="models/gemini-2.0-flash-001")
         print(f"Error during Gemini API call: {e}")
         yield f"Error: {str(e)}"
 
-

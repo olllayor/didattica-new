@@ -1,0 +1,24 @@
+*.pyc
+*.pyo
+__pycache__/
+.git
+.gitignore
+.dockerignore
+Dockerfile
+db.sqlite3
+media/
+static/ # If you are collecting static files to a local 'static' folder and intend to serve them separately
+*.md
+*.html
+hello.py
+locustfile.py
+bottom-modal.html
+chat.html
+firebase.html
+gemini.md
+test.html
+.DS_Store
+uv.lock
+pyproject.toml
+*.swp # Swap files
+*.swo # Swap files for older versions of Vim
