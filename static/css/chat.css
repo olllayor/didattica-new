@@ -1,0 +1,159 @@
+/* Media query for mobile screens */
+@media (max-width: 768px) {
+    #main-content {
+        margin-left: 0 !important;
+    }
+
+    #input-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+        background: white;
+    }
+
+    #chat-messages {
+        padding-bottom: 5rem;
+    }
+
+    .model-selector-container {
+        position: relative;
+        width: 100%;
+    }
+
+    .model-selector {
+        width: 100%;
+        z-index: 20;
+    }
+}
+
+/* Chat container styles with smooth scrolling */
+.chat-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+    scroll-behavior: smooth;
+}
+
+.chat-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Main content layout */
+#main-content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Chat messages area scrolls and takes remaining space */
+#chat-messages {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Input area stays at bottom on larger screens */
+#input-container {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+}
+
+/* Markdown styles */
+.chat-container pre {
+    position: relative;
+    margin: 1.5em 0;
+    overflow-x: auto;
+}
+
+.chat-container pre:hover button {
+    opacity: 1;
+}
+
+.chat-container code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.chat-container p {
+    margin-bottom: 1em;
+    line-height: 1.5;
+}
+
+.chat-container ul,
+.chat-container ol {
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+}
+
+.chat-container blockquote {
+    border-left: 4px solid #e5e7eb;
+    padding-left: 1em;
+    margin: 0.5em 0;
+    color: #4b5563;
+}
+
+.chat-container h1,
+.chat-container h2,
+.chat-container h3,
+.chat-container h4,
+.chat-container h5,
+.chat-container h6 {
+    font-weight: 600;
+    margin: 1em 0 0.5em 0;
+}
+
+/* Blinking cursor style for streaming */
+.blinking-cursor {
+    animation: blink 1s step-start 0s infinite;
+}
+
+/* Syntax highlighting colors */
+.chat-container pre code {
+    display: block;
+    color: #374151;
+    line-height: 1.1;
+}
+
+/* Add smooth transitions */
+.chat-container pre button {
+    transition: all 0.2s ease;
+}
+
+.chat-container strong {
+    font-weight: 600;
+}
+
+.chat-container em {
+    font-style: italic;
+}
+
+.chat-image {
+    max-width: 300px;
+    max-height: 300px;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+.message-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
