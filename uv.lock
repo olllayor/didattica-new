@@ -288,6 +288,7 @@ dependencies = [
     { name = "py-vapid" },
     { name = "python-dotenv" },
     { name = "pywebpush" },
+    { name = "sentry-sdk", extra = ["django"] },
     { name = "webpush" },
 ]
 
@@ -299,6 +300,7 @@ requires-dist = [
     { name = "py-vapid", specifier = ">=1.9.2" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "pywebpush", specifier = ">=2.0.3" },
+    { name = "sentry-sdk", extras = ["django"], specifier = ">=2.22.0" },
     { name = "webpush", specifier = ">=1.0.5" },
 ]
 
@@ -1031,6 +1033,24 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/aa/65/7d973b89c4d2351d7fb232c2e452547ddfa243e93131e7cfa766da627b52/rsa-4.9.tar.gz", hash = "sha256:e38464a49c6c85d7f1351b0126661487a7e0a14a50f1675ec50eb34d4f20ef21", size = 29711 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/49/97/fa78e3d2f65c02c8e1268b9aba606569fe97f6c8f7c2d74394553347c145/rsa-4.9-py3-none-any.whl", hash = "sha256:90260d9058e514786967344d0ef75fa8727eed8a7d2e43ce9f4bcf1b536174f7", size = 34315 },
+]
+
+[[package]]
+name = "sentry-sdk"
+version = "2.22.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "certifi" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/81/b6/662988ecd2345bf6c3a5c306a9a3590852742eff91d0a78a143398b816f3/sentry_sdk-2.22.0.tar.gz", hash = "sha256:b4bf43bb38f547c84b2eadcefbe389b36ef75f3f38253d7a74d6b928c07ae944", size = 303539 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/12/7f/0e4459173e9671ba5f75a48dda2442bcc48a12c79e54e5789381c8c6a9bc/sentry_sdk-2.22.0-py2.py3-none-any.whl", hash = "sha256:3d791d631a6c97aad4da7074081a57073126c69487560c6f8bffcf586461de66", size = 325815 },
+]
+
+[package.optional-dependencies]
+django = [
+    { name = "django" },
 ]
 
 [[package]]

@@ -11,6 +11,7 @@ def health_check(request):
     return HttpResponse("OK")
 
 
+
 urlpatterns = (
     [
         path("", index, name="index"),  # Root URL pattern

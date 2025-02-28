@@ -61,6 +61,7 @@ propcache==0.3.0
 proto-plus==1.26.0
 protobuf==5.29.3
 psutil==7.0.0
+psycopg2==2.9.10
 py-vapid==1.9.2
 pyasn1==0.6.1
 pyasn1-modules==0.4.1
@@ -77,6 +78,7 @@ redis==5.2.1
 requests==2.32.3
 requests-oauthlib==2.0.0
 rsa==4.9
+sentry-sdk==2.22.0
 setuptools==75.8.0
 six==1.17.0
 slippers==0.6.2

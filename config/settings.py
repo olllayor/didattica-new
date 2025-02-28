@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+
 load_dotenv()  # Load environment variables from .env file
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -193,6 +194,26 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
+# SENTRY FOR ISSUES/BUGS
+import sentry_sdk
+
+sentry_sdk.init(
+    dsn="https://3158cac26822384d92578f830e2acfa7@o4508810359144448.ingest.de.sentry.io/4508896839663696",
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for tracing.
+    traces_sample_rate=1.0,
+    _experiments={
+        # Set continuous_profiling_auto_start to True
+        # to automatically start the profiler on when
+        # possible.
+        "continuous_profiling_auto_start": True,
+    },
+)
+
+
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_PROVIDERS_CALLBACK_URL = "accounts/%(provider)s/login/callback/"
 SOCIALACCOUNT_TEMPLATE_EXTENSION = "html"
@@ -263,6 +284,6 @@ ANALYTICS_API_KEY = "4fba4480-104f-409b-a10a-8db9e4f9a95e"
 # Add these settings for logout handling
 ACCOUNT_LOGOUT_ON_GET = False  # Require POST request for logout
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True  # Logout after password change
-ACCOUNT_LOGOUT_REDIRECT_URL = "/"  # Where to redirect after logout
 
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"  # Where to redirect after logout
 LOGIN_URL = "/accounts/login/"

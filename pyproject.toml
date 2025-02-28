@@ -11,5 +11,6 @@ dependencies = [
     "py-vapid>=1.9.2",
     "python-dotenv>=1.0.1",
     "pywebpush>=2.0.3",
+    "sentry-sdk[django]>=2.22.0",
     "webpush>=1.0.5",
 ]
