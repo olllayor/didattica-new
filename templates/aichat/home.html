@@ -25,7 +25,27 @@
       <!-- Welcome section -->
       <div class="flex flex-col items-center justify-center flex-1 w-full">
         <div class="max-w-3xl w-full text-center mb-8 px-4">
-          <h1 class="text-3xl font-bold mb-2">Good afternoon, Ollayor M.</h1>
+          <h1 class="text-3xl font-bold mb-2" id="greeting">
+            Good afternoon, Ollayor M.
+          </h1>
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              const hours = new Date().getHours();
+              let greeting = "Good ";
+
+              if (hours < 12) {
+                greeting += "morning";
+              } else if (hours < 18) {
+                greeting += "afternoon";
+              } else {
+                greeting += "evening";
+              }
+
+              document.getElementById(
+                "greeting"
+              ).textContent = `${greeting}, Ollayor M.`;
+            });
+          </script>
           <p class="text-gray-600 text-xl">How can I help you today?</p>
         </div>
 
@@ -43,9 +63,39 @@
             <span class="font-medium text-sm">Research</span>
           </div>
 
-          <!-- Rest of the cards remain unchanged -->
-        </div>
+          <div
+            class="suggestion-card flex items-center bg-white py-2 px-4 rounded-lg shadow-sm border border-gray-200 cursor-pointer"
+            onclick="fillPrompt('Brainstorm ideas for a project')"
+          >
+            <i class="ai ai-file text-gray-700 ai-icon"></i>
+            <span class="font-medium text-sm">Brainstorm ideas</span>
+          </div>
 
+          <div
+            class="suggestion-card flex items-center bg-white py-2 px-4 rounded-lg shadow-sm border border-gray-200 cursor-pointer"
+            onclick="fillPrompt('Analyze a dataset or data trends')"
+          >
+            <i class="ai ai-file text-gray-700 ai-icon"></i>
+            <span class="font-medium text-sm">Analyze Data</span>
+          </div>
+
+          <div
+            class="suggestion-card flex items-center bg-white py-2 px-4 rounded-lg shadow-sm border border-gray-200 cursor-pointer"
+            onclick="fillPrompt('Write code for a specific task')"
+          >
+            <i class="ai ai-file text-gray-700 ai-icon"></i>
+            <span class="font-medium text-sm">Write Code</span>
+          </div>
+
+          <div
+            class="suggestion-card flex items-center bg-white py-2 px-4 rounded-lg shadow-sm border border-gray-200 cursor-pointer"
+            onclick="fillPrompt('Solve this image')"
+          >
+            <i class="ai ai-file text-gray-700 ai-icon"></i>
+            <span class="font-medium text-sm">Solve this image</span>
+          </div>
+
+        </div>
       </div>
     </main>
 
