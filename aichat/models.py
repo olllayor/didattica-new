@@ -99,4 +99,3 @@ def save_user_profile_for_chat(sender, instance, **kwargs):
     if not hasattr(instance, 'userprofile'):
         UserProfile.objects.create(user=instance)
     instance.userprofile.save()
-

@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat UI with Streaming Response</title>
+    <title>Noid</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Marked for Markdown parsing -->
@@ -167,28 +167,23 @@
         gap: 8px;
         margin-bottom: 8px;
       }
+      .hidden {
+        display: none;
+      }
+      #model-dropdown-button.locked {
+        cursor: default;
+        background-color: transparent;
+        border: none;
+        pointer-events: none;
+      }
+
+      #model-dropdown-button.locked .text-gray-500 {
+        display: none;
+      }
     </style>
   </head>
   <body class="min-h-screen">
     <div class="flex relative">
-      {% comment %}
-      <!-- Sidebar Section -->
-      <aside class="fixed z-20 h-screen" aria-label="Sidebar">
-        <div
-          id="sidebar-content"
-          class="w-64 h-full bg-white border-r border-gray-200 p-4 transition-transform duration-300 ease-in-out"
-        >
-          <!-- Sidebar Header: Place toggle button here when sidebar is open -->
-          <div class="sidebar-header flex justify-end">
-            <!-- Toggle Button will be inserted here by JavaScript when sidebar is open -->
-          </div>
-        </div>
-      </aside>
-
-      <!-- Fixed container for toggle button when sidebar is hidden -->
-      <div id="fixed-toggle-container" class="fixed z-30 top-4 left-4"></div>
-      {% endcomment %}
-
       <!-- Main Chat Area -->
       <main
         id="main-content"
@@ -197,7 +192,7 @@
         <!-- Model Selector -->
         <div
           id="model-selector-container"
-          class="sticky top-0 z-20 bg-white border-b border-gray-200 rounded-xl shadow-sm"
+          class="sticky top-0 z-20 bg-white rounded-xl"
         >
           <div
             class="max-w-[768px] mx-auto p-4 flex items-center justify-between"
@@ -207,24 +202,45 @@
             <div class="flex items-center space-x-1" id="model-select-wrapper">
               <div class="relative inline-block">
                 <div
-                  class="flex items-center gap-x-1 px-0 py-0 min-w-[160px] text-base"
+                  id="model-dropdown-button"
+                  class="flex items-center gap-x-2 px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 cursor-pointer transition-colors min-w-[220px]"
                 >
-                  <select
-                    class="appearance-none bg-transparent focus:outline-none"
-                    aria-label="Select AI Model"
-                  >
-                    <option value="models/gemini-2.0-flash-lite-preview-02-05">
+                  <div class="flex items-center gap-2">
+                    <!-- Model icon -->
+                    <span class="flex-shrink-0">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="text-blue-500"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 16v-4" />
+                        <path d="M12 8h.01" />
+                      </svg>
+                    </span>
+
+                    <!-- Current model name -->
+                    <span
+                      id="selected-model-name"
+                      class="text-sm font-medium truncate"
+                    >
                       Gemini 2.0 Flash-Lite
-                    </option>
-                    <option value="models/gemini-2.0-flash-001">
-                      Gemini 2.0 Flash
-                    </option>
-                  </select>
+                    </span>
+                  </div>
+
                   <svg
-                    class="h-4 w-4 text-gray-400"
+                    class="h-4 w-4 text-gray-500 ml-auto"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
+                    aria-hidden="true"
                   >
                     <path
                       fill-rule="evenodd"
@@ -233,24 +249,121 @@
                     ></path>
                   </svg>
                 </div>
+
+                <!-- Dropdown menu -->
+                <div
+                  id="model-dropdown-menu"
+                  class="hidden absolute left-0 mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-200 z-30"
+                >
+                  <div class="py-1">
+                    <!-- Model options -->
+                    <div
+                      class="model-option flex items-center px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                      data-value="models/gemini-2.0-flash-lite-preview-02-05"
+                    >
+                      <div class="mr-2 w-4 h-4 flex-shrink-0">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="text-blue-500 w-4 h-4"
+                        >
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M12 16v-4" />
+                          <path d="M12 8h.01" />
+                        </svg>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="font-medium">Gemini 2.0 Flash-Lite</span>
+                        <span class="text-xs text-gray-500"
+                          >Fast responses, good for chat</span
+                        >
+                      </div>
+                      <span
+                        id="check-gemini-lite"
+                        class="ml-auto text-blue-500"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+
+                    <div
+                      class="model-option flex items-center px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                      data-value="models/gemini-2.0-flash-001"
+                    >
+                      <div class="mr-2 w-4 h-4 flex-shrink-0">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="text-purple-500 w-4 h-4"
+                        >
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="8" x2="12" y2="16"></line>
+                          <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="font-medium">Gemini 2.0 Flash</span>
+                        <span class="text-xs text-gray-500"
+                          >Better quality, more capabilities</span
+                        >
+                      </div>
+                      <span
+                        id="check-gemini-flash"
+                        class="ml-auto text-blue-500 hidden"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <!-- Right side: displays the selected model name -->
-            <div class="flex items-center space-x-2">
-              <span
-                class="text-xs text-gray-500"
-                id="selected-model-name"
-              ></span>
-              <div
-                class="w-2 h-2 bg-green-500 rounded-full"
-                aria-hidden="true"
-              ></div>
             </div>
           </div>
         </div>
 
+        <!-- Home Section (initially visible) -->
+        <div id="home-section" class="flex-1 flex items-center justify-center">
+          {% include 'aichat/home.html' %}
+        </div>
         <!-- Chat Messages Area -->
-        <div id="chat-messages" class="flex-1 overflow-y-auto chat-container">
+        <div
+          id="chat-messages"
+          class="flex-1 overflow-y-auto chat-container hidden"
+        >
           <div class="max-w-[768px] mx-auto p-4">
             <!-- Messages will be added dynamically -->
           </div>
@@ -312,8 +425,9 @@
 
                   <button
                     id="search-button"
-                    class="p-2 border border-gray-300 rounded-full hover:bg-blue-300 transition-colors"
+                    class="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-400 cursor-not-allowed relative group"
                     aria-label="Search"
+                    disabled
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -335,6 +449,11 @@
                       ></ellipse>
                       <path d="M2 12h20"></path>
                     </svg>
+                    <span
+                      class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                    >
+                      Available with Premium
+                    </span>
                   </button>
                 </div>
                 <div class="flex items-center gap-2">
@@ -382,15 +501,74 @@
         </div>
       </main>
     </div>
-
-    <!-- Main JavaScript -->
     <script>
       const csrftoken = "{{ csrf_token }}";
       document.addEventListener("DOMContentLoaded", () => {
+        // Model dropdown functionality
+        const dropdownButton = document.getElementById("model-dropdown-button");
+        const dropdownMenu = document.getElementById("model-dropdown-menu");
+        const selectedModelName = document.getElementById(
+          "selected-model-name"
+        );
+        const modelOptions = document.querySelectorAll(".model-option");
+        let selectedModelValue = "models/gemini-2.0-flash-lite-preview-02-05"; // Default model
+        const checkmarkMap = {
+          "models/gemini-2.0-flash-lite-preview-02-05": "check-gemini-lite",
+          "models/gemini-2.0-flash-001": "check-gemini-flash",
+        };
+
+        // Toggle dropdown visibility
+        dropdownButton.addEventListener("click", () => {
+          if (!dropdownButton.classList.contains("locked")) {
+            const isOpen = !dropdownMenu.classList.contains("hidden");
+            dropdownMenu.classList.toggle("hidden");
+            dropdownButton.setAttribute("aria-expanded", !isOpen);
+          }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", (event) => {
+          if (
+            !dropdownButton.contains(event.target) &&
+            !dropdownMenu.contains(event.target)
+          ) {
+            dropdownMenu.classList.add("hidden");
+            dropdownButton.setAttribute("aria-expanded", "false");
+          }
+        });
+
+        // Handle model selection
+        modelOptions.forEach((option) => {
+          option.addEventListener("click", () => {
+            // Update selected model value
+            selectedModelValue = option.getAttribute("data-value");
+
+            // Update displayed model name
+            const modelName = option.querySelector(".font-medium").textContent;
+            selectedModelName.textContent = modelName;
+
+            // Update check marks - first hide all checks
+            document
+              .querySelectorAll("[id^='check-']")
+              .forEach((el) => el.classList.add("hidden"));
+
+            // Show appropriate check based on selected model
+            const checkmarkId = checkmarkMap[selectedModelValue];
+            if (checkmarkId) {
+              document.getElementById(checkmarkId).classList.remove("hidden");
+            }
+
+            // Hide dropdown
+            dropdownMenu.classList.add("hidden");
+
+            // You can trigger additional actions based on model selection here
+            console.log("Selected model:", selectedModelValue);
+          });
+        });
         // Element selectors
-
+        const homeSection = document.getElementById("home-section");
         const mainContent = document.getElementById("main-content");
-
+        const chatMessages = document.getElementById("chat-messages");
         const chatMessagesContainer = document
           .getElementById("chat-messages")
           .querySelector("div");
@@ -401,52 +579,56 @@
         const imagePreview = document.getElementById("image-preview");
         const attachInput = document.getElementById("attach-input");
         const attachButton = document.getElementById("attach-button");
-        const clearAttachButton = document.getElementById(
-          "clear-attach-button"
-        );
 
-        // Update the handleFilePreview function
+        // Check if there's an initial prompt from sessionStorage
+        const initialPrompt = sessionStorage.getItem("initialPrompt");
+        if (initialPrompt) {
+          chatInput.value = initialPrompt;
+          resizeTextarea();
+          sessionStorage.removeItem("initialPrompt");
+          submitButton.click();
+        }
+
+        // Function to switch to chat mode
+        function switchToChatMode() {
+          homeSection.classList.add("hidden");
+          chatMessages.classList.remove("hidden");
+        }
+
+        // Auto-resize textarea
+        function resizeTextarea() {
+          chatInput.style.height = "auto";
+          chatInput.style.height = Math.min(chatInput.scrollHeight, 200) + "px";
+        }
+
+        // Handle file preview for uploaded images
         function handleFilePreview(files) {
           imagePreview.innerHTML = ""; // Clear existing previews
-
           if (files.length > 0) {
             imagePreview.classList.remove("hidden");
-
             Array.from(files).forEach((file, index) => {
               if (file.type.startsWith("image/")) {
                 const reader = new FileReader();
                 const previewContainer = document.createElement("div");
                 previewContainer.className = "relative group";
-
                 reader.onload = (e) => {
                   previewContainer.innerHTML = `
-            <div class="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200 group">
-              <img src="${e.target.result}" class="w-full h-full object-cover" alt="Preview"/>
-              <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-200"></div>
-              <button
-                class="absolute top-1 right-1 p-1 rounded-full bg-white/80 opacity-0 group-hover:opacity-100 hover:bg-white transition-all duration-200 shadow-sm"
-                onclick="removePreviewImage(${index})"
-                aria-label="Remove image"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+              <div class="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200 group">
+                <img src="${e.target.result}" class="w-full h-full object-cover" alt="Preview"/>
+                <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-200"></div>
+                <button
+                  class="absolute top-1 right-1 p-1 rounded-full bg-white/80 opacity-0 group-hover:opacity-100 hover:bg-white transition-all duration-200 shadow-sm"
+                  onclick="removePreviewImage(${index})"
+                  aria-label="Remove image"
                 >
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
-          `;
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            `;
                 };
-
                 reader.readAsDataURL(file);
                 imagePreview.appendChild(previewContainer);
               }
@@ -456,38 +638,31 @@
           }
         }
 
-        // Update the removePreviewImage function to:
+        // Remove a preview image
         function removePreviewImage(index) {
           const fileList = Array.from(attachInput.files);
           const dt = new DataTransfer();
-
           fileList.forEach((file, i) => {
             if (i !== index) dt.items.add(file);
           });
-
           attachInput.files = dt.files;
           handleFilePreview(attachInput.files);
-
           if (attachInput.files.length === 0) {
             imagePreview.classList.add("hidden");
           }
         }
-
         window.removePreviewImage = removePreviewImage;
 
-        // When attach button is clicked, trigger the hidden file input.
-        attachButton.addEventListener("click", () => {
-          attachInput.click();
-        });
-
-        // Add at the start of your DOMContentLoaded callback
+        // Authentication variables
         let isAuthenticated = false;
+        let isLoading = false;
+        let abortController = null;
+        let hasSentMessage = false;
 
         // Check authentication status
         async function checkAuth() {
           try {
             const response = await fetch("/ai/auth/check/", {
-              // Update path to match URL configuration
               credentials: "include",
             });
             const data = await response.json();
@@ -502,15 +677,10 @@
           }
         }
 
-        let isLoading = false;
-        let abortController = null;
-        let hasSentMessage = false;
-
         // Improved mobile viewport handling
         window.visualViewport.addEventListener("resize", () => {
           document.documentElement.style.height = `${window.visualViewport.height}px`;
           resizeTextarea();
-
           const isMobile = window.innerWidth <= 768;
           if (isMobile && document.activeElement === chatInput) {
             chatMessagesContainer.parentElement.scrollTo({
@@ -535,14 +705,6 @@
           }
         });
 
-        // Automatically resize the textarea based on content
-        function resizeTextarea() {
-          chatInput.style.height = "auto";
-          const maxHeight = Math.min(200, window.innerHeight * 0.4); // 40% of viewport height or 200px
-          chatInput.style.height =
-            Math.min(chatInput.scrollHeight, maxHeight) + "px";
-        }
-
         // Scroll to the latest message smoothly
         function scrollToLatestMessage(force = false) {
           const chatContainer = chatMessagesContainer.parentElement;
@@ -552,7 +714,6 @@
               chatContainer.scrollTop -
               chatContainer.clientHeight <
             threshold;
-
           if (force || isNearBottom) {
             chatContainer.scrollTo({
               top: chatContainer.scrollHeight,
@@ -562,27 +723,18 @@
         }
 
         let userHasScrolled = false;
-
         function setupScrollObserver() {
           const chatContainer = chatMessagesContainer.parentElement;
           let lastScrollTop = chatContainer.scrollTop;
-
           chatContainer.addEventListener("scroll", () => {
             const isScrollingUp = chatContainer.scrollTop < lastScrollTop;
-            if (isScrollingUp) {
-              userHasScrolled = true;
-            }
-
-            // Reset userHasScrolled when user scrolls to bottom
+            if (isScrollingUp) userHasScrolled = true;
             const isAtBottom =
               chatContainer.scrollHeight -
                 chatContainer.scrollTop -
                 chatContainer.clientHeight <
               10;
-            if (isAtBottom) {
-              userHasScrolled = false;
-            }
-
+            if (isAtBottom) userHasScrolled = false;
             lastScrollTop = chatContainer.scrollTop;
           });
         }
@@ -594,11 +746,11 @@
           isStreaming = false,
           images = []
         ) {
+          switchToChatMode(); // Ensure chat mode is active when a message is added
           const messageDiv = document.createElement("div");
           messageDiv.className = `flex ${
             isUser ? "justify-end" : "justify-start"
           } mb-4`;
-
           const bubbleDiv = document.createElement("div");
           bubbleDiv.className = `max-w-full rounded-2xl p-3 ${
             isUser ? "bg-[#E8E8E880] text-black" : "bg-white"
@@ -608,7 +760,6 @@
           if (images && images.length > 0) {
             const imagesContainer = document.createElement("div");
             imagesContainer.className = "message-images";
-
             images.forEach((imageUrl) => {
               const img = document.createElement("img");
               img.src = imageUrl;
@@ -616,7 +767,6 @@
               img.alt = "Uploaded image";
               imagesContainer.appendChild(img);
             });
-
             bubbleDiv.appendChild(imagesContainer);
           }
 
@@ -629,6 +779,7 @@
             bubbleDiv.appendChild(textSpan);
             const cursor = document.createElement("span");
             cursor.className = "cursor";
+            textSpan.innerHTML = marked.parse(message);
             cursor.textContent = "...";
             bubbleDiv.appendChild(cursor);
             messageDiv.appendChild(bubbleDiv);
@@ -646,53 +797,41 @@
               messageContent.innerHTML = parsed;
               bubbleDiv.appendChild(messageContent);
 
-              // Previous code block styling remains unchanged
               bubbleDiv.querySelectorAll("pre code").forEach((block) => {
-                // Get language class if specified
                 const langClass = block.className.match(/language-([^\s]+)/);
                 const language = langClass ? langClass[1] : "plaintext";
-
                 block.className = `language-${language} font-mono text-sm`;
                 const pre = block.parentElement;
                 pre.className =
                   "group relative bg-gray-50 rounded-md p-4 my-3 overflow-x-auto";
-
-                // Add copy button
                 const copyButton = document.createElement("button");
                 copyButton.className =
                   "absolute top-2 right-2 p-1 rounded text-gray-500 hover:bg-gray-200 opacity-0 hover:opacity-100";
                 copyButton.innerHTML = `
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                  </svg>
-                `;
-                copyButton.addEventListener("click", () => {
-                  navigator.clipboard.writeText(block.textContent);
-                });
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+          `;
+                copyButton.addEventListener("click", () =>
+                  navigator.clipboard.writeText(block.textContent)
+                );
                 pre.appendChild(copyButton);
               });
 
-              // Style inline code
               bubbleDiv
                 .querySelectorAll("code:not(pre code)")
                 .forEach((block) => {
                   block.className =
                     "bg-gray-100 rounded px-1.5 py-0.5 font-mono text-sm text-gray-800";
                 });
-
-              // Style blockquotes
               bubbleDiv.querySelectorAll("blockquote").forEach((block) => {
                 block.className =
                   "border-l-4 border-gray-200 pl-4 my-4 italic text-gray-600";
               });
-
-              // Style lists
               bubbleDiv.querySelectorAll("ul, ol").forEach((list) => {
                 list.className = "my-3 pl-5";
               });
-
-              // Style headings
               ["h1", "h2", "h3", "h4", "h5", "h6"].forEach((tag) => {
                 bubbleDiv.querySelectorAll(tag).forEach((heading) => {
                   heading.className = "font-bold my-3";
@@ -719,7 +858,7 @@
           }
         }
 
-        // Send a chat message and stream the AI response
+        // Send chat message and stream AI response
         async function sendChatMessage(body, headers, useFormData) {
           if (!isAuthenticated) {
             window.location.href =
@@ -727,7 +866,6 @@
               encodeURIComponent(window.location.pathname);
             return;
           }
-
           abortController = new AbortController();
           const signal = abortController.signal;
 
@@ -744,9 +882,8 @@
               window.location.href = data.login_url || "/admin/login/";
               return;
             }
-            if (!response.ok) {
+            if (!response.ok)
               throw new Error(`HTTP error! Status: ${response.status}`);
-            }
             const streamingMessage = addChatMessage("", false, true);
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
@@ -759,9 +896,7 @@
               accumulatedText += chunk;
               streamingMessage.textSpan.innerHTML =
                 marked.parse(accumulatedText);
-              if (!userHasScrolled) {
-                scrollToLatestMessage(true);
-              }
+              if (!userHasScrolled) scrollToLatestMessage(true);
             }
             streamingMessage.cursor.remove();
           } catch (error) {
@@ -781,90 +916,59 @@
           }
         }
 
-        // Updated handleSubmit now checks for attached files.
+        // Handle form submission
         function handleSubmit(event) {
           event.preventDefault();
           const prompt = chatInput.value.trim();
           const files = attachInput.files;
-
-          // Only proceed if there is a prompt or attached files.
           if (!prompt && files.length === 0) return;
-          // Create array of image URLs for display
+
           const imageUrls = [];
           if (files.length > 0) {
             for (let i = 0; i < files.length; i++) {
-              const url = URL.createObjectURL(files[i]);
-              imageUrls.push(url);
+              imageUrls.push(URL.createObjectURL(files[i]));
             }
           }
 
+          switchToChatMode(); // Switch to chat mode on first submission
           addChatMessage(prompt, true, false, imageUrls);
 
           chatInput.value = "";
           resizeTextarea();
           if (!hasSentMessage) {
             hasSentMessage = true;
-            const modelSelectWrapper = document.getElementById(
-              "model-select-wrapper"
-            );
-            if (modelSelectWrapper) {
-              modelSelectWrapper.style.display = "none";
-            }
-            const modelSelectorContent = document.getElementById(
-              "model-selector-content"
-            );
-            if (modelSelectorContent) {
-              modelSelectorContent.classList.remove("justify-between");
-              modelSelectorContent.classList.add("justify-center");
-            }
+            dropdownButton.classList.add("locked");
+            dropdownMenu.remove();
           }
+
           isLoading = true;
           updateLoadingState();
-          // Determine if there are attached files.
-          let useFormData = attachInput.files.length > 0;
+
+          let useFormData = files.length > 0;
           let body,
             headers = { "X-CSRFToken": csrftoken };
           if (useFormData) {
-            // Create a FormData object and append prompt, model, and files.
             body = new FormData();
             body.append("prompt", prompt);
-            const modelSelector = document.querySelector("select");
-            body.append("model", modelSelector.value);
-            for (let i = 0; i < attachInput.files.length; i++) {
-              body.append("images", attachInput.files[i]);
+            body.append("model", selectedModelValue);
+            for (let i = 0; i < files.length; i++) {
+              body.append("images", files[i]);
             }
           } else {
             headers["Content-Type"] = "application/json";
             body = JSON.stringify({
               prompt: prompt,
-              model: document.querySelector("select").value,
+              model: selectedModelValue,
             });
           }
-          // Send the message (and attachments, if any)
+
           sendChatMessage(body, headers, useFormData);
           attachInput.value = "";
-          imagePreview.innerHTML = ""; // Clear previews after submission
+          imagePreview.innerHTML = "";
           imagePreview.classList.add("hidden");
         }
 
-        chatInput.addEventListener("input", resizeTextarea);
-        chatInput.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-            handleSubmit(event);
-          }
-        });
-        submitButton.addEventListener("click", handleSubmit);
-        stopButton.addEventListener("click", () => {
-          if (abortController) {
-            abortController.abort();
-            abortController = null;
-          }
-          isLoading = false;
-          updateLoadingState();
-        });
-
-        // Stop the ongoing streaming response
+        // Stop streaming response
         function handleStop() {
           if (abortController) {
             abortController.abort();
@@ -876,80 +980,66 @@
 
         // Event listeners for input and buttons
         chatInput.addEventListener("input", resizeTextarea);
-        chatInput.addEventListener("keydown", (event) => {
+        chatInput.addEventListener("keydown", function (event) {
           if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
+            console.log("Enter key pressed - submitting form");
             handleSubmit(event);
           }
         });
         submitButton.addEventListener("click", handleSubmit);
         stopButton.addEventListener("click", handleStop);
-
-        // Set initial model name and update on change.
-        const select = document.querySelector("select");
-        const selectedModelName = select.selectedOptions[0].textContent;
-        document.getElementById("selected-model-name").textContent =
-          selectedModelName;
-        select.addEventListener("change", (event) => {
-          const newModelName = event.target.selectedOptions[0].textContent;
-          document.getElementById("selected-model-name").textContent =
-            newModelName;
-        });
-        // Call checkAuth when page loads
-        checkAuth();
-        setupScrollObserver()
-
-        // Update the attachInput event listener to:
+        attachButton.addEventListener("click", () => attachInput.click());
         attachInput.addEventListener("change", () => {
-          if (attachInput.files.length > 0) {
+          if (attachInput.files.length > 0)
             handleFilePreview(attachInput.files);
-          } else {
-            imagePreview.classList.add("hidden");
-          }
+          else imagePreview.classList.add("hidden");
         });
-      });
 
-      // Add to your DOMContentLoaded event listener
-      document.addEventListener("loadPostInChat", (event) => {
-        const { postId, content, image } = event.detail;
+        // Suggestion card handler from home.html
+        window.fillPrompt = function (text) {
+          chatInput.value = text;
+          chatInput.style.height = "auto";
+          chatInput.style.height = chatInput.scrollHeight + "px";
+          chatInput.focus();
+        };
 
-        // Prepare the chat input
-        const chatInput = document.getElementById("chat-input");
-        chatInput.value = content;
+        // Initial setup
+        checkAuth();
+        setupScrollObserver();
 
-        // Handle image if present
-        if (image) {
-          const imagePreview = document.getElementById("image-preview");
-          imagePreview.classList.remove("hidden");
-
-          const previewContainer = document.createElement("div");
-          previewContainer.className = "relative inline-block";
-          previewContainer.innerHTML = `
-            <img src="${image}" alt="Post image" class="h-20 w-20 object-cover rounded-lg">
-            <button onclick="removePreviewImage(0)" class="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </button>
-        `;
-          imagePreview.appendChild(previewContainer);
-
-          // Create a file from the image URL and add it to the file input
-          fetch(image)
-            .then((res) => res.blob())
-            .then((blob) => {
-              const file = new File([blob], "post_image.jpg", {
-                type: "image/jpeg",
+        // Handle loading post in chat
+        document.addEventListener("loadPostInChat", (event) => {
+          const { postId, content, image } = event.detail;
+          chatInput.value = content;
+          if (image) {
+            imagePreview.classList.remove("hidden");
+            const previewContainer = document.createElement("div");
+            previewContainer.className = "relative inline-block";
+            previewContainer.innerHTML = `
+        <img src="${image}" alt="Post image" class="h-20 w-20 object-cover rounded-lg">
+        <button onclick="removePreviewImage(0)" class="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      `;
+            imagePreview.appendChild(previewContainer);
+            fetch(image)
+              .then((res) => res.blob())
+              .then((blob) => {
+                const file = new File([blob], "post_image.jpg", {
+                  type: "image/jpeg",
+                });
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                attachInput.files = dt.files;
               });
-              const dt = new DataTransfer();
-              dt.items.add(file);
-              document.getElementById("attach-input").files = dt.files;
-            });
-        }
+          }
+          chatInput.focus();
 
-        // Auto-resize the textarea
-        chatInput.style.height = "auto";
-        chatInput.style.height = chatInput.scrollHeight + "px";
+          resizeTextarea();
+        });
       });
     </script>
   </body>
