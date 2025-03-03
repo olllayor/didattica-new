@@ -78,27 +78,19 @@ class PostImage(models.Model):
 
     def save(self, *args, **kwargs):
         if self.image:
-            # Open the image using Pillow
-            img = Image.open(self.image)
-
-            # Convert the image to RGB mode if it's not already
-            if img.mode in ("RGBA", "LA"):
-                background = Image.new("RGB", img.size, (255, 255, 255))
-                background.paste(
-                    img, mask=img.split()[-1]
-                )  # Paste using alpha channel as mask
-                img = background
-
-            # Convert the image to WebP format with the best quality
-            buffer = BytesIO()
-            img.save(buffer, format="WEBP", quality=80)
-            webp_image = ContentFile(buffer.getvalue())
-
-            # Save the WebP image with the same name but with .webp extension
-            self.image.save(
-                os.path.splitext(self.image.name)[0] + ".webp", webp_image, save=False
-            )
-
+            try:
+                img = Image.open(self.image)
+                if img.mode in ("RGBA", "LA"):
+                    background = Image.new("RGB", img.size, (255, 255, 255))
+                    background.paste(img, mask=img.split()[-1])
+                    img = background
+                buffer = BytesIO()
+                img.save(buffer, format="WEBP", quality=80)
+                webp_image = ContentFile(buffer.getvalue())
+                self.image.save(os.path.splitext(self.image.name)[0] + ".webp", webp_image, save=False)
+            except Exception:
+                # Add proper error handling/logging in production
+                pass
         super().save(*args, **kwargs)
 
 

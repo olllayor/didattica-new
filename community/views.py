@@ -14,18 +14,6 @@ from django.utils import timezone
 @login_required
 def create_post(request):
     if request.method == "POST":
-        # Check if user can post
-        if not request.user.profile.can_post():
-            remaining_time = (
-                100
-                - (timezone.now() - request.user.profile.last_post_time).total_seconds()
-            )
-            messages.error(
-                request,
-                f"Please wait {int(remaining_time)} seconds before creating another post.",
-            )
-            return redirect("feed")
-
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
@@ -44,7 +32,6 @@ def create_post(request):
                 post.reply_to = reply_to
             
             post.save()
-            form.save_m2m()
 
             # Handle multiple image uploads
             images = request.FILES.getlist("images")  # Get list of uploaded images
