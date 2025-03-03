@@ -134,7 +134,8 @@
                 <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
                   <img src="{% if post.author.profile.profile_image %}{{ post.author.profile.profile_image.url }}{% else %}{% static 'placeholder.svg' %}{% endif %}"
                        alt="{{ post.author.username }}"
-                       class="w-full h-full object-cover rounded-full" />
+                       class="w-full h-full object-cover rounded-full"
+                       loading="lazy" />
                 </div>
                 <div>
                   <div class="flex items-center gap-1">
@@ -198,6 +199,7 @@
                         <img src="{{ image.image.url }}"
                              alt="Post image"
                              class="object-cover w-full h-full cursor-pointer"
+                              loading="lazy"
                              onclick="event.stopPropagation(); openImagePreviewModal([{% for img in post.post_images.all %}'{{ img.image.url }}'{% if not forloop.last %},{% endif %}{% endfor %}], {{ forloop.counter0 }})" />
                       </div>
                     {% endfor %}
@@ -486,7 +488,7 @@
                         <div class="flex justify-between">
                           <div class="flex gap-3">
                             <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                              <img src="${ post.profile_image || "{% static 'placeholder.svg' %}" }" alt="${ post.author }" class="w-full h-full object-cover rounded-full" />
+                              <img src="${ post.profile_image || "{% static 'placeholder.svg' %}" }" alt="${ post.author }" class="w-full h-full object-cover rounded-full" loading="lazy" />
                             </div>
                             <div>
                               <div class="flex items-center gap-1">
@@ -519,7 +521,7 @@
                         }
                         ${
                           post.image
-                            ? `<div class="mt-4"><img src="${post.image}" alt="Post image" class="rounded-xl w-full object-cover" /></div>`
+                            ? `<div class="mt-4"><img src="${post.image}" alt="Post image" class="rounded-xl w-full object-cover" loading="lazy"/></div>`
                             : ""
                         }
                         <div class="flex justify-between mt-3">

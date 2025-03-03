@@ -69,7 +69,11 @@ class Post(models.Model):
             self.likes.remove(user)
             
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['-created_at'],
+        indexes = [
+            models.Index(fields=['created_at']),
+            models.Index(fields=['author']),
+        ]
 
 
 class PostImage(models.Model):

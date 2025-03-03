@@ -1,14 +1,13 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.core.paginator import Paginator
-from django.core.paginator import EmptyPage
-from .models import Post, Comment, PostImage
-from .forms import PostForm, CommentForm
 from django.contrib import messages
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from .models import Reaction
+from django.core.paginator import EmptyPage, Paginator
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.decorators.http import require_POST
+from django.core.cache import cache
+from .forms import CommentForm, PostForm
+from .models import Post, PostImage, Reaction
 
 
 @login_required
@@ -61,7 +60,13 @@ def create_post(request):
 
 # community/views.py
 def feed(request):
-    posts = Post.objects.filter(reply_to=None).order_by("-created_at")
+    cache_key = 'feed_posts'
+    posts = cache.get(cache_key)
+    
+    if not posts:
+        posts = Post.objects.select_related('author__profile').prefetch_related('post_images', 'likes').order_by('-created_at')[:50]
+        cache.set(cache_key, posts, 300)
+        
     paginator = Paginator(posts, 10)  # Show 10 posts per page
     page_number = request.GET.get("page", 1)
 

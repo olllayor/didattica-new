@@ -91,6 +91,16 @@ CHANNEL_LAYERS = {
     },
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://localhost:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
 WSGI_APPLICATION = "config.wsgi.application"
 
 INTERNAL_IPS = ["127.0.0.1"]
@@ -172,7 +182,7 @@ LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
 
 ALLAUTH_UI_THEME = "cmyk"  # or "dark", "cupcake", etc.
 
-
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
