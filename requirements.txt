@@ -64,7 +64,7 @@ psutil==7.0.0
 psycopg2==2.9.10
 psycopg2-binary==2.9.10
 py-vapid==1.9.2
-pyasn1==0.6.1
+pyasn1==0.6.2
 pyasn1-modules==0.4.1
 pycparser==2.22
 pydantic==2.10.6
